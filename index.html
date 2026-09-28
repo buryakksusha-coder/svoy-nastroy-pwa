@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Свой Настрой — мокап приложения</title>
+<title>Свой Настрой</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F5C4A">
@@ -12,6 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Свой Настрой">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Свой Настрой — находи музыкантов рядом с собой в Екатеринбурге">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMUY1QzRBIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNzIiIGZpbGw9IiMyRThCNkUiLz48dGV4dCB4PSI5NiIgeT0iMTE0IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2NiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U048L3RleHQ+PC9zdmc+">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMUY1QzRBIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNzIiIGZpbGw9IiMyRThCNkUiLz48dGV4dCB4PSI5NiIgeT0iMTE0IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2NiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U048L3RleHQ+PC9zdmc+">
 
 <style>
   :root{
@@ -76,7 +78,6 @@
     font-weight:600;
     letter-spacing:.02em;
   }
-  .badge img{width:16px;height:16px;border-radius:5px;display:block;}
 
   #install-btn{
     display:none;
@@ -176,7 +177,7 @@
   /* bottom nav */
   .tabbar{
     flex-shrink:0;
-    display:flex;
+    display:none;
     justify-content:space-around;
     align-items:center;
     padding:10px 6px 16px;
@@ -200,7 +201,7 @@
   .tab-btn.active{color:var(--accent);}
   .tab-btn.active svg{stroke:var(--accent);}
 
-  /* form elements (anketa) */
+  /* form elements */
   .field{margin-bottom:16px;}
   .field label{
     display:block;
@@ -217,26 +218,25 @@
     border:1px solid var(--line);
     font-size:12.5px;
     color:var(--ink);
-    cursor:default;
+    cursor:pointer;
+    user-select:none;
   }
   .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
-  .input-fake{
+
+  .text-input, textarea.text-input{
+    width:100%;
     background:var(--panel-2);
     border:1px solid var(--line);
     border-radius:12px;
     padding:11px 13px;
     font-size:13px;
-    color:var(--ink-quiet);
+    color:var(--ink);
+    font-family:inherit;
   }
-  .upload-box{
-    border:1.5px dashed var(--line);
-    border-radius:14px;
-    padding:18px;
-    text-align:center;
-    color:var(--ink-quiet);
-    font-size:12.5px;
-  }
-  .upload-box svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.6;margin-bottom:6px;}
+  textarea.text-input{resize:vertical;min-height:70px;}
+  .text-input:focus{outline:none;border-color:var(--accent);}
+  .text-input::placeholder{color:var(--ink-quiet);}
+
   .primary-btn{
     width:100%;
     background:var(--accent);
@@ -248,7 +248,9 @@
     font-weight:700;
     margin-top:6px;
     font-family:inherit;
+    cursor:pointer;
   }
+  .primary-btn:disabled{opacity:.6;cursor:default;}
 
   /* avatar */
   .avatar{
@@ -281,6 +283,7 @@
     background:var(--accent);
     box-shadow:0 0 0 6px rgba(46,139,110,.3);
     transform:translate(-50%,-50%);
+    z-index:2;
   }
   .radius-ring{
     position:absolute;left:50%;top:52%;
@@ -295,6 +298,7 @@
     display:flex;align-items:center;justify-content:center;
     font-size:13px;font-weight:700;color:#fff;
     box-shadow:0 4px 10px rgba(0,0,0,.4);
+    cursor:pointer;
   }
   .pin span{transform:rotate(45deg);}
   .filter-row{
@@ -310,6 +314,8 @@
     border:1px solid var(--line);
     font-size:12px;
     color:var(--ink);
+    cursor:pointer;
+    user-select:none;
   }
   .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 
@@ -360,25 +366,6 @@
     margin:16px 0 8px;
     font-weight:700;
   }
-  .player{
-    background:var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:12px 14px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-  .play-btn{
-    width:34px;height:34px;border-radius:50%;
-    background:var(--accent);
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-  .play-btn svg{width:12px;height:12px;fill:#fff;}
-  .waveform{flex:1;height:22px;display:flex;align-items:center;gap:2px;}
-  .waveform i{width:2.5px;background:var(--line);border-radius:2px;display:inline-block;}
-  .waveform i.on{background:var(--accent);}
   .bio-text{font-size:13px;line-height:1.55;color:#d8d8dd;}
   .contact-btn{
     display:flex;gap:8px;margin-top:16px;
@@ -391,6 +378,7 @@
     font-weight:700;
     font-family:inherit;
     border:none;
+    cursor:pointer;
   }
   .contact-btn .msg{background:var(--accent);color:#fff;}
   .contact-btn .save{background:var(--chip);color:var(--ink);border:1px solid var(--line);}
@@ -400,10 +388,11 @@
     display:flex;align-items:center;gap:10px;
     padding:6px 18px 12px;
     border-bottom:1px solid var(--line);
+    flex-shrink:0;
   }
   .chat-header .avatar{width:36px;height:36px;font-size:13px;}
   .chat-header h4{margin:0;font-size:14.5px;}
-  .chat-header .status{font-size:11px;color:var(--good);}
+  .chat-header .status{font-size:11px;color:var(--ink-quiet);}
   .bubble{
     max-width:74%;
     padding:10px 13px;
@@ -411,28 +400,37 @@
     font-size:13px;
     line-height:1.4;
     margin-bottom:8px;
+    word-wrap:break-word;
   }
   .bubble.in{background:var(--panel-2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px;}
   .bubble.out{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
   .chat-scroll{display:flex;flex-direction:column;}
-  .time-stamp{
-    text-align:center;font-size:10.5px;color:var(--ink-quiet);
-    margin:4px 0 12px;
-  }
   .chat-input{
     display:flex;gap:8px;padding:10px 14px 16px;
     border-top:1px solid var(--line);
     flex-shrink:0;
   }
-  .chat-input .box{
+  .chat-input input.box{
     flex:1;background:var(--panel-2);border:1px solid var(--line);
-    border-radius:20px;padding:10px 16px;color:var(--ink-quiet);font-size:13px;
+    border-radius:20px;padding:10px 16px;color:var(--ink);font-size:13px;
+    font-family:inherit;outline:none;
   }
+  .chat-input input.box::placeholder{color:var(--ink-quiet);}
   .chat-input .send{
     width:38px;height:38px;border-radius:50%;background:var(--accent);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    border:none;cursor:pointer;
   }
   .chat-input .send svg{width:16px;height:16px;fill:#fff;}
+
+  .chat-list-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 4px;border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .chat-list-item .meta{flex:1;min-width:0;}
+  .chat-list-item .name{font-weight:700;font-size:13.5px;}
+  .chat-list-item .preview{font-size:12px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
   .caption{
     max-width:340px;
@@ -443,22 +441,9 @@
   }
   .col{display:flex;flex-direction:column;align-items:center;}
 
-  .legend{
-    max-width:920px;
-    width:100%;
-    margin-top:40px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-    gap:14px;
-  }
-  .legend .item{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:14px 16px;
-  }
-  .legend .item b{display:block;font-size:13px;margin-bottom:4px;}
-  .legend .item span{font-size:12px;color:var(--ink-quiet);line-height:1.5;}
+  .msg-line{font-size:12.5px;text-align:center;margin-top:10px;}
+  .msg-line.err{color:#ff6b8b;}
+  .msg-line.muted{color:var(--ink-quiet);}
 
   @media (max-width:760px){
     .layout{gap:20px;}
@@ -469,9 +454,9 @@
 <body>
 
 <div class="top">
-  <div class="badge">КОНЦЕПТ · Свой Настрой</div>
+  <div class="badge">СВОЙ НАСТРОЙ</div>
   <h1>Найди музыкантов рядом с собой</h1>
-  <p>Мокап пяти ключевых экранов: анкета, карта, поиск по критериям, профиль и чат.<br>Переключайте вкладки внизу телефона, чтобы посмотреть каждый экран.</p>
+  <p>Екатеринбург · зарегистрируйся, заполни анкету — и смотри, кто рядом.</p>
 </div>
 
 <button id="install-btn">Установить на телефон</button>
@@ -483,231 +468,217 @@
         <div class="notch"></div>
         <div class="statusbar"><span>9:41</span><span>●●● Свой Настрой</span></div>
 
-        <!-- SCREEN 1: ANKETA -->
-        <section class="screen active" id="s-anketa">
+        <!-- SCREEN: AUTH -->
+        <section class="screen active" id="s-auth">
           <div class="app-header">
-            <h2>Анкета</h2>
-            <div class="sub">Шаг 2 из 3 — о твоей игре</div>
+            <h2>Свой Настрой</h2>
+            <div class="sub" id="auth-sub">Проверяю сессию…</div>
           </div>
           <div class="scroll">
             <div class="field">
+              <label>Email</label>
+              <input class="text-input" type="email" id="auth-email" autocomplete="email" placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label>Пароль</label>
+              <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 6 символов">
+            </div>
+            <div class="msg-line err" id="auth-error" style="display:none;"></div>
+            <button class="primary-btn" id="auth-submit-btn">Войти</button>
+            <button class="primary-btn" id="auth-toggle-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Нет аккаунта? Зарегистрироваться</button>
+          </div>
+        </section>
+
+        <!-- SCREEN: ANKETA (создание / редактирование профиля) -->
+        <section class="screen" id="s-anketa">
+          <div class="app-header">
+            <h2 id="anketa-title">Анкета</h2>
+            <div class="sub" id="anketa-sub">Расскажи о себе — это займёт минуту</div>
+          </div>
+          <div class="scroll">
+            <div class="field">
+              <label>Имя</label>
+              <input class="text-input" type="text" id="f-name" placeholder="Как тебя зовут?">
+            </div>
+            <div class="field">
+              <label>Возраст</label>
+              <input class="text-input" type="number" id="f-age" min="12" max="99" placeholder="Необязательно">
+            </div>
+            <div class="field">
               <label>Инструменты</label>
-              <div class="chips">
-                <span class="chip on">Гитара</span>
-                <span class="chip">Вокал</span>
-                <span class="chip">Барабаны</span>
-                <span class="chip">Бас</span>
-                <span class="chip">Клавиши</span>
+              <div class="chips" id="f-instruments">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
               </div>
             </div>
             <div class="field">
               <label>Уровень</label>
-              <div class="chips">
-                <span class="chip">Новичок</span>
-                <span class="chip on">Средний</span>
-                <span class="chip">Профи</span>
+              <div class="chips" id="f-level">
+                <span class="chip" data-val="Новичок">Новичок</span>
+                <span class="chip" data-val="Средний">Средний</span>
+                <span class="chip" data-val="Профи">Профи</span>
               </div>
             </div>
             <div class="field">
               <label>Жанры</label>
-              <div class="chips">
-                <span class="chip on">Инди-рок</span>
-                <span class="chip on">Пост-панк</span>
-                <span class="chip">Джаз</span>
-                <span class="chip">Фолк</span>
+              <div class="chips" id="f-genres">
+                <span class="chip" data-val="Инди-рок">Инди-рок</span>
+                <span class="chip" data-val="Пост-панк">Пост-панк</span>
+                <span class="chip" data-val="Джаз">Джаз</span>
+                <span class="chip" data-val="Фолк">Фолк</span>
+                <span class="chip" data-val="Рок">Рок</span>
+                <span class="chip" data-val="Поп">Поп</span>
+                <span class="chip" data-val="Электроника">Электроника</span>
               </div>
             </div>
             <div class="field">
               <label>Цель</label>
-              <div class="chips">
-                <span class="chip on">Собрать группу</span>
-                <span class="chip">Джемы</span>
-                <span class="chip">Уроки</span>
+              <div class="chips" id="f-goal">
+                <span class="chip" data-val="Собрать группу">Собрать группу</span>
+                <span class="chip" data-val="Джемы">Джемы</span>
+                <span class="chip" data-val="Уроки">Уроки</span>
               </div>
             </div>
             <div class="field">
               <label>О себе (характер, бэкграунд)</label>
-              <div class="input-fake">Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…</div>
+              <textarea class="text-input" id="f-bio" placeholder="Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…"></textarea>
             </div>
-            <div class="field">
-              <label>Фрагмент игры (до 60 сек)</label>
-              <div class="upload-box">
-                <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4M4 20h16"/></svg>
-                <div>audio_sample.mp3 — 0:47</div>
-              </div>
-            </div>
-            <button class="primary-btn">Показать меня на карте</button>
+            <div class="msg-line err" id="anketa-error" style="display:none;"></div>
+            <div class="msg-line muted" id="anketa-status" style="display:none;"></div>
+            <button class="primary-btn" id="anketa-submit-btn">Показать меня на карте</button>
           </div>
         </section>
 
-        <!-- SCREEN 2: MAP -->
+        <!-- SCREEN: MAP -->
         <section class="screen" id="s-map">
           <div class="app-header">
             <h2>Рядом с тобой</h2>
-            <div class="sub">Уралмаш · радиус 2 км · 7 анкет</div>
+            <div class="sub" id="map-sub">Загружаю…</div>
           </div>
-          <div class="filter-row">
-            <span class="filter-chip on">Все</span>
-            <span class="filter-chip">Гитара</span>
-            <span class="filter-chip">Вокал</span>
-            <span class="filter-chip">Барабаны</span>
-            <span class="filter-chip">Джем сегодня</span>
+          <div class="filter-row" id="map-filter">
+            <span class="filter-chip on" data-val="Все">Все</span>
+            <span class="filter-chip" data-val="Гитара">Гитара</span>
+            <span class="filter-chip" data-val="Вокал">Вокал</span>
+            <span class="filter-chip" data-val="Барабаны">Барабаны</span>
+            <span class="filter-chip" data-val="Бас">Бас</span>
+            <span class="filter-chip" data-val="Клавиши">Клавиши</span>
           </div>
-          <div class="map-area">
+          <div class="map-area" id="map-area">
             <div class="radius-ring"></div>
             <div class="me-dot"></div>
-            <div class="pin a1" style="left:34%;top:28%;"><span>Г</span></div>
-            <div class="pin a2" style="left:66%;top:35%;"><span>Б</span></div>
-            <div class="pin a3" style="left:58%;top:64%;"><span>В</span></div>
-            <div class="pin a4" style="left:28%;top:70%;"><span>Кл</span></div>
-            <div class="pin a5" style="left:74%;top:58%;"><span>Бс</span></div>
           </div>
         </section>
 
-        <!-- SCREEN 3: SEARCH -->
+        <!-- SCREEN: SEARCH -->
         <section class="screen" id="s-search">
           <div class="app-header">
             <h2>Кого ищешь?</h2>
-            <div class="sub">Те же поля, что и в анкете — только для поиска</div>
+            <div class="sub">Фильтры + радиус поиска</div>
           </div>
           <div class="scroll">
             <div class="field">
               <label>Инструмент</label>
-              <div class="chips">
-                <span class="chip">Гитара</span>
-                <span class="chip on">Бас</span>
-                <span class="chip">Барабаны</span>
-                <span class="chip">Вокал</span>
-                <span class="chip">Клавиши</span>
+              <div class="chips" id="sf-instrument">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
               </div>
             </div>
             <div class="field">
               <label>Уровень</label>
-              <div class="chips">
-                <span class="chip">Новичок</span>
-                <span class="chip on">Средний</span>
-                <span class="chip">Профи</span>
-                <span class="chip">Не важно</span>
+              <div class="chips" id="sf-level">
+                <span class="chip" data-val="Новичок">Новичок</span>
+                <span class="chip" data-val="Средний">Средний</span>
+                <span class="chip" data-val="Профи">Профи</span>
               </div>
             </div>
             <div class="field">
               <label>Цель</label>
-              <div class="chips">
-                <span class="chip">Собрать группу</span>
-                <span class="chip on">Джемы</span>
-                <span class="chip">Разовое выступление</span>
-                <span class="chip">Уроки</span>
+              <div class="chips" id="sf-goal">
+                <span class="chip" data-val="Собрать группу">Собрать группу</span>
+                <span class="chip" data-val="Джемы">Джемы</span>
+                <span class="chip" data-val="Уроки">Уроки</span>
               </div>
             </div>
             <div class="field">
               <label>Радиус</label>
-              <div class="chips">
-                <span class="chip">1 км</span>
-                <span class="chip on">3 км</span>
-                <span class="chip">5 км</span>
-                <span class="chip">10 км</span>
+              <div class="chips" id="sf-radius">
+                <span class="chip" data-val="1">1 км</span>
+                <span class="chip" data-val="3">3 км</span>
+                <span class="chip" data-val="5">5 км</span>
+                <span class="chip" data-val="10">10 км</span>
+                <span class="chip on" data-val="25">25 км</span>
               </div>
             </div>
-            <button class="primary-btn">Показать совпадения · 4</button>
-            <button class="primary-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Оставить открытый запрос</button>
+            <button class="primary-btn" id="search-submit-btn">Показать совпадения</button>
 
-            <div class="section-title" style="margin-top:22px;">Совпадения рядом</div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="avatar a2">Б</div>
-                <div>
-                  <div class="card-name">Борис · бас, средний</div>
-                  <div class="card-meta">Играет 3 года · ищет джемы</div>
-                </div>
-                <div class="dist">1.2 км</div>
-              </div>
-              <div class="card-tags"><span class="tag">Бас</span><span class="tag">Средний</span><span class="tag">Джемы</span></div>
-            </div>
-            <div class="card">
-              <div class="card-top">
-                <div class="avatar a5">Бс</div>
-                <div>
-                  <div class="card-name">Богдан · бас, средний</div>
-                  <div class="card-meta">Играет 2 года · открыт к джемам</div>
-                </div>
-                <div class="dist">2.6 км</div>
-              </div>
-              <div class="card-tags"><span class="tag">Бас</span><span class="tag">Средний</span><span class="tag">Джемы</span></div>
-            </div>
-            <div class="card" style="border-style:dashed;">
-              <div class="card-top">
-                <div class="avatar a3">З</div>
-                <div>
-                  <div class="card-name">Запрос: нужен басист на джем</div>
-                  <div class="card-meta">Студия «Тон» · суббота 19:00</div>
-                </div>
-                <div class="dist">3.1 км</div>
-              </div>
-              <div class="card-tags"><span class="tag">Открытый запрос</span><span class="tag">Бас</span><span class="tag">Джемы</span></div>
-            </div>
+            <div class="section-title" style="margin-top:22px;">Результаты</div>
+            <div id="search-results"><div class="msg-line muted">Настрой фильтры и нажми «Показать совпадения».</div></div>
           </div>
         </section>
 
-        <!-- SCREEN 4: PROFILE -->
+        <!-- SCREEN: PROFILE -->
         <section class="screen" id="s-profile">
           <div class="scroll">
             <div class="profile-hero">
-              <div class="avatar a1">Г</div>
-              <h3>Глеб, 24</h3>
-              <div class="loc">Екатеринбург, Уралмаш · 1.2 км от тебя</div>
+              <div class="avatar a1" id="p-avatar">?</div>
+              <h3 id="p-name">—</h3>
+              <div class="loc" id="p-loc"></div>
               <div class="stat-row">
-                <div class="stat"><b>4 года</b><span>опыта</span></div>
-                <div class="stat"><b>Средний</b><span>уровень</span></div>
-                <div class="stat"><b>12</b><span>совпадений</span></div>
+                <div class="stat"><b id="p-age">—</b><span>возраст</span></div>
+                <div class="stat"><b id="p-level">—</b><span>уровень</span></div>
+                <div class="stat"><b id="p-goal">—</b><span>цель</span></div>
               </div>
             </div>
-            <div class="section-title">Фрагмент игры</div>
-            <div class="player">
-              <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-              <div class="waveform" id="waveform"></div>
-              <span style="font-size:11px;color:var(--ink-quiet);">0:38</span>
-            </div>
             <div class="section-title">О себе</div>
-            <div class="bio-text">Играю на гитаре 4 года, люблю инди-рок и пост-панк (Interpol, Молчат Дома). Ищу барабанщика и басиста для регулярных репетиций раз в неделю. По характеру спокойный, но на сцене — наоборот.</div>
-            <div class="section-title">Теги</div>
-            <div class="card-tags">
-              <span class="tag">Гитара</span><span class="tag">Инди-рок</span><span class="tag">Пост-панк</span><span class="tag">Собрать группу</span>
+            <div class="bio-text" id="p-bio">—</div>
+            <div class="section-title">Инструменты и жанры</div>
+            <div class="card-tags" id="p-tags"></div>
+            <div class="contact-btn" id="p-actions-other" style="display:none;">
+              <button class="msg" id="p-msg-btn" style="width:100%;">Написать</button>
             </div>
-            <div class="contact-btn">
-              <button class="save">Сохранить</button>
-              <button class="msg">Написать</button>
+            <div class="contact-btn" id="p-actions-own" style="display:none;">
+              <button class="save" id="p-edit-btn">Редактировать</button>
+              <button class="msg" id="p-logout-btn" style="background:#3a2630;">Выйти</button>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 5: CHAT -->
+        <!-- SCREEN: CHAT -->
         <section class="screen" id="s-chat">
-          <div class="chat-header">
-            <div class="avatar a1">Г</div>
-            <div>
-              <h4>Глеб</h4>
-              <div class="status">в сети</div>
+          <div id="chat-list-view" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+            <div class="app-header">
+              <h2>Чаты</h2>
+              <div class="sub">Общение только после взаимного интереса</div>
+            </div>
+            <div class="scroll" id="chat-list-scroll">
+              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.</div>
+              <div id="chat-list-items"></div>
             </div>
           </div>
-          <div class="scroll chat-scroll">
-            <div class="time-stamp">Сегодня, 18:24</div>
-            <div class="bubble in">Привет! Увидел твою анкету — тоже играю инди-рок, ищу барабанщика 🙂</div>
-            <div class="bubble out">Привет! Я как раз рядом, Уралмаш. Есть демка?</div>
-            <div class="bubble in">Да, скинул фрагмент в профиле. Можем в субботу собраться на репточку?</div>
-            <div class="bubble out">Погнали, скинь адрес студии</div>
-          </div>
-          <div class="chat-input">
-            <div class="box">Сообщение…</div>
-            <div class="send"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></div>
+          <div id="chat-thread-view" style="display:none;flex-direction:column;flex:1;min-height:0;">
+            <div class="chat-header">
+              <button id="chat-back-btn" style="background:none;border:none;color:var(--ink-quiet);font-size:18px;cursor:pointer;padding:0 6px 0 0;">←</button>
+              <div class="avatar a1" id="chat-avatar">?</div>
+              <div>
+                <h4 id="chat-name">—</h4>
+                <div class="status">чат</div>
+              </div>
+            </div>
+            <div class="scroll chat-scroll" id="chat-messages"></div>
+            <div class="chat-input">
+              <input class="box" id="chat-input-field" placeholder="Сообщение…">
+              <button class="send" id="chat-send-btn"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></button>
+            </div>
           </div>
         </section>
 
-        <div class="tabbar">
-          <button class="tab-btn active" data-screen="s-anketa">
-            <svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
-            Анкета
-          </button>
+        <div class="tabbar" id="tabbar">
           <button class="tab-btn" data-screen="s-map">
             <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
             Карта
@@ -727,46 +698,590 @@
         </div>
       </div>
     </div>
-    <div class="caption">Экран открывается по нажатию на нижнее меню телефона</div>
+    <div class="caption">Меню внизу телефона: карта · поиск · чат · профиль</div>
   </div>
 </div>
 
-<div class="legend">
-  <div class="item"><b>Анкета</b><span>Инструменты, уровень, жанры, цель и короткий аудио/видео фрагмент — минимум полей для быстрого заполнения.</span></div>
-  <div class="item"><b>Карта</b><span>Точный адрес скрыт, показывается район и радиус — как у JamRadar, снижает риск для приватности.</span></div>
-  <div class="item"><b>Поиск</b><span>Те же поля, что в анкете (инструмент, уровень, цель) — работают и как фильтр по людям, и как разовый открытый запрос («нужен басист на джем»).</span></div>
-  <div class="item"><b>Профиль</b><span>Фрагмент игры — главный элемент доверия, важнее текстового описания.</span></div>
-  <div class="item"><b>Чат</b><span>Общение только после взаимного интереса — снижает поток нежелательных сообщений.</span></div>
-</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import {
+    getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs,
+    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-<script>
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.screen).classList.add('active');
+  const firebaseConfig = {
+    apiKey: "AIzaSyC1dt0X4PgVUVo0f_hFUU4bjhh-QrsKjhE",
+    authDomain: "svoy-nastroy.firebaseapp.com",
+    projectId: "svoy-nastroy",
+    storageBucket: "svoy-nastroy.firebasestorage.app",
+    messagingSenderId: "1124802067",
+    appId: "1:1124802067:web:7395ec5d219fac4f41e9e6"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const MAP_RADIUS_KM = 25;
+
+  let currentUser = null;
+  let currentProfile = null;
+  let editingProfile = false;
+  let authMode = 'login';
+  let currentMapFilter = 'Все';
+  let viewedOtherProfile = null;
+  let activeChatId = null;
+  let unsubscribeMessages = null;
+  let unsubscribeChatList = null;
+  window.__mapProfiles = [];
+
+  /* ---------- helpers ---------- */
+  function $(id){ return document.getElementById(id); }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2){
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+  function bearingDeg(lat1, lon1, lat2, lon2){
+    const φ1 = lat1*Math.PI/180, φ2 = lat2*Math.PI/180;
+    const λ1 = lon1*Math.PI/180, λ2 = lon2*Math.PI/180;
+    const y = Math.sin(λ2-λ1)*Math.cos(φ2);
+    const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+    return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
+  }
+
+  const AVATAR_CLASSES = ['a1','a2','a3','a4','a5'];
+  function avatarClassFor(uid){
+    let sum = 0; for (const ch of uid) sum += ch.charCodeAt(0);
+    return AVATAR_CLASSES[sum % AVATAR_CLASSES.length];
+  }
+  function initialsFor(p){
+    if (p.instruments && p.instruments[0]) return p.instruments[0][0].toUpperCase();
+    return (p.name || '?')[0].toUpperCase();
+  }
+
+  function setActiveScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+  }
+
+  function wireChipGroup(containerId, mode){
+    const el = $(containerId);
+    el.querySelectorAll('.chip, .filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (mode === 'single'){
+          const isOn = chip.classList.contains('on');
+          el.querySelectorAll('.chip, .filter-chip').forEach(c => c.classList.remove('on'));
+          if (!isOn) chip.classList.add('on');
+        } else {
+          chip.classList.toggle('on');
+        }
+      });
+    });
+  }
+  function getChipValues(containerId){
+    return [...document.querySelectorAll('#'+containerId+' .on')].map(c => c.dataset.val);
+  }
+  function setChipValues(containerId, values){
+    const set = new Set(Array.isArray(values) ? values : (values ? [values] : []));
+    document.querySelectorAll('#'+containerId+' .chip').forEach(c => {
+      c.classList.toggle('on', set.has(c.dataset.val));
+    });
+  }
+
+  /* ---------- auth ---------- */
+  function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
+  function hideAuthError(){ $('auth-error').style.display = 'none'; }
+
+  function mapAuthError(err){
+    const code = err && err.code;
+    const map = {
+      'auth/invalid-email': 'Некорректный email.',
+      'auth/user-not-found': 'Аккаунт с таким email не найден.',
+      'auth/wrong-password': 'Неверный пароль.',
+      'auth/invalid-credential': 'Неверный email или пароль.',
+      'auth/email-already-in-use': 'Этот email уже зарегистрирован. Попробуй войти.',
+      'auth/weak-password': 'Пароль слишком короткий — минимум 6 символов.',
+      'auth/too-many-requests': 'Слишком много попыток. Попробуй позже.',
+      'auth/network-request-failed': 'Проблема с сетью. Проверь соединение.',
+    };
+    return map[code] || 'Что-то пошло не так. Попробуй ещё раз.';
+  }
+
+  $('auth-toggle-btn').addEventListener('click', () => {
+    authMode = authMode === 'login' ? 'register' : 'login';
+    $('auth-submit-btn').textContent = authMode === 'login' ? 'Войти' : 'Создать аккаунт';
+    $('auth-toggle-btn').textContent = authMode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
+    $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
+    hideAuthError();
+  });
+
+  $('auth-submit-btn').addEventListener('click', async () => {
+    hideAuthError();
+    const email = $('auth-email').value.trim();
+    const password = $('auth-password').value;
+    if (!email || !password){ showAuthError('Заполни email и пароль.'); return; }
+    const btn = $('auth-submit-btn');
+    btn.disabled = true; btn.textContent = 'Подожди…';
+    try {
+      if (authMode === 'login'){
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+    } catch (err){
+      showAuthError(mapAuthError(err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = authMode === 'login' ? 'Войти' : 'Создать аккаунт';
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    if (!user){
+      currentProfile = null;
+      $('tabbar').style.display = 'none';
+      $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
+      setActiveScreen('s-auth');
+      return;
+    }
+    try {
+      const snap = await getDoc(doc(db, 'profiles', user.uid));
+      if (snap.exists()){
+        currentProfile = { uid: user.uid, ...snap.data() };
+        $('tabbar').style.display = 'flex';
+        editingProfile = false;
+        setActiveScreen('s-map');
+        loadMap();
+      } else {
+        currentProfile = null;
+        $('tabbar').style.display = 'none';
+        prepareAnketaForm(false);
+        setActiveScreen('s-anketa');
+      }
+    } catch (err){
+      console.error(err);
+    }
+  });
+
+  /* ---------- anketa (create / edit profile) ---------- */
+  function prepareAnketaForm(isEdit){
+    $('anketa-title').textContent = isEdit ? 'Редактирование анкеты' : 'Анкета';
+    $('anketa-sub').textContent = isEdit ? 'Обнови данные о себе' : 'Расскажи о себе — это займёт минуту';
+    $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Показать меня на карте';
+    if (isEdit && currentProfile){
+      $('f-name').value = currentProfile.name || '';
+      $('f-age').value = currentProfile.age || '';
+      setChipValues('f-instruments', currentProfile.instruments || []);
+      setChipValues('f-level', currentProfile.level || null);
+      setChipValues('f-genres', currentProfile.genres || []);
+      setChipValues('f-goal', currentProfile.goal || null);
+      $('f-bio').value = currentProfile.bio || '';
+    } else {
+      $('f-name').value = '';
+      $('f-age').value = '';
+      setChipValues('f-instruments', []);
+      setChipValues('f-level', null);
+      setChipValues('f-genres', []);
+      setChipValues('f-goal', null);
+      $('f-bio').value = '';
+    }
+    hideAnketaMsgs();
+    editingProfile = isEdit;
+  }
+  function showAnketaError(msg){ $('anketa-error').textContent = msg; $('anketa-error').style.display = 'block'; $('anketa-status').style.display = 'none'; }
+  function showAnketaStatus(msg){ $('anketa-status').textContent = msg; $('anketa-status').style.display = 'block'; $('anketa-error').style.display = 'none'; }
+  function hideAnketaMsgs(){ $('anketa-error').style.display = 'none'; $('anketa-status').style.display = 'none'; }
+
+  function getGeolocation(){
+    return new Promise((resolve, reject) => {
+      if (!('geolocation' in navigator)){ reject(new Error('no-geo')); return; }
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        err => reject(err),
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+      );
+    });
+  }
+
+  $('anketa-submit-btn').addEventListener('click', async () => {
+    hideAnketaMsgs();
+    const name = $('f-name').value.trim();
+    const age = $('f-age').value ? Number($('f-age').value) : null;
+    const instruments = getChipValues('f-instruments');
+    const level = getChipValues('f-level')[0] || null;
+    const genres = getChipValues('f-genres');
+    const goal = getChipValues('f-goal')[0] || null;
+    const bio = $('f-bio').value.trim();
+
+    if (!name){ showAnketaError('Укажи имя.'); return; }
+    if (instruments.length === 0){ showAnketaError('Выбери хотя бы один инструмент.'); return; }
+    if (!level){ showAnketaError('Выбери уровень.'); return; }
+    if (!goal){ showAnketaError('Выбери цель.'); return; }
+
+    const btn = $('anketa-submit-btn');
+    btn.disabled = true;
+    showAnketaStatus('Определяю геопозицию…');
+    let coords;
+    try {
+      coords = await getGeolocation();
+    } catch (err){
+      btn.disabled = false;
+      showAnketaError('Не удалось получить геопозицию. Разреши доступ к местоположению в браузере и попробуй снова — без этого приложение не сможет находить музыкантов рядом.');
+      return;
+    }
+
+    showAnketaStatus('Сохраняю…');
+    try {
+      const data = {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        name, age, instruments, level, genres, goal, bio,
+        lat: coords.lat, lng: coords.lng,
+        updatedAt: serverTimestamp(),
+      };
+      if (!editingProfile) data.createdAt = serverTimestamp();
+      await setDoc(doc(db, 'profiles', currentUser.uid), data, { merge: true });
+      const snap = await getDoc(doc(db, 'profiles', currentUser.uid));
+      currentProfile = { uid: currentUser.uid, ...snap.data() };
+      hideAnketaMsgs();
+      $('tabbar').style.display = 'flex';
+      setActiveScreen('s-map');
+      loadMap();
+    } catch (err){
+      console.error(err);
+      showAnketaError('Не удалось сохранить анкету. Попробуй ещё раз.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* ---------- profiles fetch ---------- */
+  async function fetchAllProfiles(){
+    const snap = await getDocs(collection(db, 'profiles'));
+    const list = [];
+    snap.forEach(d => {
+      if (d.id === currentUser.uid) return;
+      const data = d.data();
+      if (typeof data.lat !== 'number' || typeof data.lng !== 'number') return;
+      list.push({ uid: d.id, ...data });
+    });
+    return list;
+  }
+
+  /* ---------- map ---------- */
+  async function loadMap(){
+    $('map-sub').textContent = 'Загружаю…';
+    let profiles;
+    try {
+      profiles = await fetchAllProfiles();
+    } catch (err){
+      $('map-sub').textContent = 'Не удалось загрузить анкеты.';
+      return;
+    }
+    const me = currentProfile;
+    const withDist = profiles.map(p => ({
+      ...p,
+      dist: haversineKm(me.lat, me.lng, p.lat, p.lng),
+      bearing: bearingDeg(me.lat, me.lng, p.lat, p.lng),
+    })).filter(p => p.dist <= MAP_RADIUS_KM);
+    window.__mapProfiles = withDist;
+    renderMapPins(withDist, currentMapFilter);
+  }
+
+  function renderMapPins(list, filter){
+    const mapArea = $('map-area');
+    mapArea.querySelectorAll('.pin').forEach(p => p.remove());
+    const filtered = filter === 'Все' ? list : list.filter(p => (p.instruments||[]).includes(filter));
+    filtered.forEach(p => {
+      const frac = Math.min(p.dist / MAP_RADIUS_KM, 0.95);
+      const rad = p.bearing * Math.PI / 180;
+      const dx = Math.sin(rad) * frac;
+      const dy = -Math.cos(rad) * frac;
+      const leftPct = 50 + dx * 38;
+      const topPct = 52 + dy * 38;
+      const pin = document.createElement('div');
+      pin.className = 'pin ' + avatarClassFor(p.uid);
+      pin.style.left = leftPct + '%';
+      pin.style.top = topPct + '%';
+      pin.innerHTML = '<span>' + escapeHtml(initialsFor(p)) + '</span>';
+      pin.title = p.name || '';
+      pin.addEventListener('click', () => openOtherProfile(p));
+      mapArea.appendChild(pin);
+    });
+    $('map-sub').textContent = `В радиусе ${MAP_RADIUS_KM} км · ${filtered.length} анкет`;
+  }
+
+  wireChipGroup('map-filter', 'single');
+  document.querySelectorAll('#map-filter .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      currentMapFilter = chip.dataset.val;
+      renderMapPins(window.__mapProfiles || [], currentMapFilter);
     });
   });
 
-  // waveform bars
-  const wf = document.getElementById('waveform');
-  const heights = [4,8,14,10,18,12,20,9,15,22,11,17,13,19,8,14,10,16,12,7,15,20,9,13,11,18,14,8,16,10];
-  heights.forEach((h,i) => {
-    const bar = document.createElement('i');
-    bar.style.height = h+'px';
-    if(i < 12) bar.classList.add('on');
-    wf.appendChild(bar);
+  /* ---------- search ---------- */
+  wireChipGroup('sf-instrument', 'single');
+  wireChipGroup('sf-level', 'single');
+  wireChipGroup('sf-goal', 'single');
+  wireChipGroup('sf-radius', 'single');
+
+  $('search-submit-btn').addEventListener('click', async () => {
+    const instrument = getChipValues('sf-instrument')[0] || null;
+    const level = getChipValues('sf-level')[0] || null;
+    const goal = getChipValues('sf-goal')[0] || null;
+    const radius = Number(getChipValues('sf-radius')[0] || '25');
+
+    const resultsEl = $('search-results');
+    resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
+
+    let profiles;
+    try {
+      profiles = await fetchAllProfiles();
+    } catch (err){
+      resultsEl.innerHTML = '<div class="msg-line err">Не удалось загрузить анкеты.</div>';
+      return;
+    }
+    const me = currentProfile;
+    let list = profiles.map(p => ({ ...p, dist: haversineKm(me.lat, me.lng, p.lat, p.lng) }))
+      .filter(p => p.dist <= radius);
+    if (instrument) list = list.filter(p => (p.instruments||[]).includes(instrument));
+    if (level) list = list.filter(p => p.level === level);
+    if (goal) list = list.filter(p => p.goal === goal);
+    list.sort((a,b) => a.dist - b.dist);
+    renderSearchResults(list);
   });
 
-  // PWA: service worker + install prompt
-  if ('serviceWorker' in navigator) {
+  function renderSearchResults(list){
+    const resultsEl = $('search-results');
+    if (list.length === 0){
+      resultsEl.innerHTML = '<div class="msg-line muted">Никого не нашлось. Попробуй увеличить радиус или изменить фильтры.</div>';
+      return;
+    }
+    resultsEl.innerHTML = '';
+    list.forEach(p => {
+      const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(p.goal ? [p.goal] : []);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.cursor = 'pointer';
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="avatar ${avatarClassFor(p.uid)}">${escapeHtml(initialsFor(p))}</div>
+          <div>
+            <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.age ? ' · '+p.age : ''}</div>
+            <div class="card-meta">${escapeHtml((p.instruments||[]).join(', ') || '—')}</div>
+          </div>
+          <div class="dist">${p.dist.toFixed(1)} км</div>
+        </div>
+        <div class="card-tags">${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
+      `;
+      card.addEventListener('click', () => openOtherProfile(p));
+      resultsEl.appendChild(card);
+    });
+  }
+
+  /* ---------- profile view ---------- */
+  function renderProfileCommon(p, locText){
+    $('p-avatar').className = 'avatar ' + avatarClassFor(p.uid);
+    $('p-avatar').textContent = initialsFor(p);
+    $('p-name').textContent = p.name + (p.age ? ', ' + p.age : '');
+    $('p-loc').textContent = locText;
+    $('p-age').textContent = p.age || '—';
+    $('p-level').textContent = p.level || '—';
+    $('p-goal').textContent = p.goal || '—';
+    $('p-bio').textContent = p.bio || 'Пока ничего не рассказал(а) о себе.';
+    const tags = (p.instruments||[]).concat(p.genres||[]);
+    $('p-tags').innerHTML = tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('') || '<span class="tag">—</span>';
+  }
+
+  function openOwnProfile(){
+    if (!currentProfile) return;
+    renderProfileCommon(currentProfile, 'Екатеринбург');
+    $('p-actions-other').style.display = 'none';
+    $('p-actions-own').style.display = 'flex';
+    setActiveScreen('s-profile');
+  }
+
+  function openOtherProfile(p){
+    viewedOtherProfile = p;
+    const locText = (typeof p.dist === 'number') ? p.dist.toFixed(1) + ' км от тебя' : '';
+    renderProfileCommon(p, locText);
+    $('p-actions-other').style.display = 'flex';
+    $('p-actions-own').style.display = 'none';
+    setActiveScreen('s-profile');
+  }
+
+  $('p-edit-btn').addEventListener('click', () => {
+    prepareAnketaForm(true);
+    setActiveScreen('s-anketa');
+  });
+  $('p-logout-btn').addEventListener('click', async () => {
+    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+    if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
+    activeChatId = null;
+    await signOut(auth);
+  });
+  $('p-msg-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    await openChatWith(viewedOtherProfile);
+  });
+
+  /* ---------- chat ---------- */
+  function chatIdFor(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
+
+  async function openChatWith(otherProfile){
+    const cid = chatIdFor(currentUser.uid, otherProfile.uid);
+    const chatRef = doc(db, 'chats', cid);
+    try {
+      const snap = await getDoc(chatRef);
+      if (!snap.exists()){
+        await setDoc(chatRef, {
+          participants: [currentUser.uid, otherProfile.uid],
+          participantNames: { [currentUser.uid]: currentProfile.name, [otherProfile.uid]: otherProfile.name },
+          createdAt: serverTimestamp(),
+          lastMessage: '',
+          lastMessageAt: serverTimestamp(),
+        });
+      }
+    } catch (err){
+      console.error(err);
+    }
+    openChatThread(cid, otherProfile.uid, otherProfile.name);
+  }
+
+  function openChatThread(chatId, otherUid, otherName){
+    activeChatId = chatId;
+    $('chat-list-view').style.display = 'none';
+    $('chat-thread-view').style.display = 'flex';
+    $('chat-name').textContent = otherName || 'Без имени';
+    const av = $('chat-avatar');
+    av.className = 'avatar ' + avatarClassFor(otherUid);
+    av.textContent = (otherName || '?')[0].toUpperCase();
+    setActiveScreen('s-chat');
+    subscribeMessages(chatId);
+  }
+
+  function subscribeMessages(chatId){
+    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+    const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'), limit(200));
+    unsubscribeMessages = onSnapshot(q, (snap) => {
+      const box = $('chat-messages');
+      box.innerHTML = '';
+      snap.forEach(d => {
+        const m = d.data();
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (m.senderId === currentUser.uid ? 'out' : 'in');
+        bubble.textContent = m.text;
+        box.appendChild(bubble);
+      });
+      box.scrollTop = box.scrollHeight;
+    }, (err) => console.error(err));
+  }
+
+  $('chat-back-btn').addEventListener('click', () => {
+    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+    activeChatId = null;
+    openChatList();
+  });
+
+  async function sendMessage(){
+    const field = $('chat-input-field');
+    const text = field.value.trim();
+    if (!text || !activeChatId) return;
+    field.value = '';
+    try {
+      await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
+        senderId: currentUser.uid,
+        text,
+        createdAt: serverTimestamp(),
+      });
+      await updateDoc(doc(db, 'chats', activeChatId), {
+        lastMessage: text,
+        lastMessageAt: serverTimestamp(),
+      });
+    } catch (err){
+      console.error(err);
+      field.value = text;
+    }
+  }
+  $('chat-send-btn').addEventListener('click', sendMessage);
+  $('chat-input-field').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); sendMessage(); }
+  });
+
+  function openChatList(){
+    $('chat-thread-view').style.display = 'none';
+    $('chat-list-view').style.display = 'flex';
+    setActiveScreen('s-chat');
+    subscribeChatList();
+  }
+
+  function subscribeChatList(){
+    if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
+    const q = query(collection(db, 'chats'), where('participants', 'array-contains', currentUser.uid));
+    unsubscribeChatList = onSnapshot(q, (snap) => {
+      const items = [];
+      snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+      items.sort((a,b) => {
+        const at = a.lastMessageAt && a.lastMessageAt.toMillis ? a.lastMessageAt.toMillis() : 0;
+        const bt = b.lastMessageAt && b.lastMessageAt.toMillis ? b.lastMessageAt.toMillis() : 0;
+        return bt - at;
+      });
+      const container = $('chat-list-items');
+      const empty = $('chat-list-empty');
+      container.innerHTML = '';
+      if (items.length === 0){ empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      items.forEach(chat => {
+        const otherUid = chat.participants.find(u => u !== currentUser.uid);
+        const otherName = (chat.participantNames && chat.participantNames[otherUid]) || 'Без имени';
+        const row = document.createElement('div');
+        row.className = 'chat-list-item';
+        row.innerHTML = `
+          <div class="avatar ${avatarClassFor(otherUid)}">${escapeHtml(otherName[0].toUpperCase())}</div>
+          <div class="meta">
+            <div class="name">${escapeHtml(otherName)}</div>
+            <div class="preview">${escapeHtml(chat.lastMessage || 'Начните диалог')}</div>
+          </div>
+        `;
+        row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName));
+        container.appendChild(row);
+      });
+    }, (err) => console.error(err));
+  }
+
+  /* ---------- tabbar ---------- */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const screen = btn.dataset.screen;
+      if (screen === 's-profile') openOwnProfile();
+      else if (screen === 's-chat') openChatList();
+      else if (screen === 's-map'){ setActiveScreen('s-map'); loadMap(); }
+      else setActiveScreen(screen);
+    });
+  });
+
+  /* ---------- PWA: service worker + install prompt ---------- */
+  if ('serviceWorker' in navigator){
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
   let deferredPrompt = null;
-  const installBtn = document.getElementById('install-btn');
+  const installBtn = $('install-btn');
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
