@@ -801,6 +801,10 @@
     });
   }
 
+  wireChipGroup('f-instruments', 'multi');
+  wireChipGroup('f-level', 'single');
+  wireChipGroup('f-genres', 'multi');
+  wireChipGroup('f-goal', 'single');
   /* ---------- auth ---------- */
   function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
   function hideAuthError(){ $('auth-error').style.display = 'none'; }
