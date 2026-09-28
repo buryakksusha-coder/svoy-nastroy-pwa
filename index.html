@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Свой Настрой — мокап приложения</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F5C4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Свой Настрой">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Свой Настрой — находи музыкантов рядом с собой в Екатеринбурге">
+
+<style>
+  :root{
+    --bg:#0e0f12;
+    --panel:#17181d;
+    --panel-2:#1f2026;
+    --line:#2a2b32;
+    --ink:#f2f2f4;
+    --ink-quiet:#9a9ba3;
+    --accent:#2E8B6E;
+    --accent-2:#C88B3D;
+    --accent-ink:#ffffff;
+    --good:#33c17a;
+    --warn:#e8a13d;
+    --chip:#25262d;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #10281f 0%, transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, #2a1c0f 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .top{
+    max-width:920px;
+    width:100%;
+    text-align:center;
+    margin-bottom:26px;
+  }
+  .top h1{
+    font-size:22px;
+    margin:0 0 6px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .top p{
+    margin:0;
+    color:var(--ink-quiet);
+    font-size:14px;
+    line-height:1.5;
+  }
+  .top .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:12px;
+    padding:5px 12px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .badge img{width:16px;height:16px;border-radius:5px;display:block;}
+
+  #install-btn{
+    display:none;
+    margin:0 auto 18px;
+    padding:10px 18px;
+    border-radius:999px;
+    border:1px solid var(--accent);
+    background:rgba(46,139,110,.12);
+    color:var(--accent);
+    font-weight:700;
+    font-size:13px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  .layout{
+    display:flex;
+    gap:36px;
+    align-items:flex-start;
+    justify-content:center;
+    flex-wrap:wrap;
+    max-width:1000px;
+  }
+
+  /* phone frame */
+  .phone{
+    width:340px;
+    height:700px;
+    background:#000;
+    border-radius:44px;
+    padding:12px;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px #2c2c33;
+    position:relative;
+    flex-shrink:0;
+  }
+  .screen-wrap{
+    width:100%;
+    height:100%;
+    background:var(--panel);
+    border-radius:32px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .notch{
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    width:120px; height:22px;
+    background:#000;
+    border-radius:0 0 16px 16px;
+    z-index:5;
+  }
+  .statusbar{
+    height:40px;
+    flex-shrink:0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    padding:0 20px 6px;
+    font-size:12px;
+    color:var(--ink-quiet);
+    font-weight:600;
+  }
+
+  .screen{
+    display:none;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+  }
+  .screen.active{display:flex;}
+
+  .app-header{
+    padding:6px 18px 12px;
+    flex-shrink:0;
+  }
+  .app-header h2{
+    margin:0;
+    font-size:20px;
+    font-weight:700;
+  }
+  .app-header .sub{
+    color:var(--ink-quiet);
+    font-size:12.5px;
+    margin-top:2px;
+  }
+
+  .scroll{
+    flex:1;
+    overflow-y:auto;
+    padding:0 18px 18px;
+  }
+  .scroll::-webkit-scrollbar{width:0;}
+
+  /* bottom nav */
+  .tabbar{
+    flex-shrink:0;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:10px 6px 16px;
+    border-top:1px solid var(--line);
+    background:var(--panel);
+  }
+  .tab-btn{
+    background:none;
+    border:none;
+    color:var(--ink-quiet);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-size:10.5px;
+    font-family:inherit;
+    cursor:pointer;
+    padding:4px 8px;
+  }
+  .tab-btn svg{width:22px;height:22px;stroke:var(--ink-quiet);fill:none;stroke-width:1.8;}
+  .tab-btn.active{color:var(--accent);}
+  .tab-btn.active svg{stroke:var(--accent);}
+
+  /* form elements (anketa) */
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-quiet);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    padding:8px 13px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    font-size:12.5px;
+    color:var(--ink);
+    cursor:default;
+  }
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+  .input-fake{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+    font-size:13px;
+    color:var(--ink-quiet);
+  }
+  .upload-box{
+    border:1.5px dashed var(--line);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    color:var(--ink-quiet);
+    font-size:12.5px;
+  }
+  .upload-box svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.6;margin-bottom:6px;}
+  .primary-btn{
+    width:100%;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    font-size:14.5px;
+    font-weight:700;
+    margin-top:6px;
+    font-family:inherit;
+  }
+
+  /* avatar */
+  .avatar{
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;color:#fff;flex-shrink:0;
+  }
+  .a1{background:linear-gradient(135deg,#2E8B6E,#1F5C4A);}
+  .a2{background:linear-gradient(135deg,#33c17a,#1e8f57);}
+  .a3{background:linear-gradient(135deg,#C88B3D,#a86a1f);}
+  .a4{background:linear-gradient(135deg,#ff6b8b,#c93e5f);}
+  .a5{background:linear-gradient(135deg,#38bdf8,#1d7fb3);}
+
+  /* map screen */
+  .map-area{
+    position:relative;
+    flex:1;
+    margin:0 18px 12px;
+    border-radius:18px;
+    overflow:hidden;
+    background:
+      repeating-linear-gradient(0deg, #1a2a24 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, #1a2a24 0 1px, transparent 1px 40px),
+      #12211c;
+    min-height:260px;
+  }
+  .me-dot{
+    position:absolute; left:50%; top:52%;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 6px rgba(46,139,110,.3);
+    transform:translate(-50%,-50%);
+  }
+  .radius-ring{
+    position:absolute;left:50%;top:52%;
+    width:210px;height:210px;border-radius:50%;
+    border:1.5px dashed rgba(46,139,110,.55);
+    transform:translate(-50%,-50%);
+  }
+  .pin{
+    position:absolute;
+    width:34px;height:34px;border-radius:50% 50% 50% 0;
+    transform:translate(-50%,-100%) rotate(-45deg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,.4);
+  }
+  .pin span{transform:rotate(45deg);}
+  .filter-row{
+    display:flex;gap:8px;overflow-x:auto;
+    padding:0 18px 12px;
+    flex-shrink:0;
+  }
+  .filter-chip{
+    white-space:nowrap;
+    padding:7px 12px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink);
+  }
+  .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+  /* card list (feed) */
+  .card{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .card-top{display:flex;gap:12px;align-items:center;}
+  .card-name{font-weight:700;font-size:14px;}
+  .card-meta{font-size:12px;color:var(--ink-quiet);margin-top:1px;}
+  .card-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .tag{
+    font-size:11px;
+    padding:4px 9px;
+    border-radius:999px;
+    background:var(--chip);
+    color:var(--ink-quiet);
+  }
+  .dist{
+    margin-left:auto;
+    font-size:11.5px;
+    color:var(--good);
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  /* profile */
+  .profile-hero{
+    text-align:center;
+    padding:10px 18px 16px;
+  }
+  .profile-hero .avatar{width:84px;height:84px;font-size:28px;margin:0 auto 10px;}
+  .profile-hero h3{margin:0;font-size:18px;}
+  .profile-hero .loc{color:var(--ink-quiet);font-size:12.5px;margin-top:3px;}
+  .stat-row{display:flex;justify-content:center;gap:26px;margin:14px 0 6px;}
+  .stat{text-align:center;}
+  .stat b{display:block;font-size:15px;}
+  .stat span{font-size:11px;color:var(--ink-quiet);}
+  .section-title{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-quiet);
+    margin:16px 0 8px;
+    font-weight:700;
+  }
+  .player{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .play-btn{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .play-btn svg{width:12px;height:12px;fill:#fff;}
+  .waveform{flex:1;height:22px;display:flex;align-items:center;gap:2px;}
+  .waveform i{width:2.5px;background:var(--line);border-radius:2px;display:inline-block;}
+  .waveform i.on{background:var(--accent);}
+  .bio-text{font-size:13px;line-height:1.55;color:#d8d8dd;}
+  .contact-btn{
+    display:flex;gap:8px;margin-top:16px;
+  }
+  .contact-btn button{
+    flex:1;
+    border-radius:14px;
+    padding:13px;
+    font-size:13.5px;
+    font-weight:700;
+    font-family:inherit;
+    border:none;
+  }
+  .contact-btn .msg{background:var(--accent);color:#fff;}
+  .contact-btn .save{background:var(--chip);color:var(--ink);border:1px solid var(--line);}
+
+  /* chat */
+  .chat-header{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 18px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .chat-header .avatar{width:36px;height:36px;font-size:13px;}
+  .chat-header h4{margin:0;font-size:14.5px;}
+  .chat-header .status{font-size:11px;color:var(--good);}
+  .bubble{
+    max-width:74%;
+    padding:10px 13px;
+    border-radius:16px;
+    font-size:13px;
+    line-height:1.4;
+    margin-bottom:8px;
+  }
+  .bubble.in{background:var(--panel-2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px;}
+  .bubble.out{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .chat-scroll{display:flex;flex-direction:column;}
+  .time-stamp{
+    text-align:center;font-size:10.5px;color:var(--ink-quiet);
+    margin:4px 0 12px;
+  }
+  .chat-input{
+    display:flex;gap:8px;padding:10px 14px 16px;
+    border-top:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .chat-input .box{
+    flex:1;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:20px;padding:10px 16px;color:var(--ink-quiet);font-size:13px;
+  }
+  .chat-input .send{
+    width:38px;height:38px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .chat-input .send svg{width:16px;height:16px;fill:#fff;}
+
+  .caption{
+    max-width:340px;
+    text-align:center;
+    margin-top:14px;
+    font-size:12.5px;
+    color:var(--ink-quiet);
+  }
+  .col{display:flex;flex-direction:column;align-items:center;}
+
+  .legend{
+    max-width:920px;
+    width:100%;
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;
+  }
+  .legend .item{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+  }
+  .legend .item b{display:block;font-size:13px;margin-bottom:4px;}
+  .legend .item span{font-size:12px;color:var(--ink-quiet);line-height:1.5;}
+
+  @media (max-width:760px){
+    .layout{gap:20px;}
+    .phone{width:300px;height:620px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="badge">КОНЦЕПТ · Свой Настрой</div>
+  <h1>Найди музыкантов рядом с собой</h1>
+  <p>Мокап пяти ключевых экранов: анкета, карта, поиск по критериям, профиль и чат.<br>Переключайте вкладки внизу телефона, чтобы посмотреть каждый экран.</p>
+</div>
+
+<button id="install-btn">Установить на телефон</button>
+
+<div class="layout">
+  <div class="col">
+    <div class="phone">
+      <div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● Свой Настрой</span></div>
+
+        <!-- SCREEN 1: ANKETA -->
+        <section class="screen active" id="s-anketa">
+          <div class="app-header">
+            <h2>Анкета</h2>
+            <div class="sub">Шаг 2 из 3 — о твоей игре</div>
+          </div>
+          <div class="scroll">
+            <div class="field">
+              <label>Инструменты</label>
+              <div class="chips">
+                <span class="chip on">Гитара</span>
+                <span class="chip">Вокал</span>
+                <span class="chip">Барабаны</span>
+                <span class="chip">Бас</span>
+                <span class="chip">Клавиши</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Уровень</label>
+              <div class="chips">
+                <span class="chip">Новичок</span>
+                <span class="chip on">Средний</span>
+                <span class="chip">Профи</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Жанры</label>
+              <div class="chips">
+                <span class="chip on">Инди-рок</span>
+                <span class="chip on">Пост-панк</span>
+                <span class="chip">Джаз</span>
+                <span class="chip">Фолк</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Цель</label>
+              <div class="chips">
+                <span class="chip on">Собрать группу</span>
+                <span class="chip">Джемы</span>
+                <span class="chip">Уроки</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>О себе (характер, бэкграунд)</label>
+              <div class="input-fake">Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…</div>
+            </div>
+            <div class="field">
+              <label>Фрагмент игры (до 60 сек)</label>
+              <div class="upload-box">
+                <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4M4 20h16"/></svg>
+                <div>audio_sample.mp3 — 0:47</div>
+              </div>
+            </div>
+            <button class="primary-btn">Показать меня на карте</button>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: MAP -->
+        <section class="screen" id="s-map">
+          <div class="app-header">
+            <h2>Рядом с тобой</h2>
+            <div class="sub">Уралмаш · радиус 2 км · 7 анкет</div>
+          </div>
+          <div class="filter-row">
+            <span class="filter-chip on">Все</span>
+            <span class="filter-chip">Гитара</span>
+            <span class="filter-chip">Вокал</span>
+            <span class="filter-chip">Барабаны</span>
+            <span class="filter-chip">Джем сегодня</span>
+          </div>
+          <div class="map-area">
+            <div class="radius-ring"></div>
+            <div class="me-dot"></div>
+            <div class="pin a1" style="left:34%;top:28%;"><span>Г</span></div>
+            <div class="pin a2" style="left:66%;top:35%;"><span>Б</span></div>
+            <div class="pin a3" style="left:58%;top:64%;"><span>В</span></div>
+            <div class="pin a4" style="left:28%;top:70%;"><span>Кл</span></div>
+            <div class="pin a5" style="left:74%;top:58%;"><span>Бс</span></div>
+          </div>
+        </section>
+
+        <!-- SCREEN 3: SEARCH -->
+        <section class="screen" id="s-search">
+          <div class="app-header">
+            <h2>Кого ищешь?</h2>
+            <div class="sub">Те же поля, что и в анкете — только для поиска</div>
+          </div>
+          <div class="scroll">
+            <div class="field">
+              <label>Инструмент</label>
+              <div class="chips">
+                <span class="chip">Гитара</span>
+                <span class="chip on">Бас</span>
+                <span class="chip">Барабаны</span>
+                <span class="chip">Вокал</span>
+                <span class="chip">Клавиши</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Уровень</label>
+              <div class="chips">
+                <span class="chip">Новичок</span>
+                <span class="chip on">Средний</span>
+                <span class="chip">Профи</span>
+                <span class="chip">Не важно</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Цель</label>
+              <div class="chips">
+                <span class="chip">Собрать группу</span>
+                <span class="chip on">Джемы</span>
+                <span class="chip">Разовое выступление</span>
+                <span class="chip">Уроки</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Радиус</label>
+              <div class="chips">
+                <span class="chip">1 км</span>
+                <span class="chip on">3 км</span>
+                <span class="chip">5 км</span>
+                <span class="chip">10 км</span>
+              </div>
+            </div>
+            <button class="primary-btn">Показать совпадения · 4</button>
+            <button class="primary-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Оставить открытый запрос</button>
+
+            <div class="section-title" style="margin-top:22px;">Совпадения рядом</div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="avatar a2">Б</div>
+                <div>
+                  <div class="card-name">Борис · бас, средний</div>
+                  <div class="card-meta">Играет 3 года · ищет джемы</div>
+                </div>
+                <div class="dist">1.2 км</div>
+              </div>
+              <div class="card-tags"><span class="tag">Бас</span><span class="tag">Средний</span><span class="tag">Джемы</span></div>
+            </div>
+            <div class="card">
+              <div class="card-top">
+                <div class="avatar a5">Бс</div>
+                <div>
+                  <div class="card-name">Богдан · бас, средний</div>
+                  <div class="card-meta">Играет 2 года · открыт к джемам</div>
+                </div>
+                <div class="dist">2.6 км</div>
+              </div>
+              <div class="card-tags"><span class="tag">Бас</span><span class="tag">Средний</span><span class="tag">Джемы</span></div>
+            </div>
+            <div class="card" style="border-style:dashed;">
+              <div class="card-top">
+                <div class="avatar a3">З</div>
+                <div>
+                  <div class="card-name">Запрос: нужен басист на джем</div>
+                  <div class="card-meta">Студия «Тон» · суббота 19:00</div>
+                </div>
+                <div class="dist">3.1 км</div>
+              </div>
+              <div class="card-tags"><span class="tag">Открытый запрос</span><span class="tag">Бас</span><span class="tag">Джемы</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 4: PROFILE -->
+        <section class="screen" id="s-profile">
+          <div class="scroll">
+            <div class="profile-hero">
+              <div class="avatar a1">Г</div>
+              <h3>Глеб, 24</h3>
+              <div class="loc">Екатеринбург, Уралмаш · 1.2 км от тебя</div>
+              <div class="stat-row">
+                <div class="stat"><b>4 года</b><span>опыта</span></div>
+                <div class="stat"><b>Средний</b><span>уровень</span></div>
+                <div class="stat"><b>12</b><span>совпадений</span></div>
+              </div>
+            </div>
+            <div class="section-title">Фрагмент игры</div>
+            <div class="player">
+              <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+              <div class="waveform" id="waveform"></div>
+              <span style="font-size:11px;color:var(--ink-quiet);">0:38</span>
+            </div>
+            <div class="section-title">О себе</div>
+            <div class="bio-text">Играю на гитаре 4 года, люблю инди-рок и пост-панк (Interpol, Молчат Дома). Ищу барабанщика и басиста для регулярных репетиций раз в неделю. По характеру спокойный, но на сцене — наоборот.</div>
+            <div class="section-title">Теги</div>
+            <div class="card-tags">
+              <span class="tag">Гитара</span><span class="tag">Инди-рок</span><span class="tag">Пост-панк</span><span class="tag">Собрать группу</span>
+            </div>
+            <div class="contact-btn">
+              <button class="save">Сохранить</button>
+              <button class="msg">Написать</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 5: CHAT -->
+        <section class="screen" id="s-chat">
+          <div class="chat-header">
+            <div class="avatar a1">Г</div>
+            <div>
+              <h4>Глеб</h4>
+              <div class="status">в сети</div>
+            </div>
+          </div>
+          <div class="scroll chat-scroll">
+            <div class="time-stamp">Сегодня, 18:24</div>
+            <div class="bubble in">Привет! Увидел твою анкету — тоже играю инди-рок, ищу барабанщика 🙂</div>
+            <div class="bubble out">Привет! Я как раз рядом, Уралмаш. Есть демка?</div>
+            <div class="bubble in">Да, скинул фрагмент в профиле. Можем в субботу собраться на репточку?</div>
+            <div class="bubble out">Погнали, скинь адрес студии</div>
+          </div>
+          <div class="chat-input">
+            <div class="box">Сообщение…</div>
+            <div class="send"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></div>
+          </div>
+        </section>
+
+        <div class="tabbar">
+          <button class="tab-btn active" data-screen="s-anketa">
+            <svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
+            Анкета
+          </button>
+          <button class="tab-btn" data-screen="s-map">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            Карта
+          </button>
+          <button class="tab-btn" data-screen="s-search">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></svg>
+            Поиск
+          </button>
+          <button class="tab-btn" data-screen="s-chat">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.9 8.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+            Чат
+          </button>
+          <button class="tab-btn" data-screen="s-profile">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+            Профиль
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Экран открывается по нажатию на нижнее меню телефона</div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="item"><b>Анкета</b><span>Инструменты, уровень, жанры, цель и короткий аудио/видео фрагмент — минимум полей для быстрого заполнения.</span></div>
+  <div class="item"><b>Карта</b><span>Точный адрес скрыт, показывается район и радиус — как у JamRadar, снижает риск для приватности.</span></div>
+  <div class="item"><b>Поиск</b><span>Те же поля, что в анкете (инструмент, уровень, цель) — работают и как фильтр по людям, и как разовый открытый запрос («нужен басист на джем»).</span></div>
+  <div class="item"><b>Профиль</b><span>Фрагмент игры — главный элемент доверия, важнее текстового описания.</span></div>
+  <div class="item"><b>Чат</b><span>Общение только после взаимного интереса — снижает поток нежелательных сообщений.</span></div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.screen).classList.add('active');
+    });
+  });
+
+  // waveform bars
+  const wf = document.getElementById('waveform');
+  const heights = [4,8,14,10,18,12,20,9,15,22,11,17,13,19,8,14,10,16,12,7,15,20,9,13,11,18,14,8,16,10];
+  heights.forEach((h,i) => {
+    const bar = document.createElement('i');
+    bar.style.height = h+'px';
+    if(i < 12) bar.classList.add('on');
+    wf.appendChild(bar);
+  });
+
+  // PWA: service worker + install prompt
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('install-btn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'inline-flex';
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
