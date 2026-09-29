@@ -501,8 +501,8 @@
               <input class="text-input" type="text" id="f-name" placeholder="Как тебя зовут?">
             </div>
             <div class="field">
-              <label>Возраст</label>
-              <input class="text-input" type="number" id="f-age" min="12" max="99" placeholder="Необязательно">
+              <label>Возраст (обязательно, сервис только для совершеннолетних)</label>
+              <input class="text-input" type="number" id="f-age" min="18" max="99" placeholder="Например, 27">
             </div>
             <div class="field">
               <label>Инструменты</label>
@@ -640,7 +640,8 @@
             <div class="section-title">Инструменты и жанры</div>
             <div class="card-tags" id="p-tags"></div>
             <div class="contact-btn" id="p-actions-other" style="display:none;">
-              <button class="msg" id="p-msg-btn" style="width:100%;">Написать</button>
+              <button class="save" id="p-like-btn" style="width:100%;">Мне интересно</button>
+              <button class="msg" id="p-msg-btn" style="width:100%;display:none;">Написать</button>
             </div>
             <div class="contact-btn" id="p-actions-own" style="display:none;">
               <button class="save" id="p-edit-btn">Редактировать</button>
@@ -654,7 +655,7 @@
           <div id="chat-list-view" style="display:flex;flex-direction:column;flex:1;min-height:0;">
             <div class="app-header">
               <h2>Чаты</h2>
-              <div class="sub">Общение только после взаимного интереса</div>
+              <div class="sub">Переписка открывается только после взаимного «интересно»</div>
             </div>
             <div class="scroll" id="chat-list-scroll">
               <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.</div>
@@ -805,6 +806,7 @@
   wireChipGroup('f-level', 'single');
   wireChipGroup('f-genres', 'multi');
   wireChipGroup('f-goal', 'single');
+
   /* ---------- auth ---------- */
   function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
   function hideAuthError(){ $('auth-error').style.display = 'none'; }
@@ -932,6 +934,7 @@
     const bio = $('f-bio').value.trim();
 
     if (!name){ showAnketaError('Укажи имя.'); return; }
+    if (!age || !Number.isInteger(age) || age < 18 || age > 99){ showAnketaError('Сервис только для совершеннолетних — укажи корректный возраст (18+).'); return; }
     if (instruments.length === 0){ showAnketaError('Выбери хотя бы один инструмент.'); return; }
     if (!level){ showAnketaError('Выбери уровень.'); return; }
     if (!goal){ showAnketaError('Выбери цель.'); return; }
@@ -1119,14 +1122,69 @@
     setActiveScreen('s-profile');
   }
 
-  function openOtherProfile(p){
+  async function openOtherProfile(p){
     viewedOtherProfile = p;
     const locText = (typeof p.dist === 'number') ? p.dist.toFixed(1) + ' км от тебя' : '';
     renderProfileCommon(p, locText);
     $('p-actions-other').style.display = 'flex';
     $('p-actions-own').style.display = 'none';
     setActiveScreen('s-profile');
+    await refreshLikeButton(p.uid);
   }
+
+  /* ---------- likes / matching ---------- */
+  function likeId(fromUid, toUid){ return fromUid + '_' + toUid; }
+
+  async function getMatchStatus(otherUid){
+    const myLikeRef = doc(db, 'likes', likeId(currentUser.uid, otherUid));
+    const theirLikeRef = doc(db, 'likes', likeId(otherUid, currentUser.uid));
+    const [mySnap, theirSnap] = await Promise.all([getDoc(myLikeRef), getDoc(theirLikeRef)]);
+    return { iLiked: mySnap.exists(), theyLiked: theirSnap.exists() };
+  }
+
+  async function refreshLikeButton(otherUid){
+    const likeBtn = $('p-like-btn');
+    const msgBtn = $('p-msg-btn');
+    likeBtn.disabled = true;
+    likeBtn.textContent = '…';
+    likeBtn.style.display = 'block';
+    msgBtn.style.display = 'none';
+    try {
+      const { iLiked, theyLiked } = await getMatchStatus(otherUid);
+      if (iLiked && theyLiked){
+        likeBtn.style.display = 'none';
+        msgBtn.style.display = 'block';
+      } else if (iLiked){
+        likeBtn.disabled = true;
+        likeBtn.textContent = 'Ждём взаимности…';
+      } else {
+        likeBtn.disabled = false;
+        likeBtn.textContent = 'Мне интересно';
+      }
+    } catch (err){
+      console.error(err);
+      likeBtn.disabled = false;
+      likeBtn.textContent = 'Мне интересно';
+    }
+  }
+
+  $('p-like-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    const otherUid = viewedOtherProfile.uid;
+    const btn = $('p-like-btn');
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      await setDoc(doc(db, 'likes', likeId(currentUser.uid, otherUid)), {
+        from: currentUser.uid, to: otherUid, createdAt: serverTimestamp()
+      });
+      await refreshLikeButton(otherUid);
+    } catch (err){
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = 'Мне интересно';
+    }
+  });
 
   $('p-edit-btn').addEventListener('click', () => {
     prepareAnketaForm(true);
@@ -1140,6 +1198,8 @@
   });
   $('p-msg-btn').addEventListener('click', async () => {
     if (!viewedOtherProfile) return;
+    const { iLiked, theyLiked } = await getMatchStatus(viewedOtherProfile.uid);
+    if (!iLiked || !theyLiked){ await refreshLikeButton(viewedOtherProfile.uid); return; }
     await openChatWith(viewedOtherProfile);
   });
 
