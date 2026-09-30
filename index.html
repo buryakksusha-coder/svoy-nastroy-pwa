@@ -10,7 +10,10 @@
 <meta property="og:description" content="Находи гитаристов, барабанщиков и вокалистов в своём районе Екатеринбурга. Собери группу, найди с кем поджемить — без ленты и лишнего шума.">
 <meta property="og:url" content="https://buryakksusha-coder.github.io/svoy-nastroy-pwa/">
 <meta property="og:locale" content="ru_RU">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://buryakksusha-coder.github.io/svoy-nastroy-pwa/icons/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F5C4A">
@@ -19,8 +22,9 @@
 <meta name="apple-mobile-web-app-title" content="Свой Настрой">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Свой Настрой — находи музыкантов рядом с собой в Екатеринбурге">
-<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMUY1QzRBIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNzIiIGZpbGw9IiMyRThCNkUiLz48dGV4dCB4PSI5NiIgeT0iMTE0IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2NiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U048L3RleHQ+PC9zdmc+">
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMUY1QzRBIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNzIiIGZpbGw9IiMyRThCNkUiLz48dGV4dCB4PSI5NiIgeT0iMTE0IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2NiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U048L3RleHQ+PC9zdmc+">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 
 <style>
   :root{
@@ -310,6 +314,9 @@
     z-index:2;
   }
   .pin span{transform:rotate(45deg);}
+  .pin.band{border:2px solid var(--accent-2);}
+  .band-badge{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent-2);border:1px solid var(--accent-2);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle;}
+  .tag.match{background:rgba(46,139,110,.2);color:var(--accent);font-weight:600;}
   .filter-row{
     display:flex;gap:8px;overflow-x:auto;
     padding:0 18px 12px;
@@ -467,6 +474,31 @@
   .chat-list-item.unread .name{color:var(--accent);}
   .chat-list-item.unread .preview{color:var(--ink);font-weight:600;}
   .unread-dot{width:9px;height:9px;border-radius:50%;background:#ff6b8b;flex-shrink:0;}
+  .brand-bar{display:none;align-items:center;gap:8px;padding:8px 18px 4px;font-size:13.5px;font-weight:700;letter-spacing:.02em;color:var(--ink);flex-shrink:0;}
+  .brand-bar img{width:24px;height:24px;border-radius:7px;display:block;}
+  .brand-logo{width:56px;height:56px;border-radius:14px;display:block;margin-bottom:10px;}
+  .header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .ghost-btn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .ghost-btn.accent{border-color:var(--accent);color:var(--accent);}
+  .quiet-link{background:none;border:none;color:var(--ink-quiet);font-size:12px;font-family:inherit;cursor:pointer;text-decoration:underline;padding:4px 6px;}
+  .quiet-link.danger{color:#ff6b8b;}
+  .looking-for{margin:10px auto 0;max-width:320px;font-size:13px;color:var(--accent-2);line-height:1.4;}
+  .card-looking{font-size:12px;color:var(--accent-2);margin-top:8px;}
+  .vis-card{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:16px;font-size:12.5px;line-height:1.45;}
+  .vis-card .vis-status{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink);}
+  .vis-card .vis-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--good);}
+  .vis-card.off .vis-dot{background:var(--ink-quiet);}
+  .vis-card .vis-note{color:var(--ink-quiet);margin-top:4px;}
+  .vis-card .vis-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .map-empty{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:78%;text-align:center;z-index:3;font-size:13px;color:var(--ink);line-height:1.45;}
+  .map-empty .ghost-btn{margin-top:10px;}
+  .map-hidden-note{text-align:center;font-size:12px;color:var(--warn);padding:0 18px 8px;cursor:pointer;display:none;}
+  .blocked-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2a2b32;color:var(--ink);padding:10px 16px;border-radius:12px;font-size:13px;z-index:80;max-width:88vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;}
+  .toast.show{opacity:1;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;align-items:center;justify-content:center;padding:20px;}
+  .modal-box{background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:360px;width:100%;}
+  .danger-btn{background:#c93e5f !important;}
 
   @media (max-width:639px){
     html, body{height:100%;overflow:hidden;overscroll-behavior:none;}
@@ -498,10 +530,12 @@
 
 <div class="layout">
   <div class="app-shell" id="app-shell">
+        <div class="brand-bar" id="brand-bar"><img src="icons/icon-192.png" alt=""><span>Свой Настрой</span></div>
 
         <!-- SCREEN: AUTH -->
         <section class="screen active" id="s-auth">
           <div class="app-header">
+            <img class="brand-logo" src="icons/icon-192.png" alt="">
             <h2>Свой Настрой</h2>
             <div class="sub" id="auth-sub">Проверяю сессию…</div>
           </div>
@@ -535,6 +569,13 @@
           <div class="scroll">
             <div class="msg-line muted" id="anketa-verify-notice" style="display:none;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:16px;">Мы отправили письмо для подтверждения на твой email — можно проверить позже, это не мешает пользоваться приложением.</div>
             <div class="field">
+              <label>Кто ты</label>
+              <div class="chips" id="f-kind">
+                <span class="chip on" data-val="musician">Музыкант</span>
+                <span class="chip" data-val="band">Группа ищет участника</span>
+              </div>
+            </div>
+            <div class="field">
               <label>Фото профиля (необязательно)</label>
               <div style="display:flex;align-items:center;gap:14px;">
                 <div class="avatar a1" id="f-avatar-preview" style="width:64px;height:64px;font-size:22px;">?</div>
@@ -545,7 +586,7 @@
               </div>
             </div>
             <div class="field">
-              <label>Имя</label>
+              <label id="f-name-label">Имя</label>
               <input class="text-input" type="text" id="f-name" placeholder="Как тебя зовут?">
             </div>
             <div class="field">
@@ -567,8 +608,18 @@
               <div class="district-chip-note">Подсказка: ВИЗ — Верх-Исетский, Уралмаш и Эльмаш — Орджоникидзевский, Втузгородок — Кировский, Юго-Запад — Ленинский, Ботаника и Химмаш — Чкаловский, Сортировка — Железнодорожный, Синие Камни — Октябрьский.</div>
             </div>
             <div class="field">
-              <label>Инструменты</label>
+              <label id="f-instr-label">Инструменты</label>
               <div class="chips" id="f-instruments">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
+              </div>
+            </div>
+            <div class="field" id="f-needs-field" style="display:none;">
+              <label>Кого ищете</label>
+              <div class="chips" id="f-needs">
                 <span class="chip" data-val="Гитара">Гитара</span>
                 <span class="chip" data-val="Вокал">Вокал</span>
                 <span class="chip" data-val="Барабаны">Барабаны</span>
@@ -605,6 +656,10 @@
               </div>
             </div>
             <div class="field">
+              <label>Кого ищешь сейчас (необязательно)</label>
+              <input class="text-input" type="text" id="f-looking" maxlength="80" placeholder="Например: барабанщик в кавер-группу, репетиции по выходным">
+            </div>
+            <div class="field">
               <label>О себе (характер, бэкграунд)</label>
               <textarea class="text-input" id="f-bio" placeholder="Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…"></textarea>
             </div>
@@ -616,11 +671,15 @@
 
         <!-- SCREEN: MAP -->
         <section class="screen" id="s-map">
-          <div class="app-header">
-            <h2>Рядом с тобой</h2>
-            <div class="sub" id="map-sub">Загружаю…</div>
+          <div class="app-header header-row">
+            <div>
+              <h2>Рядом с тобой</h2>
+              <div class="sub" id="map-sub">Загружаю…</div>
+            </div>
+            <button class="ghost-btn accent" id="map-invite-btn">+ Пригласить</button>
           </div>
           <div class="map-district" id="map-district"></div>
+          <div class="map-hidden-note" id="map-hidden-note">Твоя анкета сейчас скрыта от других · открыть профиль</div>
           <div class="filter-row" id="map-filter">
             <span class="filter-chip on" data-val="Все">Все</span>
             <span class="filter-chip" data-val="Гитара">Гитара</span>
@@ -628,10 +687,12 @@
             <span class="filter-chip" data-val="Барабаны">Барабаны</span>
             <span class="filter-chip" data-val="Бас">Бас</span>
             <span class="filter-chip" data-val="Клавиши">Клавиши</span>
+            <span class="filter-chip" data-val="Группы">Группы</span>
           </div>
           <div class="map-area" id="map-area">
             <div class="radius-ring"></div>
             <div class="me-dot"></div>
+            <div class="map-empty" id="map-empty" style="display:none;">Рядом пока никого с такими фильтрами.<br>Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="map-empty-invite-btn">Пригласить</button></div>
           </div>
         </section>
 
@@ -642,6 +703,13 @@
             <div class="sub">Фильтры + радиус поиска</div>
           </div>
           <div class="scroll">
+            <div class="field">
+              <label>Кто</label>
+              <div class="chips" id="sf-kind">
+                <span class="chip" data-val="musician">Музыканты</span>
+                <span class="chip" data-val="band">Группы</span>
+              </div>
+            </div>
             <div class="field">
               <label>Инструмент</label>
               <div class="chips" id="sf-instrument">
@@ -692,6 +760,7 @@
               <div class="avatar a1" id="p-avatar">?</div>
               <h3 id="p-name">—</h3>
               <div class="loc" id="p-loc"></div>
+              <div class="looking-for" id="p-looking" style="display:none;"></div>
               <div class="stat-row">
                 <div class="stat"><b id="p-age">—</b><span>возраст</span></div>
                 <div class="stat"><b id="p-level">—</b><span>уровень</span></div>
@@ -707,11 +776,23 @@
               <button class="msg" id="p-msg-btn" style="width:100%;display:none;">Написать</button>
             </div>
             <div id="p-actions-other-report" style="display:none;text-align:center;margin-top:10px;">
-              <button id="p-report-btn" style="background:none;border:none;color:var(--ink-quiet);font-size:12px;cursor:pointer;text-decoration:underline;">⚑ Пожаловаться</button>
+              <button class="quiet-link" id="p-report-btn">⚑ Пожаловаться</button>
+              <button class="quiet-link" id="p-block-btn">Заблокировать</button>
             </div>
             <div class="contact-btn" id="p-actions-own" style="display:none;">
               <button class="save" id="p-edit-btn">Редактировать</button>
               <button class="msg" id="p-logout-btn" style="background:#3a2630;">Выйти</button>
+            </div>
+            <div id="p-own-extra" style="display:none;">
+              <div class="vis-card" id="p-visibility"></div>
+              <button class="primary-btn" id="p-invite-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:12px;">Пригласить знакомых музыкантов</button>
+              <div id="p-blocked-wrap" style="display:none;">
+                <div class="section-title">Заблокированные</div>
+                <div id="p-blocked-list"></div>
+              </div>
+              <div style="text-align:center;margin-top:22px;">
+                <button class="quiet-link danger" id="p-delete-btn">Удалить аккаунт</button>
+              </div>
             </div>
           </div>
         </section>
@@ -728,15 +809,15 @@
               <div id="likes-you-list" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;"></div>
             </div>
             <div class="scroll" id="chat-list-scroll">
-              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.</div>
+              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.<br><button class="ghost-btn accent" id="chat-empty-invite-btn" style="margin-top:12px;">Пригласить знакомых</button></div>
               <div id="chat-list-items"></div>
             </div>
           </div>
           <div id="chat-thread-view" style="display:none;flex-direction:column;flex:1;min-height:0;">
             <div class="chat-header">
               <button id="chat-back-btn" style="background:none;border:none;color:var(--ink-quiet);font-size:18px;cursor:pointer;padding:0 6px 0 0;">←</button>
-              <div class="avatar a1" id="chat-avatar">?</div>
-              <div>
+              <div class="avatar a1" id="chat-avatar" style="cursor:pointer;">?</div>
+              <div id="chat-peer" style="cursor:pointer;">
                 <h4 id="chat-name">—</h4>
                 <div class="status">чат</div>
               </div>
@@ -785,6 +866,7 @@
       <span class="chip" data-val="Другое">Другое</span>
     </div>
     <textarea class="text-input" id="report-comment" placeholder="Необязательный комментарий" style="margin-bottom:14px;"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-quiet);margin-bottom:14px;cursor:pointer;"><input type="checkbox" id="report-also-block"> Также заблокировать этого человека</label>
     <div class="msg-line err" id="report-error" style="display:none;margin-bottom:10px;"></div>
     <div style="display:flex;gap:8px;">
       <button class="primary-btn" id="report-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
@@ -793,15 +875,31 @@
   </div>
 </div>
 
+<div id="delete-modal-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin:0 0 6px;font-size:16px;">Удалить аккаунт?</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;line-height:1.45;">Удалим навсегда: анкету, лайки, блокировки и все переписки (у собеседников они тоже исчезнут). Восстановить будет нельзя. Для подтверждения введи пароль.</div>
+    <input class="text-input" type="password" id="delete-password" autocomplete="current-password" placeholder="Пароль" style="margin-bottom:12px;">
+    <div class="msg-line err" id="delete-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="delete-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn danger-btn" id="delete-confirm-btn" style="margin-top:0;">Удалить навсегда</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut, sendEmailVerification
+    onAuthStateChanged, signOut, sendEmailVerification,
+    EmailAuthProvider, reauthenticateWithCredential, deleteUser
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
   import {
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs,
-    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit
+    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit, deleteDoc
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -818,7 +916,7 @@
 
   const MAP_RADIUS_KM = 25;
   const CLOUDINARY_CLOUD_NAME = 'ngs9uhfn';
-  const CLOUDINARY_UPLOAD_PRESET = 'svoy_nastroy_avatars';
+  const CLOUDINARY_UPLOAD_PRESET = 'svoy_nastroy';
 
   let currentUser = null;
   let currentProfile = null;
@@ -840,6 +938,14 @@
   let justRegistered = false;
   let reportTargetUid = null;
   let reportTargetChatId = null;
+  const APP_URL = 'https://buryakksusha-coder.github.io/svoy-nastroy-pwa/';
+  const VISIBLE_DAYS = 30;
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  let blockedByMe = new Set();
+  let blockedMe = new Set();
+  let unsubscribeBlocksOut = null;
+  let unsubscribeBlocksIn = null;
+  let chatItemsCache = [];
   let unseenLikesCount = 0;
   let unreadChatsCount = 0;
   const BASE_TITLE = document.title;
@@ -882,6 +988,36 @@
       : escapeHtml(initialsFor(p || {}));
   }
 
+  let toastTimer = null;
+  function showToast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  async function inviteFriends(){
+    const text = 'Нашёл(ла) приложение, где музыканты Екатеринбурга ищут друг друга по районам — без ленты и лишнего шума. Заходи:';
+    if (navigator.share){
+      try { await navigator.share({ title: 'Свой Настрой', text, url: APP_URL }); } catch (e){}
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text + ' ' + APP_URL);
+      showToast('Ссылка скопирована — отправь её знакомым');
+    } catch (e){
+      prompt('Скопируй ссылку и отправь знакомым:', APP_URL);
+    }
+  }
+
+  function isBlockedPair(uid){ return blockedByMe.has(uid) || blockedMe.has(uid); }
+
+  function isProfileVisible(p){
+    if (!p || p.hidden) return false;
+    return !p.activeUntil || p.activeUntil > Date.now();
+  }
+
   /* ---------- фильтр контента: экстремизм + буллинг ---------- */
   const EXTREMISM_PATTERNS = [
     'игил', 'исис', 'aль-каида', 'аль-каида', 'аль каида', 'ауе', 'а.у.е',
@@ -922,6 +1058,7 @@
   function setActiveScreen(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     $(id).classList.add('active');
+    $('brand-bar').style.display = id === 's-auth' ? 'none' : 'flex';
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   }
 
@@ -954,6 +1091,18 @@
   wireChipGroup('f-genres', 'multi');
   wireChipGroup('f-goal', 'single');
   wireChipGroup('f-district', 'single');
+  wireChipGroup('f-kind', 'single');
+  wireChipGroup('f-needs', 'multi');
+  function getAnketaKind(){ return getChipValues('f-kind')[0] || 'musician'; }
+  function applyKindUI(){
+    const band = getAnketaKind() === 'band';
+    $('f-needs-field').style.display = band ? 'block' : 'none';
+    $('f-name-label').textContent = band ? 'Название группы' : 'Имя';
+    $('f-name').placeholder = band ? 'Как называется группа?' : 'Как тебя зовут?';
+    $('f-instr-label').textContent = band ? 'Кто уже есть в группе' : 'Инструменты';
+    $('f-looking').placeholder = band ? 'Например: барабанщик, репетиции 2 раза в неделю на ВИЗе' : 'Например: барабанщик в кавер-группу, репетиции по выходным';
+  }
+  document.querySelectorAll('#f-kind .chip').forEach(c => c.addEventListener('click', applyKindUI));
 
   /* ---------- auth ---------- */
   function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
@@ -1016,6 +1165,9 @@
       myOutgoingLikeUids = new Set();
       incomingLikesRaw = [];
       if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
+      if (unsubscribeBlocksOut){ unsubscribeBlocksOut(); unsubscribeBlocksOut = null; }
+      if (unsubscribeBlocksIn){ unsubscribeBlocksIn(); unsubscribeBlocksIn = null; }
+      blockedByMe = new Set(); blockedMe = new Set(); chatItemsCache = [];
       unreadChatsCount = 0;
       updateLikesBadge(0);
       $('tabbar').style.display = 'none';
@@ -1032,6 +1184,7 @@
         setActiveScreen('s-map');
         loadMap();
         subscribeLikeWatchers();
+        subscribeBlocks();
         subscribeChatList();
       } else {
         currentProfile = null;
@@ -1060,6 +1213,9 @@
       setChipValues('f-goal', currentProfile.goal || null);
       setChipValues('f-district', currentProfile.district || null);
       $('f-bio').value = currentProfile.bio || '';
+      $('f-looking').value = currentProfile.lookingFor || '';
+      setChipValues('f-kind', currentProfile.kind || 'musician');
+      setChipValues('f-needs', currentProfile.needs || []);
       pendingAvatarUrl = currentProfile.avatarUrl || null;
     } else {
       $('f-name').value = '';
@@ -1070,6 +1226,9 @@
       setChipValues('f-goal', null);
       setChipValues('f-district', null);
       $('f-bio').value = '';
+      $('f-looking').value = '';
+      setChipValues('f-kind', 'musician');
+      setChipValues('f-needs', []);
       pendingAvatarUrl = null;
     }
     $('f-avatar-input').value = '';
@@ -1078,6 +1237,7 @@
     preview.className = 'avatar a1';
     preview.style.width = '64px'; preview.style.height = '64px'; preview.style.fontSize = '22px';
     preview.innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl, name: (isEdit && currentProfile) ? currentProfile.name : '' });
+    applyKindUI();
     hideAnketaMsgs();
     editingProfile = isEdit;
   }
@@ -1149,12 +1309,16 @@
     const age = $('f-age').value ? Number($('f-age').value) : null;
     const instruments = getChipValues('f-instruments');
     const level = getChipValues('f-level')[0] || null;
+    const kind = getAnketaKind();
+    const needs = kind === 'band' ? getChipValues('f-needs') : [];
     const genres = getChipValues('f-genres');
     const goal = getChipValues('f-goal')[0] || null;
     const bio = $('f-bio').value.trim();
+    const lookingFor = $('f-looking').value.trim().slice(0, 80);
     const district = getChipValues('f-district')[0] || null;
 
-    if (!name){ showAnketaError('Укажи имя.'); return; }
+    if (!name){ showAnketaError(kind === 'band' ? 'Укажи название группы.' : 'Укажи имя.'); return; }
+    if (kind === 'band' && needs.length === 0){ showAnketaError('Отметь, кого ищете в группу.'); return; }
     if (!age || !Number.isInteger(age) || age < 18 || age > 99){ showAnketaError('Сервис только для совершеннолетних — укажи корректный возраст (18+).'); return; }
     if (instruments.length === 0){ showAnketaError('Выбери хотя бы один инструмент.'); return; }
     if (!level){ showAnketaError('Выбери уровень.'); return; }
@@ -1162,6 +1326,8 @@
     if (!district){ showAnketaError('Выбери свой район.'); return; }
     const bioCheck = checkContentSafety(bio);
     if (!bioCheck.ok){ showAnketaError(bioCheck.reason); return; }
+    const lookingCheck = checkContentSafety(lookingFor);
+    if (!lookingCheck.ok){ showAnketaError(lookingCheck.reason); return; }
 
     const btn = $('anketa-submit-btn');
     btn.disabled = true;
@@ -1180,12 +1346,13 @@
       const data = {
         uid: currentUser.uid,
         email: currentUser.email,
-        name, age, instruments, level, genres, goal, bio, district,
+        name, age, instruments, level, genres, goal, bio, district, lookingFor, kind, needs,
+        activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS,
         avatarUrl: pendingAvatarUrl || null,
         lat: coords.lat, lng: coords.lng,
         updatedAt: serverTimestamp(),
       };
-      if (!editingProfile) data.createdAt = serverTimestamp();
+      if (!editingProfile){ data.createdAt = serverTimestamp(); data.hidden = false; }
       await setDoc(doc(db, 'profiles', currentUser.uid), data, { merge: true });
       const snap = await getDoc(doc(db, 'profiles', currentUser.uid));
       currentProfile = { uid: currentUser.uid, ...snap.data() };
@@ -1195,6 +1362,7 @@
       loadMap();
       if (!unsubscribeOutgoingLikes) subscribeLikeWatchers();
       if (!unsubscribeChatList) subscribeChatList();
+      if (!unsubscribeBlocksOut) subscribeBlocks();
     } catch (err){
       console.error(err);
       showAnketaError('Не удалось сохранить анкету. Попробуй ещё раз.');
@@ -1209,7 +1377,9 @@
     const list = [];
     snap.forEach(d => {
       if (d.id === currentUser.uid) return;
+      if (isBlockedPair(d.id)) return;
       const data = d.data();
+      if (!isProfileVisible(data)) return;
       if (typeof data.lat !== 'number' || typeof data.lng !== 'number') return;
       list.push({ uid: d.id, ...data });
     });
@@ -1234,13 +1404,19 @@
       bearing: bearingDeg(me.lat, me.lng, p.lat, p.lng),
     })).filter(p => p.dist <= MAP_RADIUS_KM);
     window.__mapProfiles = withDist;
+    window.__mapLoaded = true;
     renderMapPins(withDist, currentMapFilter);
   }
 
   function renderMapPins(list, filter){
     const mapArea = $('map-area');
     mapArea.querySelectorAll('.pin').forEach(p => p.remove());
-    const filtered = filter === 'Все' ? list : list.filter(p => (p.instruments||[]).includes(filter));
+    const base = list.filter(p => !isBlockedPair(p.uid));
+    const filtered = filter === 'Все' ? base
+      : filter === 'Группы' ? base.filter(p => p.kind === 'band')
+      : base.filter(p => (p.instruments||[]).includes(filter));
+    $('map-empty').style.display = filtered.length === 0 ? 'block' : 'none';
+    $('map-hidden-note').style.display = (currentProfile && !isProfileVisible(currentProfile)) ? 'block' : 'none';
     filtered.forEach(p => {
       const frac = Math.min(p.dist / MAP_RADIUS_KM, 0.95);
       const rad = p.bearing * Math.PI / 180;
@@ -1249,7 +1425,7 @@
       const leftPct = 50 + dx * 38;
       const topPct = 52 + dy * 38;
       const pin = document.createElement('div');
-      pin.className = 'pin ' + avatarClassFor(p.uid);
+      pin.className = 'pin ' + avatarClassFor(p.uid) + (p.kind === 'band' ? ' band' : '');
       pin.style.left = leftPct + '%';
       pin.style.top = topPct + '%';
       pin.innerHTML = p.avatarUrl
@@ -1275,12 +1451,14 @@
   wireChipGroup('sf-level', 'single');
   wireChipGroup('sf-goal', 'single');
   wireChipGroup('sf-radius', 'single');
+  wireChipGroup('sf-kind', 'single');
 
   $('search-submit-btn').addEventListener('click', async () => {
     const instrument = getChipValues('sf-instrument')[0] || null;
     const level = getChipValues('sf-level')[0] || null;
     const goal = getChipValues('sf-goal')[0] || null;
     const radius = Number(getChipValues('sf-radius')[0] || '25');
+    const kindFilter = getChipValues('sf-kind')[0] || null;
 
     const resultsEl = $('search-results');
     resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
@@ -1298,6 +1476,7 @@
     if (instrument) list = list.filter(p => (p.instruments||[]).includes(instrument));
     if (level) list = list.filter(p => p.level === level);
     if (goal) list = list.filter(p => p.goal === goal);
+    if (kindFilter) list = list.filter(p => (p.kind || 'musician') === kindFilter);
     list.sort((a,b) => a.dist - b.dist);
     renderSearchResults(list);
   });
@@ -1311,6 +1490,8 @@
     resultsEl.innerHTML = '';
     list.forEach(p => {
       const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(p.goal ? [p.goal] : []);
+      const myInstr = (currentProfile && currentProfile.instruments) || [];
+      const wantsMe = p.kind === 'band' && (currentProfile && currentProfile.kind !== 'band') && (p.needs||[]).some(n => myInstr.includes(n));
       const card = document.createElement('div');
       card.className = 'card';
       card.style.cursor = 'pointer';
@@ -1318,12 +1499,14 @@
         <div class="card-top">
           <div class="avatar ${avatarClassFor(p.uid)}">${avatarInnerHtml(p)}</div>
           <div>
-            <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.age ? ' · '+p.age : ''}</div>
+            <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.kind === 'band' ? '<span class="band-badge">группа</span>' : (p.age ? ' · '+p.age : '')}</div>
             <div class="card-meta">${escapeHtml((p.instruments||[]).join(', ') || '—')}${p.district ? ' · ' + escapeHtml(p.district) : ''}</div>
           </div>
           <div class="dist">${p.dist.toFixed(1)} км</div>
         </div>
-        <div class="card-tags">${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
+        ${p.kind === 'band' && (p.needs||[]).length ? '<div class="card-looking">Ищут: ' + escapeHtml(p.needs.join(', ')) + '</div>' : ''}
+        ${p.lookingFor ? '<div class="card-looking">' + (p.kind === 'band' ? '' : 'Ищу: ') + escapeHtml(p.lookingFor) + '</div>' : ''}
+        <div class="card-tags">${wantsMe ? '<span class="tag match">Ищут твой инструмент</span>' : ''}${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
       `;
       card.addEventListener('click', () => openOtherProfile(p));
       resultsEl.appendChild(card);
@@ -1334,8 +1517,14 @@
   function renderProfileCommon(p, locText){
     $('p-avatar').className = 'avatar ' + avatarClassFor(p.uid);
     $('p-avatar').innerHTML = avatarInnerHtml(p);
-    $('p-name').textContent = p.name + (p.age ? ', ' + p.age : '');
+    const isBand = p.kind === 'band';
+    $('p-name').innerHTML = escapeHtml(p.name || '') + (isBand ? '<span class="band-badge">группа</span>' : (p.age ? ', ' + escapeHtml(p.age) : ''));
     $('p-loc').textContent = locText;
+    const lookingParts = [];
+    if (isBand && (p.needs||[]).length) lookingParts.push('Ищем: ' + p.needs.join(', '));
+    if (p.lookingFor) lookingParts.push((isBand ? '' : 'Ищу: ') + p.lookingFor);
+    $('p-looking').style.display = lookingParts.length ? 'block' : 'none';
+    $('p-looking').textContent = lookingParts.join(' · ');
     $('p-age').textContent = p.age || '—';
     $('p-level').textContent = p.level || '—';
     $('p-goal').textContent = p.goal || '—';
@@ -1350,6 +1539,9 @@
     $('p-actions-other').style.display = 'none';
     $('p-actions-other-report').style.display = 'none';
     $('p-actions-own').style.display = 'flex';
+    $('p-own-extra').style.display = 'block';
+    renderVisibilityCard();
+    renderBlockedList();
     setActiveScreen('s-profile');
   }
 
@@ -1361,6 +1553,7 @@
     $('p-actions-other').style.display = 'flex';
     $('p-actions-other-report').style.display = 'block';
     $('p-actions-own').style.display = 'none';
+    $('p-own-extra').style.display = 'none';
     setActiveScreen('s-profile');
     await refreshLikeButton(p.uid);
   }
@@ -1466,7 +1659,7 @@
 
   async function renderIncomingLikes(){
     if (!currentUser) return;
-    const pending = incomingLikesRaw.filter(l => l.from && !myOutgoingLikeUids.has(l.from));
+    const pending = incomingLikesRaw.filter(l => l.from && !myOutgoingLikeUids.has(l.from) && !isBlockedPair(l.from));
     const seen = getSeenLikeUids();
     const unseenCount = pending.filter(l => !seen.has(l.from)).length;
     updateLikesBadge(unseenCount);
@@ -1656,44 +1849,245 @@
     unsubscribeChatList = onSnapshot(q, (snap) => {
       const items = [];
       snap.forEach(d => items.push({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) }));
-      items.sort((a,b) => {
-        const at = a.lastMessageAt && a.lastMessageAt.toMillis ? a.lastMessageAt.toMillis() : 0;
-        const bt = b.lastMessageAt && b.lastMessageAt.toMillis ? b.lastMessageAt.toMillis() : 0;
-        return bt - at;
-      });
-      const container = $('chat-list-items');
-      const empty = $('chat-list-empty');
-      container.innerHTML = '';
-      const threadOpen = $('chat-thread-view').style.display !== 'none' && $('s-chat').classList.contains('active');
-      const toMs = t => (t && t.toMillis) ? t.toMillis() : 0;
-      items.forEach(chat => {
-        const lastReadMs = toMs(chat.lastReadAt && chat.lastReadAt[currentUser.uid]);
-        chat.unread = !!chat.lastSenderId && chat.lastSenderId !== currentUser.uid &&
-          toMs(chat.lastMessageAt) > lastReadMs && !(threadOpen && chat.id === activeChatId);
-      });
-      unreadChatsCount = items.filter(c => c.unread).length;
-      renderTotalBadge();
-      if (items.length === 0){ empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
-      items.forEach(chat => {
-        const otherUid = chat.participants.find(u => u !== currentUser.uid);
-        const otherName = (chat.participantNames && chat.participantNames[otherUid]) || 'Без имени';
-        const otherAvatarUrl = (chat.participantAvatars && chat.participantAvatars[otherUid]) || null;
-        const row = document.createElement('div');
-        row.className = 'chat-list-item' + (chat.unread ? ' unread' : '');
-        row.innerHTML = `
-          <div class="avatar ${avatarClassFor(otherUid)}">${avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName })}</div>
-          <div class="meta">
-            <div class="name">${escapeHtml(otherName)}</div>
-            <div class="preview">${escapeHtml(chat.lastMessage || 'Начните диалог')}</div>
-          </div>
-          ${chat.unread ? '<span class="unread-dot"></span>' : ''}
-        `;
-        row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName, otherAvatarUrl));
-        container.appendChild(row);
-      });
+      chatItemsCache = items;
+      renderChatList();
     }, (err) => console.error(err));
   }
+
+  function renderChatList(){
+    if (!currentUser) return;
+    const toMs = t => (t && t.toMillis) ? t.toMillis() : 0;
+    const items = chatItemsCache
+      .map(chat => ({ ...chat, otherUid: (chat.participants || []).find(u => u !== currentUser.uid) }))
+      .filter(chat => chat.otherUid && !isBlockedPair(chat.otherUid));
+    items.sort((a,b) => toMs(b.lastMessageAt) - toMs(a.lastMessageAt));
+    const container = $('chat-list-items');
+    const empty = $('chat-list-empty');
+    container.innerHTML = '';
+    const threadOpen = $('chat-thread-view').style.display !== 'none' && $('s-chat').classList.contains('active');
+    items.forEach(chat => {
+      const lastReadMs = toMs(chat.lastReadAt && chat.lastReadAt[currentUser.uid]);
+      chat.unread = !!chat.lastSenderId && chat.lastSenderId !== currentUser.uid &&
+        toMs(chat.lastMessageAt) > lastReadMs && !(threadOpen && chat.id === activeChatId);
+    });
+    unreadChatsCount = items.filter(c => c.unread).length;
+    renderTotalBadge();
+    if (items.length === 0){ empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    items.forEach(chat => {
+      const otherUid = chat.otherUid;
+      const otherName = (chat.participantNames && chat.participantNames[otherUid]) || 'Без имени';
+      const otherAvatarUrl = (chat.participantAvatars && chat.participantAvatars[otherUid]) || null;
+      const row = document.createElement('div');
+      row.className = 'chat-list-item' + (chat.unread ? ' unread' : '');
+      row.innerHTML = `
+        <div class="avatar ${avatarClassFor(otherUid)}">${avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName })}</div>
+        <div class="meta">
+          <div class="name">${escapeHtml(otherName)}</div>
+          <div class="preview">${escapeHtml(chat.lastMessage || 'Начните диалог')}</div>
+        </div>
+        ${chat.unread ? '<span class="unread-dot"></span>' : ''}
+      `;
+      row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName, otherAvatarUrl));
+      container.appendChild(row);
+    });
+  }
+
+  /* ---------- блокировки ---------- */
+  function subscribeBlocks(){
+    if (unsubscribeBlocksOut) unsubscribeBlocksOut();
+    if (unsubscribeBlocksIn) unsubscribeBlocksIn();
+    const refreshAll = () => {
+      renderChatList();
+      renderIncomingLikes();
+      if (window.__mapLoaded) renderMapPins(window.__mapProfiles || [], currentMapFilter);
+      if ($('p-own-extra').style.display === 'block') renderBlockedList();
+    };
+    unsubscribeBlocksOut = onSnapshot(query(collection(db, 'blocks'), where('from', '==', currentUser.uid)), (snap) => {
+      blockedByMe = new Set(snap.docs.map(d => d.data().to));
+      refreshAll();
+    }, (err) => console.error(err));
+    unsubscribeBlocksIn = onSnapshot(query(collection(db, 'blocks'), where('to', '==', currentUser.uid)), (snap) => {
+      blockedMe = new Set(snap.docs.map(d => d.data().from));
+      refreshAll();
+    }, (err) => console.error(err));
+  }
+
+  async function blockUser(uid, name){
+    if (!uid || !currentUser || uid === currentUser.uid) return false;
+    try {
+      await setDoc(doc(db, 'blocks', currentUser.uid + '_' + uid), {
+        from: currentUser.uid, to: uid, createdAt: serverTimestamp(),
+      });
+      blockedByMe.add(uid);
+      if (activeChatOtherUid === uid){
+        if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+        activeChatId = null; activeChatOtherUid = null;
+      }
+      showToast((name || 'Пользователь') + ' заблокирован(а). Вы больше не видите друг друга.');
+      return true;
+    } catch (err){
+      console.error(err);
+      showToast('Не удалось заблокировать. Попробуй ещё раз.');
+      return false;
+    }
+  }
+
+  async function renderBlockedList(){
+    const wrap = $('p-blocked-wrap');
+    const list = $('p-blocked-list');
+    const uids = [...blockedByMe];
+    if (uids.length === 0){ wrap.style.display = 'none'; list.innerHTML = ''; return; }
+    wrap.style.display = 'block';
+    list.innerHTML = '';
+    for (const uid of uids){
+      let name = 'Пользователь';
+      try {
+        const snap = await getDoc(doc(db, 'profiles', uid));
+        if (snap.exists()) name = snap.data().name || name;
+      } catch (e){}
+      const row = document.createElement('div');
+      row.className = 'blocked-row';
+      row.innerHTML = '<span>' + escapeHtml(name) + '</span>';
+      const btn = document.createElement('button');
+      btn.className = 'quiet-link';
+      btn.textContent = 'Разблокировать';
+      btn.addEventListener('click', async () => {
+        try {
+          await deleteDoc(doc(db, 'blocks', currentUser.uid + '_' + uid));
+          showToast(name + ' разблокирован(а)');
+        } catch (err){ console.error(err); }
+      });
+      row.appendChild(btn);
+      list.appendChild(row);
+    }
+  }
+
+  $('p-block-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    const name = viewedOtherProfile.name || 'этого человека';
+    if (!confirm('Заблокировать ' + name + '? Вы перестанете видеть друг друга на карте и в поиске, переписка закроется. Разблокировать можно в своём профиле.')) return;
+    const ok = await blockUser(viewedOtherProfile.uid, viewedOtherProfile.name);
+    if (ok){ setActiveScreen('s-map'); loadMap(); }
+  });
+
+  async function openProfileByUid(uid){
+    if (!uid) return;
+    try {
+      const snap = await getDoc(doc(db, 'profiles', uid));
+      if (!snap.exists()){ showToast('Анкета удалена или недоступна'); return; }
+      const p = { uid, ...snap.data() };
+      if (currentProfile && typeof p.lat === 'number'){
+        p.dist = haversineKm(currentProfile.lat, currentProfile.lng, p.lat, p.lng);
+      }
+      await openOtherProfile(p);
+    } catch (err){ console.error(err); }
+  }
+  $('chat-peer').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
+  $('chat-avatar').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
+
+  /* ---------- видимость анкеты: 30 дней + «я нашёл группу» ---------- */
+  function formatDate(ms){
+    return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  }
+  function renderVisibilityCard(){
+    const el = $('p-visibility');
+    const p = currentProfile;
+    if (!el || !p) return;
+    let status, note, actions;
+    const band = p.kind === 'band';
+    if (p.hidden){
+      el.classList.add('off');
+      status = band ? 'Группа скрыта из поиска' : 'Ты скрыт(а) из поиска';
+      note = (band ? 'Рады, что состав собран! ' : 'Рады, что ты нашёл(ла) своих! ') + 'Старые переписки остаются, новые люди анкету не видят.';
+      actions = '<button class="ghost-btn accent" data-vis="show">Снова показывать меня</button>';
+    } else if (p.activeUntil && p.activeUntil <= Date.now()){
+      el.classList.add('off');
+      status = 'Срок показа истёк — анкета скрыта';
+      note = 'Анкета показывается 30 дней, чтобы на карте были только те, кто ищет прямо сейчас.';
+      actions = '<button class="ghost-btn accent" data-vis="extend">Показывать ещё 30 дней</button>';
+    } else {
+      el.classList.remove('off');
+      status = p.activeUntil ? 'Анкета видна в поиске до ' + formatDate(p.activeUntil) : 'Анкета видна в поиске';
+      note = 'Через 30 дней она скроется сама — если ещё ищешь, просто продли.';
+      actions = '<button class="ghost-btn" data-vis="extend">Продлить на 30 дней</button>' +
+                '<button class="ghost-btn accent" data-vis="found">' + (band ? 'Мы нашли участника — скрыть нас' : 'Я нашёл(ла) группу — скрыть меня') + '</button>';
+    }
+    el.innerHTML = '<div class="vis-status"><span class="vis-dot"></span>' + escapeHtml(status) + '</div>' +
+      '<div class="vis-note">' + escapeHtml(note) + '</div><div class="vis-actions">' + actions + '</div>';
+    el.querySelectorAll('[data-vis]').forEach(btn => btn.addEventListener('click', () => updateVisibility(btn.dataset.vis)));
+  }
+  async function updateVisibility(action){
+    if (!currentUser || !currentProfile) return;
+    const patch = action === 'found'
+      ? { hidden: true }
+      : { hidden: false, activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS };
+    try {
+      await updateDoc(doc(db, 'profiles', currentUser.uid), patch);
+      currentProfile = { ...currentProfile, ...patch };
+      renderVisibilityCard();
+      showToast(action === 'found' ? 'Анкета скрыта. Удачи и хороших репетиций!' : 'Анкета снова видна до ' + formatDate(currentProfile.activeUntil));
+    } catch (err){
+      console.error(err);
+      showToast('Не получилось сохранить. Попробуй ещё раз.');
+    }
+  }
+
+  /* ---------- приглашения ---------- */
+  ['map-invite-btn', 'map-empty-invite-btn', 'chat-empty-invite-btn', 'p-invite-btn'].forEach(id => {
+    $(id).addEventListener('click', inviteFriends);
+  });
+  $('map-hidden-note').addEventListener('click', openOwnProfile);
+
+  /* ---------- удаление аккаунта ---------- */
+  function closeDeleteModal(){ $('delete-modal-overlay').style.display = 'none'; }
+  $('p-delete-btn').addEventListener('click', () => {
+    $('delete-password').value = '';
+    $('delete-error').style.display = 'none';
+    $('delete-modal-overlay').style.display = 'flex';
+  });
+  $('delete-cancel-btn').addEventListener('click', closeDeleteModal);
+  $('delete-confirm-btn').addEventListener('click', async () => {
+    const password = $('delete-password').value;
+    const errEl = $('delete-error');
+    const showErr = (m) => { errEl.textContent = m; errEl.style.display = 'block'; };
+    if (!password){ showErr('Введи пароль.'); return; }
+    const btn = $('delete-confirm-btn');
+    btn.disabled = true; btn.textContent = 'Удаляю…';
+    const user = auth.currentUser;
+    try {
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+    } catch (err){
+      btn.disabled = false; btn.textContent = 'Удалить навсегда';
+      showErr(mapAuthError(err));
+      return;
+    }
+    try {
+      const uid = user.uid;
+      [unsubscribeMessages, unsubscribeChatList, unsubscribeOutgoingLikes, unsubscribeIncomingLikes, unsubscribeBlocksOut, unsubscribeBlocksIn]
+        .forEach(fn => { if (fn) fn(); });
+      unsubscribeMessages = unsubscribeChatList = unsubscribeOutgoingLikes = unsubscribeIncomingLikes = unsubscribeBlocksOut = unsubscribeBlocksIn = null;
+      const chats = await getDocs(query(collection(db, 'chats'), where('participants', 'array-contains', uid)));
+      for (const c of chats.docs){
+        const msgs = await getDocs(collection(db, 'chats', c.id, 'messages'));
+        await Promise.all(msgs.docs.map(m => deleteDoc(m.ref)));
+        await deleteDoc(c.ref);
+      }
+      const likesOut = await getDocs(query(collection(db, 'likes'), where('from', '==', uid)));
+      const likesIn = await getDocs(query(collection(db, 'likes'), where('to', '==', uid)));
+      const blocksOut = await getDocs(query(collection(db, 'blocks'), where('from', '==', uid)));
+      await Promise.all([...likesOut.docs, ...likesIn.docs, ...blocksOut.docs].map(d => deleteDoc(d.ref)));
+      await deleteDoc(doc(db, 'profiles', uid));
+      await deleteUser(user);
+      closeDeleteModal();
+      showToast('Аккаунт удалён. Спасибо, что был(а) с нами.');
+    } catch (err){
+      console.error(err);
+      showErr('Удаление прервалось: ' + (err.message || err) + '. Попробуй ещё раз.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Удалить навсегда';
+    }
+  });
 
   /* ---------- жалобы ---------- */
   wireChipGroup('report-reasons', 'single');
@@ -1703,6 +2097,7 @@
     reportTargetUid = targetUid;
     reportTargetChatId = chatId || null;
     $('report-comment').value = '';
+    $('report-also-block').checked = false;
     $('report-error').style.display = 'none';
     setChipValues('report-reasons', []);
     $('report-modal-overlay').style.display = 'flex';
@@ -1731,7 +2126,15 @@
       };
       if (reportTargetChatId) payload.chatId = reportTargetChatId;
       await addDoc(collection(db, 'reports'), payload);
+      const alsoBlock = $('report-also-block').checked;
+      const targetUid = reportTargetUid;
       closeReportModal();
+      if (alsoBlock){
+        const ok = await blockUser(targetUid, null);
+        if (ok){ setActiveScreen('s-map'); loadMap(); }
+      } else {
+        showToast('Жалоба отправлена. Спасибо!');
+      }
     } catch (err){
       console.error(err);
       $('report-error').textContent = 'Не удалось отправить жалобу. Попробуй ещё раз.';
