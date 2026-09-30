@@ -320,6 +320,18 @@
   .skill-detail-row .sd-title{font-size:11.5px;color:var(--ink-quiet);margin-bottom:6px;}
   .chip.small{padding:6px 11px;font-size:12px;}
   .tag.goal{color:var(--accent-2);}
+  .rec-box{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px;}
+  .rec-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .rec-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .rec-btn.stop{background:#c93e5f;}
+  .rec-dot{width:10px;height:10px;border-radius:50%;background:#fff;}
+  .rec-btn.stop .rec-dot{border-radius:2px;animation:recpulse 1s infinite;}
+  @keyframes recpulse{50%{opacity:.4;}}
+  .rec-timer{font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-quiet);}
+  .rec-box audio, .listen-box audio{width:100%;margin-top:10px;height:40px;}
+  .rec-file-label{font-size:12px;color:var(--ink-quiet);text-decoration:underline;cursor:pointer;}
+  .listen-link{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;}
+  .tag.sound{color:var(--accent);}
   .tag.match{background:rgba(46,139,110,.2);color:var(--accent);font-weight:600;}
   .filter-row{
     display:flex;gap:8px;overflow-x:auto;
@@ -673,6 +685,24 @@
               <input class="text-input" type="text" id="f-looking" maxlength="80" placeholder="Например: барабанщик в кавер-группу, репетиции по выходным">
             </div>
             <div class="field">
+              <label>Как ты звучишь (необязательно)</label>
+              <div class="rec-box">
+                <div class="rec-row">
+                  <button type="button" class="rec-btn" id="rec-btn"><span class="rec-dot"></span><span id="rec-btn-text">Записать до 60 сек</span></button>
+                  <span class="rec-timer" id="rec-timer"></span>
+                </div>
+                <div class="msg-line muted" id="rec-status" style="display:none;text-align:left;margin-top:8px;"></div>
+                <audio id="rec-preview" controls preload="none" style="display:none;"></audio>
+                <div class="rec-row" style="margin-top:10px;">
+                  <label class="rec-file-label" for="rec-file">или загрузить файл</label>
+                  <input type="file" id="rec-file" accept="audio/*" style="display:none;">
+                  <button type="button" class="quiet-link danger" id="rec-remove" style="display:none;">Удалить запись</button>
+                </div>
+                <div class="district-chip-note">Сыграй кусочек, спой куплет или покажи свой звук. Телефон лучше поставить в полуметре от инструмента.</div>
+              </div>
+              <input class="text-input" type="url" id="f-music-link" placeholder="Ссылка на твою музыку: Яндекс Музыка, VK, YouTube…" style="margin-top:10px;">
+            </div>
+            <div class="field">
               <label>О себе (характер, бэкграунд)</label>
               <textarea class="text-input" id="f-bio" placeholder="Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…"></textarea>
             </div>
@@ -790,6 +820,11 @@
             </div>
             <div class="section-title">О себе</div>
             <div class="bio-text" id="p-bio">—</div>
+            <div id="p-listen" class="listen-box" style="display:none;">
+              <div class="section-title">Послушать</div>
+              <audio id="p-audio" controls preload="none" style="display:none;"></audio>
+              <a id="p-music-link" class="listen-link" target="_blank" rel="noopener noreferrer nofollow" style="display:none;">Слушать на площадке ↗</a>
+            </div>
             <div class="section-title">Что умеет и чего хочет</div>
             <div class="card-tags" id="p-tags"></div>
             <div class="contact-btn" id="p-actions-other" style="display:none;">
@@ -956,6 +991,14 @@
   let unsubscribeOutgoingLikes = null;
   let unsubscribeIncomingLikes = null;
   let pendingAvatarUrl = null;
+  let pendingAudioUrl = null;
+  let pendingAudioDuration = null;
+  let audioUploading = false;
+  let mediaRecorder = null;
+  let recStream = null;
+  let recTimerId = null;
+  const REC_MAX_SEC = 60;
+  const MUSIC_LINK_HOSTS = ['music.yandex.ru', 'music.yandex.com', 'vk.com', 'vk.ru', 'youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be', 'soundcloud.com', 'on.soundcloud.com', 'bandcamp.com', 't.me', 'zvuk.com', 'music.apple.com', 'open.spotify.com', 'band.link', 'mts-music.ru', 'music.mts.ru'];
   let justRegistered = false;
   let reportTargetUid = null;
   let reportTargetChatId = null;
@@ -1054,6 +1097,105 @@
     return !p.activeUntil || p.activeUntil > Date.now();
   }
 
+  /* ---------- звук: запись в приложении / файл / ссылка ---------- */
+  function playableAudioUrl(url){
+    if (!url) return null;
+    return url.replace('/upload/', '/upload/du_60/').replace(/\.[a-z0-9]+$/i, '.mp3');
+  }
+  function normalizeMusicLink(raw){
+    const t = String(raw || '').trim();
+    if (!t) return { ok: true, url: null };
+    let u;
+    try { u = new URL(/^https?:\/\//i.test(t) ? t : 'https://' + t); } catch (e){ return { ok: false }; }
+    const host = u.hostname.toLowerCase();
+    const allowed = MUSIC_LINK_HOSTS.some(h => host === h || host.endsWith('.' + h));
+    if (!allowed || u.protocol !== 'https:') return { ok: false };
+    return { ok: true, url: u.toString() };
+  }
+  function fmtSec(sec){ sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+  function setRecStatus(msg){ const el = $('rec-status'); el.textContent = msg || ''; el.style.display = msg ? 'block' : 'none'; }
+  function renderRecUI(){
+    const has = !!pendingAudioUrl;
+    const prev = $('rec-preview');
+    prev.style.display = has ? 'block' : 'none';
+    if (has && prev.dataset.src !== pendingAudioUrl){ prev.src = playableAudioUrl(pendingAudioUrl); prev.dataset.src = pendingAudioUrl; }
+    if (!has){ prev.removeAttribute('src'); prev.dataset.src = ''; }
+    $('rec-remove').style.display = has ? 'inline-block' : 'none';
+    if (!mediaRecorder){
+      $('rec-btn').classList.remove('stop');
+      $('rec-btn-text').textContent = has ? 'Перезаписать' : 'Записать до 60 сек';
+      $('rec-timer').textContent = has && pendingAudioDuration ? fmtSec(pendingAudioDuration) : '';
+    }
+  }
+  function stopRecStream(){
+    if (recStream){ recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+    clearInterval(recTimerId); recTimerId = null;
+  }
+  function cancelRecording(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive'){ mediaRecorder.onstop = null; mediaRecorder.stop(); }
+    mediaRecorder = null;
+    stopRecStream();
+  }
+  async function uploadAudio(blob, durationSec, filename){
+    audioUploading = true;
+    setRecStatus('Загружаю запись…');
+    try {
+      const fd = new FormData();
+      fd.append('file', blob, filename);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, { method: 'POST', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.secure_url) throw new Error((data.error && data.error.message) || ('HTTP ' + res.status));
+      pendingAudioUrl = data.secure_url;
+      pendingAudioDuration = Math.min(REC_MAX_SEC, Math.round(data.duration || durationSec || 0)) || null;
+      setRecStatus('Запись загружена. Не забудь сохранить анкету.');
+    } catch (err){
+      console.error(err);
+      setRecStatus('Не удалось загрузить запись (' + err.message + '). Попробуй ещё раз.');
+    } finally {
+      audioUploading = false;
+      renderRecUI();
+    }
+  }
+  async function startRecording(){
+    if (!navigator.mediaDevices || !window.MediaRecorder){
+      setRecStatus('Этот браузер не умеет записывать звук. Загрузи файл или обнови браузер.');
+      return;
+    }
+    try {
+      // для музыки выключаем «телефонную» обработку голоса — она режет звук инструментов
+      recStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    } catch (err){
+      setRecStatus('Нет доступа к микрофону. Разреши его в настройках браузера и попробуй снова.');
+      return;
+    }
+    const types = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'];
+    const mimeType = types.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+    const chunks = [];
+    const rec = new MediaRecorder(recStream, mimeType ? { mimeType, audioBitsPerSecond: 128000 } : {});
+    mediaRecorder = rec;
+    const startedAt = Date.now();
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      const dur = (Date.now() - startedAt) / 1000;
+      mediaRecorder = null;
+      stopRecStream();
+      const type = rec.mimeType || mimeType || 'audio/webm';
+      const ext = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'webm';
+      if (dur < 2){ setRecStatus('Слишком коротко — запиши хотя бы пару секунд.'); renderRecUI(); return; }
+      uploadAudio(new Blob(chunks, { type }), dur, 'sample.' + ext);
+    };
+    rec.start(1000);
+    $('rec-btn').classList.add('stop');
+    $('rec-btn-text').textContent = 'Стоп';
+    setRecStatus('Идёт запись…');
+    recTimerId = setInterval(() => {
+      const sec = (Date.now() - startedAt) / 1000;
+      $('rec-timer').textContent = fmtSec(sec) + ' / ' + fmtSec(REC_MAX_SEC);
+      if (sec >= REC_MAX_SEC && rec.state === 'recording') rec.stop();
+    }, 250);
+  }
+
   /* ---------- фильтр контента: экстремизм + буллинг ---------- */
   const EXTREMISM_PATTERNS = [
     'игил', 'исис', 'aль-каида', 'аль-каида', 'аль каида', 'ауе', 'а.у.е',
@@ -1095,6 +1237,7 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     $(id).classList.add('active');
     $('brand-bar').style.display = id === 's-auth' ? 'none' : 'flex';
+    if (id !== 's-anketa' && mediaRecorder) cancelRecording();
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
   }
 
@@ -1276,6 +1419,9 @@
       setChipValues('f-kind', currentProfile.kind || 'musician');
       setChipValues('f-needs', currentProfile.needs || []);
       pendingAvatarUrl = currentProfile.avatarUrl || null;
+      pendingAudioUrl = currentProfile.audioUrl || null;
+      pendingAudioDuration = currentProfile.audioDuration || null;
+      $('f-music-link').value = currentProfile.musicLink || '';
     } else {
       $('f-name').value = '';
       $('f-age').value = '';
@@ -1290,6 +1436,9 @@
       setChipValues('f-kind', 'musician');
       setChipValues('f-needs', []);
       pendingAvatarUrl = null;
+      pendingAudioUrl = null;
+      pendingAudioDuration = null;
+      $('f-music-link').value = '';
     }
     $('f-avatar-input').value = '';
     $('f-avatar-status').style.display = 'none';
@@ -1298,6 +1447,9 @@
     preview.style.width = '64px'; preview.style.height = '64px'; preview.style.fontSize = '22px';
     preview.innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl, name: (isEdit && currentProfile) ? currentProfile.name : '' });
     applyKindUI();
+    cancelRecording();
+    setRecStatus('');
+    renderRecUI();
     hideAnketaMsgs();
     editingProfile = isEdit;
   }
@@ -1348,6 +1500,33 @@
       statusEl.textContent = 'Не удалось загрузить фото (' + err.message + '). Можно продолжить без него.';
     }
   });
+  $('rec-btn').addEventListener('click', () => {
+    if (audioUploading) return;
+    if (mediaRecorder && mediaRecorder.state === 'recording'){ mediaRecorder.stop(); return; }
+    startRecording();
+  });
+  $('rec-file').addEventListener('change', async () => {
+    const file = $('rec-file').files[0];
+    $('rec-file').value = '';
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024){ setRecStatus('Файл больше 15 МБ — выбери покороче.'); return; }
+    const dur = await new Promise(resolve => {
+      const a = document.createElement('audio');
+      a.preload = 'metadata';
+      a.onloadedmetadata = () => { resolve(a.duration); URL.revokeObjectURL(a.src); };
+      a.onerror = () => resolve(null);
+      a.src = URL.createObjectURL(file);
+    });
+    if (dur && isFinite(dur) && dur > REC_MAX_SEC + 1){ setRecStatus('Запись длиннее минуты — отрежь самый яркий кусок до 60 секунд.'); return; }
+    uploadAudio(file, dur, file.name || 'sample');
+  });
+  $('rec-remove').addEventListener('click', () => {
+    cancelRecording();
+    pendingAudioUrl = null; pendingAudioDuration = null;
+    setRecStatus('Запись удалена из анкеты. Сохрани анкету, чтобы изменение применилось.');
+    renderRecUI();
+  });
+
   function showAnketaError(msg){ $('anketa-error').textContent = msg; $('anketa-error').style.display = 'block'; $('anketa-status').style.display = 'none'; }
   function showAnketaStatus(msg){ $('anketa-status').textContent = msg; $('anketa-status').style.display = 'block'; $('anketa-error').style.display = 'none'; }
   function hideAnketaMsgs(){ $('anketa-error').style.display = 'none'; $('anketa-status').style.display = 'none'; }
@@ -1390,6 +1569,10 @@
     if (!bioCheck.ok){ showAnketaError(bioCheck.reason); return; }
     const lookingCheck = checkContentSafety(lookingFor);
     if (!lookingCheck.ok){ showAnketaError(lookingCheck.reason); return; }
+    if (mediaRecorder){ showAnketaError('Сначала останови запись.'); return; }
+    if (audioUploading){ showAnketaError('Подожди, запись ещё загружается.'); return; }
+    const linkCheck = normalizeMusicLink($('f-music-link').value);
+    if (!linkCheck.ok){ showAnketaError('Ссылка должна вести на музыкальную площадку: Яндекс Музыка, VK, YouTube, SoundCloud, Bandcamp, Звук, Telegram, Apple Music или Spotify.'); return; }
 
     const btn = $('anketa-submit-btn');
     btn.disabled = true;
@@ -1411,6 +1594,9 @@
         name, age, instruments, instrumentDetails, level, genres, goal, goals, bio, district, lookingFor, kind, needs,
         activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS,
         avatarUrl: pendingAvatarUrl || null,
+        audioUrl: pendingAudioUrl || null,
+        audioDuration: pendingAudioUrl ? (pendingAudioDuration || null) : null,
+        musicLink: linkCheck.url,
         lat: coords.lat, lng: coords.lng,
         updatedAt: serverTimestamp(),
       };
@@ -1568,7 +1754,7 @@
         </div>
         ${p.kind === 'band' && (p.needs||[]).length ? '<div class="card-looking">Ищут: ' + escapeHtml(p.needs.join(', ')) + '</div>' : ''}
         ${p.lookingFor ? '<div class="card-looking">' + (p.kind === 'band' ? '' : 'Ищу: ') + escapeHtml(p.lookingFor) + '</div>' : ''}
-        <div class="card-tags">${wantsMe ? '<span class="tag match">Ищут твой инструмент</span>' : ''}${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
+        <div class="card-tags">${wantsMe ? '<span class="tag match">Ищут твой инструмент</span>' : ''}${p.audioUrl ? '<span class="tag sound">♪ есть запись</span>' : ''}${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
       `;
       card.addEventListener('click', () => openOtherProfile(p));
       resultsEl.appendChild(card);
@@ -1592,6 +1778,14 @@
     const pGoals = goalsOf(p);
     $('p-goal').textContent = pGoals.length ? pGoals[0] + (pGoals.length > 1 ? ' +' + (pGoals.length - 1) : '') : '—';
     $('p-bio').textContent = p.bio || 'Пока ничего не рассказал(а) о себе.';
+    const pAudio = $('p-audio');
+    pAudio.pause();
+    if (p.audioUrl){ pAudio.src = playableAudioUrl(p.audioUrl); pAudio.style.display = 'block'; }
+    else { pAudio.removeAttribute('src'); pAudio.style.display = 'none'; }
+    const linkOk = p.musicLink && normalizeMusicLink(p.musicLink).ok;
+    $('p-music-link').style.display = linkOk ? 'inline-block' : 'none';
+    if (linkOk) $('p-music-link').href = p.musicLink;
+    $('p-listen').style.display = (p.audioUrl || linkOk) ? 'block' : 'none';
     const tags = (p.instruments||[]).concat(p.instrumentDetails||[]).concat(p.genres||[]);
     $('p-tags').innerHTML = (tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('') +
       pGoals.map(g=>'<span class="tag goal">'+escapeHtml(g)+'</span>').join('')) || '<span class="tag">—</span>';
