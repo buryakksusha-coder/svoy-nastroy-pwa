@@ -102,46 +102,26 @@
     max-width:1000px;
   }
 
-  /* phone frame */
-  .phone{
-    width:340px;
-    height:700px;
-    background:#000;
-    border-radius:44px;
-    padding:12px;
-    box-shadow:0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px #2c2c33;
-    position:relative;
-    flex-shrink:0;
-  }
-  .screen-wrap{
+  /* app shell — реальная адаптивная вёрстка, без декоративной рамки телефона */
+  .app-shell{
     width:100%;
-    height:100%;
+    max-width:480px;
+    min-height:100vh;
     background:var(--panel);
-    border-radius:32px;
-    overflow:hidden;
     position:relative;
     display:flex;
     flex-direction:column;
-  }
-  .notch{
-    position:absolute;
-    top:0; left:50%;
-    transform:translateX(-50%);
-    width:120px; height:22px;
-    background:#000;
-    border-radius:0 0 16px 16px;
-    z-index:5;
-  }
-  .statusbar{
-    height:40px;
     flex-shrink:0;
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    padding:0 20px 6px;
-    font-size:12px;
-    color:var(--ink-quiet);
-    font-weight:600;
+  }
+  @media (min-width:640px){
+    .app-shell{
+      min-height:700px;
+      max-height:860px;
+      margin:0 auto;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px #2c2c33;
+    }
   }
 
   .screen{
@@ -196,10 +176,19 @@
     font-family:inherit;
     cursor:pointer;
     padding:4px 8px;
+    position:relative;
   }
   .tab-btn svg{width:22px;height:22px;stroke:var(--ink-quiet);fill:none;stroke-width:1.8;}
   .tab-btn.active{color:var(--accent);}
   .tab-btn.active svg{stroke:var(--accent);}
+  .tab-badge{
+    position:absolute; top:-2px; right:10px;
+    min-width:16px; height:16px; border-radius:8px;
+    background:#ff6b8b; color:#fff; font-size:9.5px; font-weight:800;
+    display:none; align-items:center; justify-content:center;
+    padding:0 4px; line-height:1;
+  }
+  .tab-badge.show{display:flex;}
 
   /* form elements */
   .field{margin-bottom:16px;}
@@ -277,6 +266,17 @@
       #12211c;
     min-height:260px;
   }
+  .map-area::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:34px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='34'><g fill='%231f2f28'><rect x='2' y='14' width='16' height='20'/><polygon points='2,14 10,4 18,14'/><rect x='24' y='20' width='14' height='14'/><rect x='42' y='10' width='18' height='24'/><polygon points='42,10 51,2 60,10'/><rect x='64' y='18' width='16' height='16'/><rect x='84' y='6' width='16' height='28'/><polygon points='84,6 92,-2 100,6'/><rect x='104' y='16' width='14' height='18'/></g></svg>");
+    background-repeat:repeat-x;
+    background-position:bottom left;
+    opacity:.55;
+    pointer-events:none;
+  }
   .me-dot{
     position:absolute; left:50%; top:52%;
     width:14px;height:14px;border-radius:50%;
@@ -299,6 +299,7 @@
     font-size:13px;font-weight:700;color:#fff;
     box-shadow:0 4px 10px rgba(0,0,0,.4);
     cursor:pointer;
+    z-index:2;
   }
   .pin span{transform:rotate(45deg);}
   .filter-row{
@@ -318,6 +319,18 @@
     user-select:none;
   }
   .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+  .map-district{
+    text-align:center;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:.02em;
+    padding:0 18px 8px;
+    display:none;
+  }
+  .map-district.show{display:block;}
+  .map-district .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;}
 
   /* card list (feed) */
   .card{
@@ -432,22 +445,13 @@
   .chat-list-item .name{font-weight:700;font-size:13.5px;}
   .chat-list-item .preview{font-size:12px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-  .caption{
-    max-width:340px;
-    text-align:center;
-    margin-top:14px;
-    font-size:12.5px;
-    color:var(--ink-quiet);
-  }
-  .col{display:flex;flex-direction:column;align-items:center;}
-
   .msg-line{font-size:12.5px;text-align:center;margin-top:10px;}
   .msg-line.err{color:#ff6b8b;}
   .msg-line.muted{color:var(--ink-quiet);}
 
   @media (max-width:760px){
-    .layout{gap:20px;}
-    .phone{width:300px;height:620px;}
+    .layout{gap:0;}
+    .top{margin-bottom:16px;}
   }
 </style>
 </head>
@@ -462,11 +466,7 @@
 <button id="install-btn">Установить на телефон</button>
 
 <div class="layout">
-  <div class="col">
-    <div class="phone">
-      <div class="screen-wrap">
-        <div class="notch"></div>
-        <div class="statusbar"><span>9:41</span><span>●●● Свой Настрой</span></div>
+  <div class="app-shell" id="app-shell">
 
         <!-- SCREEN: AUTH -->
         <section class="screen active" id="s-auth">
@@ -482,6 +482,12 @@
             <div class="field">
               <label>Пароль</label>
               <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 6 символов">
+            </div>
+            <div class="field" id="consent-field" style="display:none;">
+              <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400;">
+                <input type="checkbox" id="auth-consent" style="margin-top:3px;">
+                <span style="font-size:12px;color:var(--ink-quiet);line-height:1.4;">Согласен(на) с <a href="privacy.html" target="_blank" style="color:var(--accent);">политикой конфиденциальности</a> и обработкой персональных данных, включая геолокацию</span>
+              </label>
             </div>
             <div class="msg-line err" id="auth-error" style="display:none;"></div>
             <button class="primary-btn" id="auth-submit-btn">Войти</button>
@@ -558,6 +564,7 @@
             <h2>Рядом с тобой</h2>
             <div class="sub" id="map-sub">Загружаю…</div>
           </div>
+          <div class="map-district" id="map-district"></div>
           <div class="filter-row" id="map-filter">
             <span class="filter-chip on" data-val="Все">Все</span>
             <span class="filter-chip" data-val="Гитара">Гитара</span>
@@ -657,6 +664,10 @@
               <h2>Чаты</h2>
               <div class="sub">Переписка открывается только после взаимного «интересно»</div>
             </div>
+            <div id="likes-you-row" style="display:none;padding:0 18px 10px;flex-shrink:0;">
+              <div class="section-title" style="margin:0 0 8px;">Тобой заинтересовались</div>
+              <div id="likes-you-list" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;"></div>
+            </div>
             <div class="scroll" id="chat-list-scroll">
               <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.</div>
               <div id="chat-list-items"></div>
@@ -690,6 +701,7 @@
           </button>
           <button class="tab-btn" data-screen="s-chat">
             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.9 8.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+            <span class="tab-badge" id="chat-tab-badge">0</span>
             Чат
           </button>
           <button class="tab-btn" data-screen="s-profile">
@@ -697,9 +709,6 @@
             Профиль
           </button>
         </div>
-      </div>
-    </div>
-    <div class="caption">Меню внизу телефона: карта · поиск · чат · профиль</div>
   </div>
 </div>
 
@@ -738,6 +747,11 @@
   let unsubscribeMessages = null;
   let unsubscribeChatList = null;
   window.__mapProfiles = [];
+  let myOutgoingLikeUids = new Set();
+  let incomingLikesRaw = [];
+  let likerProfilesCache = new Map();
+  let unsubscribeOutgoingLikes = null;
+  let unsubscribeIncomingLikes = null;
 
   /* ---------- helpers ---------- */
   function $(id){ return document.getElementById(id); }
@@ -831,6 +845,7 @@
     $('auth-submit-btn').textContent = authMode === 'login' ? 'Войти' : 'Создать аккаунт';
     $('auth-toggle-btn').textContent = authMode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
     $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
+    $('consent-field').style.display = authMode === 'register' ? 'block' : 'none';
     hideAuthError();
   });
 
@@ -839,6 +854,7 @@
     const email = $('auth-email').value.trim();
     const password = $('auth-password').value;
     if (!email || !password){ showAuthError('Заполни email и пароль.'); return; }
+    if (authMode === 'register' && !$('auth-consent').checked){ showAuthError('Нужно согласие на обработку персональных данных.'); return; }
     const btn = $('auth-submit-btn');
     btn.disabled = true; btn.textContent = 'Подожди…';
     try {
@@ -859,6 +875,11 @@
     currentUser = user;
     if (!user){
       currentProfile = null;
+      if (unsubscribeOutgoingLikes){ unsubscribeOutgoingLikes(); unsubscribeOutgoingLikes = null; }
+      if (unsubscribeIncomingLikes){ unsubscribeIncomingLikes(); unsubscribeIncomingLikes = null; }
+      myOutgoingLikeUids = new Set();
+      incomingLikesRaw = [];
+      updateLikesBadge(0);
       $('tabbar').style.display = 'none';
       $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
       setActiveScreen('s-auth');
@@ -872,6 +893,7 @@
         editingProfile = false;
         setActiveScreen('s-map');
         loadMap();
+        subscribeLikeWatchers();
       } else {
         currentProfile = null;
         $('tabbar').style.display = 'none';
@@ -1000,6 +1022,7 @@
       return;
     }
     const me = currentProfile;
+    updateDistrictLabel(me.lat, me.lng);
     const withDist = profiles.map(p => ({
       ...p,
       dist: haversineKm(me.lat, me.lng, p.lat, p.lng),
@@ -1185,6 +1208,106 @@
       btn.textContent = 'Мне интересно';
     }
   });
+
+  function subscribeLikeWatchers(){
+    if (unsubscribeOutgoingLikes) unsubscribeOutgoingLikes();
+    if (unsubscribeIncomingLikes) unsubscribeIncomingLikes();
+    const outQ = query(collection(db, 'likes'), where('from', '==', currentUser.uid));
+    unsubscribeOutgoingLikes = onSnapshot(outQ, (snap) => {
+      myOutgoingLikeUids = new Set(snap.docs.map(d => d.data().to));
+      renderIncomingLikes();
+    }, (err) => console.error(err));
+    const inQ = query(collection(db, 'likes'), where('to', '==', currentUser.uid));
+    unsubscribeIncomingLikes = onSnapshot(inQ, (snap) => {
+      incomingLikesRaw = snap.docs.map(d => d.data());
+      renderIncomingLikes();
+    }, (err) => console.error(err));
+  }
+
+  function getSeenLikeUids(){
+    try { return new Set(JSON.parse(localStorage.getItem('sn_seen_likes') || '[]')); }
+    catch(e){ return new Set(); }
+  }
+  function markLikeSeen(uid){
+    try {
+      const seen = getSeenLikeUids();
+      seen.add(uid);
+      localStorage.setItem('sn_seen_likes', JSON.stringify([...seen]));
+    } catch(e){}
+  }
+
+  function updateLikesBadge(pendingCount){
+    const badge = $('chat-tab-badge');
+    if (!badge) return;
+    if (pendingCount > 0){
+      badge.textContent = pendingCount > 9 ? '9+' : String(pendingCount);
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  }
+
+  async function renderIncomingLikes(){
+    if (!currentUser) return;
+    const pending = incomingLikesRaw.filter(l => l.from && !myOutgoingLikeUids.has(l.from));
+    const seen = getSeenLikeUids();
+    const unseenCount = pending.filter(l => !seen.has(l.from)).length;
+    updateLikesBadge(unseenCount);
+
+    const row = $('likes-you-row');
+    const list = $('likes-you-list');
+    if (!row || !list) return;
+    if (pending.length === 0){ row.style.display = 'none'; return; }
+    row.style.display = 'block';
+    list.innerHTML = '';
+    for (const like of pending){
+      const uid = like.from;
+      let profile = likerProfilesCache.get(uid);
+      if (!profile){
+        try {
+          const snap = await getDoc(doc(db, 'profiles', uid));
+          if (!snap.exists()) continue;
+          profile = { uid, ...snap.data() };
+          likerProfilesCache.set(uid, profile);
+        } catch (err){ console.error(err); continue; }
+      }
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;cursor:pointer;';
+      item.innerHTML = `
+        <div class="avatar ${avatarClassFor(uid)}" style="width:48px;height:48px;font-size:17px;">${escapeHtml(initialsFor(profile))}</div>
+        <div style="font-size:10.5px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56px;">${escapeHtml(profile.name || '?')}</div>
+      `;
+      item.addEventListener('click', async () => {
+        markLikeSeen(uid);
+        renderIncomingLikes();
+        await openOtherProfile(profile);
+      });
+      list.appendChild(item);
+    }
+  }
+
+  /* ---------- district label (обратный геокодинг) ---------- */
+  async function updateDistrictLabel(lat, lng){
+    const el = $('map-district');
+    if (!el) return;
+    const cacheKey = 'sn_district_' + lat.toFixed(2) + '_' + lng.toFixed(2);
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached){ el.innerHTML = '<span class="dot"></span>' + escapeHtml(cached); el.classList.add('show'); return; }
+    } catch(e){}
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ru&zoom=14`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const a = data.address || {};
+      const district = a.suburb || a.city_district || a.borough || a.neighbourhood || a.city || a.town || null;
+      if (district){
+        el.innerHTML = '<span class="dot"></span>' + escapeHtml(district);
+        el.classList.add('show');
+        try { localStorage.setItem(cacheKey, district); } catch(e){}
+      }
+    } catch (err){ console.error(err); }
+  }
 
   $('p-edit-btn').addEventListener('click', () => {
     prepareAnketaForm(true);
