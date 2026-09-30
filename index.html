@@ -246,6 +246,7 @@
     width:44px;height:44px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
     font-weight:700;font-size:15px;color:#fff;flex-shrink:0;
+    overflow:hidden;
   }
   .a1{background:linear-gradient(135deg,#2E8B6E,#1F5C4A);}
   .a2{background:linear-gradient(135deg,#33c17a,#1e8f57);}
@@ -502,6 +503,17 @@
             <div class="sub" id="anketa-sub">Расскажи о себе — это займёт минуту</div>
           </div>
           <div class="scroll">
+            <div class="msg-line muted" id="anketa-verify-notice" style="display:none;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:16px;">Мы отправили письмо для подтверждения на твой email — можно проверить позже, это не мешает пользоваться приложением.</div>
+            <div class="field">
+              <label>Фото профиля (необязательно)</label>
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div class="avatar a1" id="f-avatar-preview" style="width:64px;height:64px;font-size:22px;">?</div>
+                <div style="flex:1;">
+                  <input type="file" id="f-avatar-input" accept="image/*" style="font-size:12px;color:var(--ink-quiet);max-width:100%;">
+                  <div class="msg-line muted" id="f-avatar-status" style="display:none;margin-top:6px;text-align:left;"></div>
+                </div>
+              </div>
+            </div>
             <div class="field">
               <label>Имя</label>
               <input class="text-input" type="text" id="f-name" placeholder="Как тебя зовут?">
@@ -650,6 +662,9 @@
               <button class="save" id="p-like-btn" style="width:100%;">Мне интересно</button>
               <button class="msg" id="p-msg-btn" style="width:100%;display:none;">Написать</button>
             </div>
+            <div id="p-actions-other-report" style="display:none;text-align:center;margin-top:10px;">
+              <button id="p-report-btn" style="background:none;border:none;color:var(--ink-quiet);font-size:12px;cursor:pointer;text-decoration:underline;">⚑ Пожаловаться</button>
+            </div>
             <div class="contact-btn" id="p-actions-own" style="display:none;">
               <button class="save" id="p-edit-btn">Редактировать</button>
               <button class="msg" id="p-logout-btn" style="background:#3a2630;">Выйти</button>
@@ -681,8 +696,10 @@
                 <h4 id="chat-name">—</h4>
                 <div class="status">чат</div>
               </div>
+              <button id="chat-report-btn" title="Пожаловаться" style="margin-left:auto;background:none;border:none;color:var(--ink-quiet);font-size:17px;cursor:pointer;padding:4px 6px;">⚑</button>
             </div>
             <div class="scroll chat-scroll" id="chat-messages"></div>
+            <div class="msg-line err" id="chat-input-error" style="display:none;margin:0 14px 6px;"></div>
             <div class="chat-input">
               <input class="box" id="chat-input-field" placeholder="Сообщение…">
               <button class="send" id="chat-send-btn"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></button>
@@ -712,11 +729,31 @@
   </div>
 </div>
 
+<div id="report-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:360px;width:100%;">
+    <h3 style="margin:0 0 4px;font-size:16px;">Пожаловаться</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;">Жалоба уходит модератору вручную — ответа в приложении не будет.</div>
+    <div class="chips" id="report-reasons" style="margin-bottom:14px;">
+      <span class="chip" data-val="Спам">Спам</span>
+      <span class="chip" data-val="Оскорбления/буллинг">Оскорбления/буллинг</span>
+      <span class="chip" data-val="Экстремистские материалы">Экстремистские материалы</span>
+      <span class="chip" data-val="Мошенничество">Мошенничество</span>
+      <span class="chip" data-val="Другое">Другое</span>
+    </div>
+    <textarea class="text-input" id="report-comment" placeholder="Необязательный комментарий" style="margin-bottom:14px;"></textarea>
+    <div class="msg-line err" id="report-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="report-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn" id="report-submit-btn" style="margin-top:0;">Отправить</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut
+    onAuthStateChanged, signOut, sendEmailVerification
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
   import {
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs,
@@ -736,6 +773,8 @@
   const db = getFirestore(app);
 
   const MAP_RADIUS_KM = 25;
+  const CLOUDINARY_CLOUD_NAME = 'ngs9uhfn';
+  const CLOUDINARY_UPLOAD_PRESET = 'ac7544b3-33c8-4825-8b39-4814bc16df36';
 
   let currentUser = null;
   let currentProfile = null;
@@ -744,6 +783,7 @@
   let currentMapFilter = 'Все';
   let viewedOtherProfile = null;
   let activeChatId = null;
+  let activeChatOtherUid = null;
   let unsubscribeMessages = null;
   let unsubscribeChatList = null;
   window.__mapProfiles = [];
@@ -752,6 +792,10 @@
   let likerProfilesCache = new Map();
   let unsubscribeOutgoingLikes = null;
   let unsubscribeIncomingLikes = null;
+  let pendingAvatarUrl = null;
+  let justRegistered = false;
+  let reportTargetUid = null;
+  let reportTargetChatId = null;
 
   /* ---------- helpers ---------- */
   function $(id){ return document.getElementById(id); }
@@ -784,6 +828,48 @@
   function initialsFor(p){
     if (p.instruments && p.instruments[0]) return p.instruments[0][0].toUpperCase();
     return (p.name || '?')[0].toUpperCase();
+  }
+  function avatarInnerHtml(p){
+    return (p && p.avatarUrl)
+      ? '<img src="' + escapeHtml(p.avatarUrl) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">'
+      : escapeHtml(initialsFor(p || {}));
+  }
+
+  /* ---------- фильтр контента: экстремизм + буллинг ---------- */
+  const EXTREMISM_PATTERNS = [
+    'игил', 'исис', 'aль-каида', 'аль-каида', 'аль каида', 'ауе', 'а.у.е',
+    'мизантропик division', 'мизантропик дивижн', 'колумбайн', 'скулшутинг', 'скул шутинг',
+    'талибан', 'хизб ут-тахрир', 'хизб ут тахрир', 'нацбат',
+    'зига', 'зиг хайль', 'sieg heil', '14/88', '1488',
+    'россия для русских', 'смерть хачам', 'бей хачей', 'бей чурок', 'бей жидов',
+    'резать русских', 'джихад против', 'газават'
+  ];
+  const BULLYING_INSULTS = [
+    'тварь', 'урод', 'ублюдок', 'дебил', 'даун', 'ничтожество',
+    'конченая', 'конченый', 'отброс', 'мразь', 'чмо', 'позорище'
+  ];
+  const BULLYING_THREATS = [
+    'убью', 'сдохни', 'найду и', 'пожалеешь', 'проучу', 'закопаю', 'урою', 'зарежу'
+  ];
+  function normalizeForFilter(text){
+    return String(text || '').toLowerCase().replace(/ё/g, 'е');
+  }
+  function containsAny(normalized, list){
+    return list.some(marker => normalized.includes(marker));
+  }
+  function checkContentSafety(rawText){
+    const text = normalizeForFilter(rawText);
+    if (!text) return { ok: true };
+    if (containsAny(text, EXTREMISM_PATTERNS)){
+      return { ok: false, reason: 'Текст похож на экстремистские материалы — сохранение заблокировано.' };
+    }
+    const hasInsult = containsAny(text, BULLYING_INSULTS);
+    const hasThreat = containsAny(text, BULLYING_THREATS);
+    const hasDirectAddress = /\bты\b/.test(text) || /\bтебя\b/.test(text) || /\bтебе\b/.test(text);
+    if ((hasInsult && hasDirectAddress) || hasThreat){
+      return { ok: false, reason: 'Похоже на оскорбление или угрозу в чей-то адрес — сохранение заблокировано. Мат сам по себе не запрещён.' };
+    }
+    return { ok: true };
   }
 
   function setActiveScreen(id){
@@ -861,7 +947,9 @@
       if (authMode === 'login'){
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        justRegistered = true;
+        sendEmailVerification(cred.user).catch(err => console.error(err));
       }
     } catch (err){
       showAuthError(mapAuthError(err));
@@ -898,6 +986,8 @@
         currentProfile = null;
         $('tabbar').style.display = 'none';
         prepareAnketaForm(false);
+        $('anketa-verify-notice').style.display = justRegistered ? 'block' : 'none';
+        justRegistered = false;
         setActiveScreen('s-anketa');
       }
     } catch (err){
@@ -918,6 +1008,7 @@
       setChipValues('f-genres', currentProfile.genres || []);
       setChipValues('f-goal', currentProfile.goal || null);
       $('f-bio').value = currentProfile.bio || '';
+      pendingAvatarUrl = currentProfile.avatarUrl || null;
     } else {
       $('f-name').value = '';
       $('f-age').value = '';
@@ -926,10 +1017,42 @@
       setChipValues('f-genres', []);
       setChipValues('f-goal', null);
       $('f-bio').value = '';
+      pendingAvatarUrl = null;
     }
+    $('f-avatar-input').value = '';
+    $('f-avatar-status').style.display = 'none';
+    const preview = $('f-avatar-preview');
+    preview.className = 'avatar a1';
+    preview.style.width = '64px'; preview.style.height = '64px'; preview.style.fontSize = '22px';
+    preview.innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl, name: (isEdit && currentProfile) ? currentProfile.name : '' });
     hideAnketaMsgs();
     editingProfile = isEdit;
   }
+
+  $('f-avatar-input').addEventListener('change', async () => {
+    const file = $('f-avatar-input').files[0];
+    if (!file) return;
+    const statusEl = $('f-avatar-status');
+    statusEl.style.display = 'block';
+    statusEl.textContent = 'Загружаю фото…';
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('upload failed: ' + res.status);
+      const data = await res.json();
+      pendingAvatarUrl = data.secure_url;
+      $('f-avatar-preview').innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl });
+      statusEl.textContent = 'Фото загружено.';
+    } catch (err){
+      console.error(err);
+      statusEl.textContent = 'Не удалось загрузить фото. Можно продолжить без него.';
+    }
+  });
   function showAnketaError(msg){ $('anketa-error').textContent = msg; $('anketa-error').style.display = 'block'; $('anketa-status').style.display = 'none'; }
   function showAnketaStatus(msg){ $('anketa-status').textContent = msg; $('anketa-status').style.display = 'block'; $('anketa-error').style.display = 'none'; }
   function hideAnketaMsgs(){ $('anketa-error').style.display = 'none'; $('anketa-status').style.display = 'none'; }
@@ -960,6 +1083,8 @@
     if (instruments.length === 0){ showAnketaError('Выбери хотя бы один инструмент.'); return; }
     if (!level){ showAnketaError('Выбери уровень.'); return; }
     if (!goal){ showAnketaError('Выбери цель.'); return; }
+    const bioCheck = checkContentSafety(bio);
+    if (!bioCheck.ok){ showAnketaError(bioCheck.reason); return; }
 
     const btn = $('anketa-submit-btn');
     btn.disabled = true;
@@ -979,6 +1104,7 @@
         uid: currentUser.uid,
         email: currentUser.email,
         name, age, instruments, level, genres, goal, bio,
+        avatarUrl: pendingAvatarUrl || null,
         lat: coords.lat, lng: coords.lng,
         updatedAt: serverTimestamp(),
       };
@@ -1047,7 +1173,9 @@
       pin.className = 'pin ' + avatarClassFor(p.uid);
       pin.style.left = leftPct + '%';
       pin.style.top = topPct + '%';
-      pin.innerHTML = '<span>' + escapeHtml(initialsFor(p)) + '</span>';
+      pin.innerHTML = p.avatarUrl
+        ? '<span style="display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;transform:rotate(45deg);"><img src="' + escapeHtml(p.avatarUrl) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></span>'
+        : '<span>' + escapeHtml(initialsFor(p)) + '</span>';
       pin.title = p.name || '';
       pin.addEventListener('click', () => openOtherProfile(p));
       mapArea.appendChild(pin);
@@ -1109,7 +1237,7 @@
       card.style.cursor = 'pointer';
       card.innerHTML = `
         <div class="card-top">
-          <div class="avatar ${avatarClassFor(p.uid)}">${escapeHtml(initialsFor(p))}</div>
+          <div class="avatar ${avatarClassFor(p.uid)}">${avatarInnerHtml(p)}</div>
           <div>
             <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.age ? ' · '+p.age : ''}</div>
             <div class="card-meta">${escapeHtml((p.instruments||[]).join(', ') || '—')}</div>
@@ -1126,7 +1254,7 @@
   /* ---------- profile view ---------- */
   function renderProfileCommon(p, locText){
     $('p-avatar').className = 'avatar ' + avatarClassFor(p.uid);
-    $('p-avatar').textContent = initialsFor(p);
+    $('p-avatar').innerHTML = avatarInnerHtml(p);
     $('p-name').textContent = p.name + (p.age ? ', ' + p.age : '');
     $('p-loc').textContent = locText;
     $('p-age').textContent = p.age || '—';
@@ -1141,6 +1269,7 @@
     if (!currentProfile) return;
     renderProfileCommon(currentProfile, 'Екатеринбург');
     $('p-actions-other').style.display = 'none';
+    $('p-actions-other-report').style.display = 'none';
     $('p-actions-own').style.display = 'flex';
     setActiveScreen('s-profile');
   }
@@ -1150,6 +1279,7 @@
     const locText = (typeof p.dist === 'number') ? p.dist.toFixed(1) + ' км от тебя' : '';
     renderProfileCommon(p, locText);
     $('p-actions-other').style.display = 'flex';
+    $('p-actions-other-report').style.display = 'block';
     $('p-actions-own').style.display = 'none';
     setActiveScreen('s-profile');
     await refreshLikeButton(p.uid);
@@ -1274,7 +1404,7 @@
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;cursor:pointer;';
       item.innerHTML = `
-        <div class="avatar ${avatarClassFor(uid)}" style="width:48px;height:48px;font-size:17px;">${escapeHtml(initialsFor(profile))}</div>
+        <div class="avatar ${avatarClassFor(uid)}" style="width:48px;height:48px;font-size:17px;">${avatarInnerHtml(profile)}</div>
         <div style="font-size:10.5px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56px;">${escapeHtml(profile.name || '?')}</div>
       `;
       item.addEventListener('click', async () => {
@@ -1338,6 +1468,7 @@
         await setDoc(chatRef, {
           participants: [currentUser.uid, otherProfile.uid],
           participantNames: { [currentUser.uid]: currentProfile.name, [otherProfile.uid]: otherProfile.name },
+          participantAvatars: { [currentUser.uid]: currentProfile.avatarUrl || null, [otherProfile.uid]: otherProfile.avatarUrl || null },
           createdAt: serverTimestamp(),
           lastMessage: '',
           lastMessageAt: serverTimestamp(),
@@ -1346,17 +1477,19 @@
     } catch (err){
       console.error(err);
     }
-    openChatThread(cid, otherProfile.uid, otherProfile.name);
+    openChatThread(cid, otherProfile.uid, otherProfile.name, otherProfile.avatarUrl);
   }
 
-  function openChatThread(chatId, otherUid, otherName){
+  function openChatThread(chatId, otherUid, otherName, otherAvatarUrl){
     activeChatId = chatId;
+    activeChatOtherUid = otherUid;
     $('chat-list-view').style.display = 'none';
     $('chat-thread-view').style.display = 'flex';
     $('chat-name').textContent = otherName || 'Без имени';
     const av = $('chat-avatar');
     av.className = 'avatar ' + avatarClassFor(otherUid);
-    av.textContent = (otherName || '?')[0].toUpperCase();
+    av.innerHTML = avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName });
+    $('chat-input-error').style.display = 'none';
     setActiveScreen('s-chat');
     subscribeMessages(chatId);
   }
@@ -1384,10 +1517,22 @@
     openChatList();
   });
 
+  function showChatInputError(msg){
+    const el = $('chat-input-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideChatInputError(){
+    $('chat-input-error').style.display = 'none';
+  }
+
   async function sendMessage(){
     const field = $('chat-input-field');
     const text = field.value.trim();
     if (!text || !activeChatId) return;
+    hideChatInputError();
+    const safety = checkContentSafety(text);
+    if (!safety.ok){ showChatInputError(safety.reason); return; }
     field.value = '';
     try {
       await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
@@ -1435,20 +1580,75 @@
       items.forEach(chat => {
         const otherUid = chat.participants.find(u => u !== currentUser.uid);
         const otherName = (chat.participantNames && chat.participantNames[otherUid]) || 'Без имени';
+        const otherAvatarUrl = (chat.participantAvatars && chat.participantAvatars[otherUid]) || null;
         const row = document.createElement('div');
         row.className = 'chat-list-item';
         row.innerHTML = `
-          <div class="avatar ${avatarClassFor(otherUid)}">${escapeHtml(otherName[0].toUpperCase())}</div>
+          <div class="avatar ${avatarClassFor(otherUid)}">${avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName })}</div>
           <div class="meta">
             <div class="name">${escapeHtml(otherName)}</div>
             <div class="preview">${escapeHtml(chat.lastMessage || 'Начните диалог')}</div>
           </div>
         `;
-        row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName));
+        row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName, otherAvatarUrl));
         container.appendChild(row);
       });
     }, (err) => console.error(err));
   }
+
+  /* ---------- жалобы ---------- */
+  wireChipGroup('report-reasons', 'single');
+
+  function openReportModal(targetUid, chatId){
+    if (!targetUid) return;
+    reportTargetUid = targetUid;
+    reportTargetChatId = chatId || null;
+    $('report-comment').value = '';
+    $('report-error').style.display = 'none';
+    setChipValues('report-reasons', []);
+    $('report-modal-overlay').style.display = 'flex';
+  }
+  function closeReportModal(){
+    $('report-modal-overlay').style.display = 'none';
+  }
+  $('report-cancel-btn').addEventListener('click', closeReportModal);
+  $('report-submit-btn').addEventListener('click', async () => {
+    const reason = getChipValues('report-reasons')[0];
+    if (!reason){
+      $('report-error').textContent = 'Выбери причину.';
+      $('report-error').style.display = 'block';
+      return;
+    }
+    if (!reportTargetUid || !currentUser) return;
+    const btn = $('report-submit-btn');
+    btn.disabled = true;
+    try {
+      const payload = {
+        reporterId: currentUser.uid,
+        targetUid: reportTargetUid,
+        reason,
+        comment: $('report-comment').value.trim(),
+        createdAt: serverTimestamp(),
+      };
+      if (reportTargetChatId) payload.chatId = reportTargetChatId;
+      await addDoc(collection(db, 'reports'), payload);
+      closeReportModal();
+    } catch (err){
+      console.error(err);
+      $('report-error').textContent = 'Не удалось отправить жалобу. Попробуй ещё раз.';
+      $('report-error').style.display = 'block';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $('p-report-btn').addEventListener('click', () => {
+    if (!viewedOtherProfile) return;
+    openReportModal(viewedOtherProfile.uid);
+  });
+  $('chat-report-btn').addEventListener('click', () => {
+    if (!activeChatOtherUid) return;
+    openReportModal(activeChatOtherUid, activeChatId);
+  });
 
   /* ---------- tabbar ---------- */
   document.querySelectorAll('.tab-btn').forEach(btn => {
