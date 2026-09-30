@@ -316,6 +316,10 @@
   .pin span{transform:rotate(45deg);}
   .pin.band{border:2px solid var(--accent-2);}
   .band-badge{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent-2);border:1px solid var(--accent-2);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle;}
+  .skill-detail-row{margin-top:10px;}
+  .skill-detail-row .sd-title{font-size:11.5px;color:var(--ink-quiet);margin-bottom:6px;}
+  .chip.small{padding:6px 11px;font-size:12px;}
+  .tag.goal{color:var(--accent-2);}
   .tag.match{background:rgba(46,139,110,.2);color:var(--accent);font-weight:600;}
   .filter-row{
     display:flex;gap:8px;overflow-x:auto;
@@ -608,23 +612,30 @@
               <div class="district-chip-note">Подсказка: ВИЗ — Верх-Исетский, Уралмаш и Эльмаш — Орджоникидзевский, Втузгородок — Кировский, Юго-Запад — Ленинский, Ботаника и Химмаш — Чкаловский, Сортировка — Железнодорожный, Синие Камни — Октябрьский.</div>
             </div>
             <div class="field">
-              <label id="f-instr-label">Инструменты</label>
+              <label id="f-instr-label">Что умеешь</label>
               <div class="chips" id="f-instruments">
                 <span class="chip" data-val="Гитара">Гитара</span>
-                <span class="chip" data-val="Вокал">Вокал</span>
-                <span class="chip" data-val="Барабаны">Барабаны</span>
                 <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
                 <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
               </div>
+              <div id="f-skill-details"></div>
             </div>
             <div class="field" id="f-needs-field" style="display:none;">
               <label>Кого ищете</label>
               <div class="chips" id="f-needs">
                 <span class="chip" data-val="Гитара">Гитара</span>
-                <span class="chip" data-val="Вокал">Вокал</span>
-                <span class="chip" data-val="Барабаны">Барабаны</span>
                 <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
                 <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
               </div>
             </div>
             <div class="field">
@@ -648,11 +659,13 @@
               </div>
             </div>
             <div class="field">
-              <label>Цель</label>
+              <label>Цели (до трёх)</label>
               <div class="chips" id="f-goal">
-                <span class="chip" data-val="Собрать группу">Собрать группу</span>
-                <span class="chip" data-val="Джемы">Джемы</span>
-                <span class="chip" data-val="Уроки">Уроки</span>
+                <span class="chip" data-val="Играть в группе">Играть в группе</span>
+                <span class="chip" data-val="Поджемить">Поджемить</span>
+                <span class="chip" data-val="Записать трек">Записать трек</span>
+                <span class="chip" data-val="Выступать и подрабатывать">Выступать и подрабатывать</span>
+                <span class="chip" data-val="Прокачаться">Прокачаться</span>
               </div>
             </div>
             <div class="field">
@@ -687,6 +700,9 @@
             <span class="filter-chip" data-val="Барабаны">Барабаны</span>
             <span class="filter-chip" data-val="Бас">Бас</span>
             <span class="filter-chip" data-val="Клавиши">Клавиши</span>
+            <span class="filter-chip" data-val="Струнные">Струнные</span>
+            <span class="filter-chip" data-val="Духовые">Духовые</span>
+            <span class="filter-chip" data-val="За пультом">За пультом</span>
             <span class="filter-chip" data-val="Группы">Группы</span>
           </div>
           <div class="map-area" id="map-area">
@@ -711,13 +727,16 @@
               </div>
             </div>
             <div class="field">
-              <label>Инструмент</label>
+              <label>Что умеет</label>
               <div class="chips" id="sf-instrument">
                 <span class="chip" data-val="Гитара">Гитара</span>
                 <span class="chip" data-val="Бас">Бас</span>
                 <span class="chip" data-val="Барабаны">Барабаны</span>
-                <span class="chip" data-val="Вокал">Вокал</span>
                 <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
               </div>
             </div>
             <div class="field">
@@ -731,9 +750,11 @@
             <div class="field">
               <label>Цель</label>
               <div class="chips" id="sf-goal">
-                <span class="chip" data-val="Собрать группу">Собрать группу</span>
-                <span class="chip" data-val="Джемы">Джемы</span>
-                <span class="chip" data-val="Уроки">Уроки</span>
+                <span class="chip" data-val="Играть в группе">Играть в группе</span>
+                <span class="chip" data-val="Поджемить">Поджемить</span>
+                <span class="chip" data-val="Записать трек">Записать трек</span>
+                <span class="chip" data-val="Выступать и подрабатывать">Выступать и подрабатывать</span>
+                <span class="chip" data-val="Прокачаться">Прокачаться</span>
               </div>
             </div>
             <div class="field">
@@ -769,7 +790,7 @@
             </div>
             <div class="section-title">О себе</div>
             <div class="bio-text" id="p-bio">—</div>
-            <div class="section-title">Инструменты и жанры</div>
+            <div class="section-title">Что умеет и чего хочет</div>
             <div class="card-tags" id="p-tags"></div>
             <div class="contact-btn" id="p-actions-other" style="display:none;">
               <button class="save" id="p-like-btn" style="width:100%;">Мне интересно</button>
@@ -940,6 +961,21 @@
   let reportTargetChatId = null;
   const APP_URL = 'https://buryakksusha-coder.github.io/svoy-nastroy-pwa/';
   const VISIBLE_DAYS = 30;
+  const SKILL_DETAILS = {
+    'Гитара': ['Акустика', 'Электро'],
+    'Барабаны': ['Перкуссия'],
+    'Клавиши': ['Пианино', 'Синтезатор', 'Сэмплы и MIDI'],
+    'Струнные': ['Скрипка', 'Альт', 'Виолончель', 'Контрабас'],
+    'Духовые': ['Саксофон', 'Труба', 'Тромбон', 'Флейта', 'Кларнет'],
+    'За пультом': ['Концертный звук', 'Сведение и запись'],
+  };
+  const OLD_GOALS = { 'Собрать группу': 'Играть в группе', 'Джемы': 'Поджемить', 'Уроки': 'Прокачаться' };
+  const MAX_GOALS = 3;
+  function goalsOf(p){
+    if (p && Array.isArray(p.goals) && p.goals.length) return p.goals;
+    if (p && p.goal) return [OLD_GOALS[p.goal] || p.goal];
+    return [];
+  }
   const DAY_MS = 24 * 60 * 60 * 1000;
   let blockedByMe = new Set();
   let blockedMe = new Set();
@@ -1087,9 +1123,31 @@
   }
 
   wireChipGroup('f-instruments', 'multi');
+  function renderSkillDetails(selectedDetails){
+    const wrap = $('f-skill-details');
+    const keep = new Set(selectedDetails || [...wrap.querySelectorAll('.chip.on')].map(c => c.dataset.val));
+    wrap.innerHTML = '';
+    getChipValues('f-instruments').forEach(skill => {
+      const subs = SKILL_DETAILS[skill];
+      if (!subs) return;
+      const row = document.createElement('div');
+      row.className = 'skill-detail-row';
+      row.innerHTML = '<div class="sd-title">' + escapeHtml(skill) + ' — уточни, если хочешь</div><div class="chips">' +
+        subs.map(v => '<span class="chip small' + (keep.has(v) ? ' on' : '') + '" data-val="' + escapeHtml(v) + '">' + escapeHtml(v) + '</span>').join('') + '</div>';
+      row.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+      wrap.appendChild(row);
+    });
+  }
+  document.querySelectorAll('#f-instruments .chip').forEach(c => c.addEventListener('click', () => renderSkillDetails()));
   wireChipGroup('f-level', 'single');
   wireChipGroup('f-genres', 'multi');
-  wireChipGroup('f-goal', 'single');
+  wireChipGroup('f-goal', 'multi');
+  document.querySelectorAll('#f-goal .chip').forEach(c => c.addEventListener('click', () => {
+    if (getChipValues('f-goal').length > MAX_GOALS){
+      c.classList.remove('on');
+      showToast('Можно выбрать до трёх целей');
+    }
+  }));
   wireChipGroup('f-district', 'single');
   wireChipGroup('f-kind', 'single');
   wireChipGroup('f-needs', 'multi');
@@ -1099,7 +1157,7 @@
     $('f-needs-field').style.display = band ? 'block' : 'none';
     $('f-name-label').textContent = band ? 'Название группы' : 'Имя';
     $('f-name').placeholder = band ? 'Как называется группа?' : 'Как тебя зовут?';
-    $('f-instr-label').textContent = band ? 'Кто уже есть в группе' : 'Инструменты';
+    $('f-instr-label').textContent = band ? 'Кто уже есть в группе' : 'Что умеешь';
     $('f-looking').placeholder = band ? 'Например: барабанщик, репетиции 2 раза в неделю на ВИЗе' : 'Например: барабанщик в кавер-группу, репетиции по выходным';
   }
   document.querySelectorAll('#f-kind .chip').forEach(c => c.addEventListener('click', applyKindUI));
@@ -1208,9 +1266,10 @@
       $('f-name').value = currentProfile.name || '';
       $('f-age').value = currentProfile.age || '';
       setChipValues('f-instruments', currentProfile.instruments || []);
+      renderSkillDetails(currentProfile.instrumentDetails || []);
       setChipValues('f-level', currentProfile.level || null);
       setChipValues('f-genres', currentProfile.genres || []);
-      setChipValues('f-goal', currentProfile.goal || null);
+      setChipValues('f-goal', goalsOf(currentProfile));
       setChipValues('f-district', currentProfile.district || null);
       $('f-bio').value = currentProfile.bio || '';
       $('f-looking').value = currentProfile.lookingFor || '';
@@ -1221,6 +1280,7 @@
       $('f-name').value = '';
       $('f-age').value = '';
       setChipValues('f-instruments', []);
+      renderSkillDetails([]);
       setChipValues('f-level', null);
       setChipValues('f-genres', []);
       setChipValues('f-goal', null);
@@ -1312,7 +1372,9 @@
     const kind = getAnketaKind();
     const needs = kind === 'band' ? getChipValues('f-needs') : [];
     const genres = getChipValues('f-genres');
-    const goal = getChipValues('f-goal')[0] || null;
+    const goals = getChipValues('f-goal').slice(0, MAX_GOALS);
+    const goal = goals[0] || null;
+    const instrumentDetails = [...document.querySelectorAll('#f-skill-details .chip.on')].map(c => c.dataset.val);
     const bio = $('f-bio').value.trim();
     const lookingFor = $('f-looking').value.trim().slice(0, 80);
     const district = getChipValues('f-district')[0] || null;
@@ -1320,9 +1382,9 @@
     if (!name){ showAnketaError(kind === 'band' ? 'Укажи название группы.' : 'Укажи имя.'); return; }
     if (kind === 'band' && needs.length === 0){ showAnketaError('Отметь, кого ищете в группу.'); return; }
     if (!age || !Number.isInteger(age) || age < 18 || age > 99){ showAnketaError('Сервис только для совершеннолетних — укажи корректный возраст (18+).'); return; }
-    if (instruments.length === 0){ showAnketaError('Выбери хотя бы один инструмент.'); return; }
+    if (instruments.length === 0){ showAnketaError('Отметь, что умеешь.'); return; }
     if (!level){ showAnketaError('Выбери уровень.'); return; }
-    if (!goal){ showAnketaError('Выбери цель.'); return; }
+    if (!goal){ showAnketaError('Выбери хотя бы одну цель.'); return; }
     if (!district){ showAnketaError('Выбери свой район.'); return; }
     const bioCheck = checkContentSafety(bio);
     if (!bioCheck.ok){ showAnketaError(bioCheck.reason); return; }
@@ -1346,7 +1408,7 @@
       const data = {
         uid: currentUser.uid,
         email: currentUser.email,
-        name, age, instruments, level, genres, goal, bio, district, lookingFor, kind, needs,
+        name, age, instruments, instrumentDetails, level, genres, goal, goals, bio, district, lookingFor, kind, needs,
         activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS,
         avatarUrl: pendingAvatarUrl || null,
         lat: coords.lat, lng: coords.lng,
@@ -1475,7 +1537,7 @@
       .filter(p => p.dist <= radius);
     if (instrument) list = list.filter(p => (p.instruments||[]).includes(instrument));
     if (level) list = list.filter(p => p.level === level);
-    if (goal) list = list.filter(p => p.goal === goal);
+    if (goal) list = list.filter(p => goalsOf(p).includes(goal));
     if (kindFilter) list = list.filter(p => (p.kind || 'musician') === kindFilter);
     list.sort((a,b) => a.dist - b.dist);
     renderSearchResults(list);
@@ -1489,7 +1551,7 @@
     }
     resultsEl.innerHTML = '';
     list.forEach(p => {
-      const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(p.goal ? [p.goal] : []);
+      const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(goalsOf(p));
       const myInstr = (currentProfile && currentProfile.instruments) || [];
       const wantsMe = p.kind === 'band' && (currentProfile && currentProfile.kind !== 'band') && (p.needs||[]).some(n => myInstr.includes(n));
       const card = document.createElement('div');
@@ -1527,10 +1589,12 @@
     $('p-looking').textContent = lookingParts.join(' · ');
     $('p-age').textContent = p.age || '—';
     $('p-level').textContent = p.level || '—';
-    $('p-goal').textContent = p.goal || '—';
+    const pGoals = goalsOf(p);
+    $('p-goal').textContent = pGoals.length ? pGoals[0] + (pGoals.length > 1 ? ' +' + (pGoals.length - 1) : '') : '—';
     $('p-bio').textContent = p.bio || 'Пока ничего не рассказал(а) о себе.';
-    const tags = (p.instruments||[]).concat(p.genres||[]);
-    $('p-tags').innerHTML = tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('') || '<span class="tag">—</span>';
+    const tags = (p.instruments||[]).concat(p.instrumentDetails||[]).concat(p.genres||[]);
+    $('p-tags').innerHTML = (tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('') +
+      pGoals.map(g=>'<span class="tag goal">'+escapeHtml(g)+'</span>').join('')) || '<span class="tag">—</span>';
   }
 
   function openOwnProfile(){
