@@ -831,6 +831,18 @@
               </div>
             </div>
             <div class="field">
+              <label>Жанр</label>
+              <div class="chips" id="sf-genre">
+                <span class="chip" data-val="Инди-рок">Инди-рок</span>
+                <span class="chip" data-val="Пост-панк">Пост-панк</span>
+                <span class="chip" data-val="Джаз">Джаз</span>
+                <span class="chip" data-val="Фолк">Фолк</span>
+                <span class="chip" data-val="Рок">Рок</span>
+                <span class="chip" data-val="Поп">Поп</span>
+                <span class="chip" data-val="Электроника">Электроника</span>
+              </div>
+            </div>
+            <div class="field">
               <label>Радиус</label>
               <div class="chips" id="sf-radius">
                 <span class="chip" data-val="1">1 км</span>
@@ -967,8 +979,8 @@
     </div>
     <div id="about-ios">
       <ol class="about-steps">
-        <li>Открой ссылку в <b>Safari</b>. В Chrome и встроенных браузерах (ВК, Telegram) на iPhone установка не работает.</li>
-        <li>Нажми «Поделиться» — квадрат со стрелкой вверх внизу экрана.</li>
+        <li>Открой ссылку в <b>Safari</b> или Chrome. Во встроенных браузерах (ВК, Telegram) установка не работает — там открой меню и выбери «Открыть в Safari».</li>
+        <li>Нажми «Поделиться» — квадрат со стрелкой вверх (в Safari он внизу экрана, в Chrome — в адресной строке).</li>
         <li>Пролистай меню и выбери <b>«На экран «Домой»»</b>.</li>
         <li>Нажми «Добавить» — иконка появится среди приложений.</li>
       </ol>
@@ -985,10 +997,11 @@
 
     <div class="section-title">Как это работает</div>
     <ol class="about-steps">
-      <li><b>Заполни анкету:</b> на чём играешь, уровень, жанры, чего ищешь. Добавь запись звучания — по желанию.</li>
-      <li><b>Смотри, кто рядом:</b> на карте или в поиске, с фильтрами по инструментам, жанрам и целям.</li>
+      <li><b>Заполни анкету:</b> на чём играешь, уровень, жанры, чего ищешь. По желанию добавь, как ты звучишь: запиши до 60 секунд прямо в приложении, загрузи аудиофайл или вставь ссылку на Яндекс Музыку, VK, YouTube и другие площадки.</li>
+      <li><b>Смотри, кто рядом:</b> на карте или в поиске. В поиске можно отфильтровать по тому, кто нужен, что умеет, уровню, цели, жанру и радиусу.</li>
       <li><b>Нажми «Мне интересно».</b> Если интерес взаимный — открывается чат. Спама в личку нет.</li>
     </ol>
+    <p class="q">Чтобы считать расстояния, браузер спросит доступ к геопозиции. Мы сохраняем только примерную точку (около 1 км): другие видят «≈ 2 км» и район, а не твой адрес. Не разрешишь — возьмём центр выбранного района.</p>
 
     <div class="section-title">Наш подход</div>
     <p>Приложение нужно, чтобы договориться и пойти играть, а не чтобы листать ленту. Поэтому здесь нет рекламы, бесконечного скролла и навязчивых уведомлений.</p>
@@ -1011,16 +1024,18 @@
     <div class="section-title">Частые вопросы</div>
     <div class="about-faq">
       <details><summary>Почему я никого не вижу?</summary><p>Приложение только запускается, и людей пока немного. Загляни в «Поиск», сними часть фильтров и позови знакомых музыкантов — кнопка «Пригласить» есть в Профиле.</p></details>
+      <details><summary>Зачем нужна геопозиция?</summary><p>Чтобы показать, кто рядом. Мы округляем её до примерно 1 км, а другим показываем расстояние вроде «≈ 2 км» и район. Если доступ закрыт, используем центр выбранного района. Разрешить доступ позже: на iPhone — Настройки → Конфиденциальность → Службы геолокации; на Android — значок слева от адреса сайта → Разрешения → Местоположение.</p></details>
+      <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и 15 МБ) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
       <details><summary>Как скрыть анкету?</summary><p>В Профиле есть карточка видимости. Нашёл группу — нажми «Я нашёл(ла) группу — скрыть меня». Вернуться можно в любой момент.</p></details>
-      <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и запись.</p></details>
-      <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки удаляются безвозвратно.</p></details>
+      <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Каждое сохранение продлевает показ анкеты ещё на 30 дней.</p></details>
+      <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись исчезают из приложения, но сами файлы могут остаться на сервере хранения (Cloudinary).</p></details>
       <details><summary>Нужно ли подтверждать почту?</summary><p>При регистрации мы отправляем письмо. Подтвердить можно позже — это не мешает пользоваться приложением.</p></details>
     </div>
 
     <div class="section-title">Связаться с нами</div>
     <p>Нашёл ошибку или есть идея — напиши:<br><a href="mailto:greenbergsound@gmail.com?subject=%D0%A1%D0%B2%D0%BE%D0%B9%20%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9" style="color:var(--accent);">greenbergsound@gmail.com</a></p>
 
-    <div class="about-foot">Свой Настрой · v1.1 · Екатеринбург</div>
+    <div class="about-foot">Свой Настрой · v1.2 · Екатеринбург</div>
   </div></div>
 </div>
 
@@ -1069,7 +1084,7 @@
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
   import {
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs,
-    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit, deleteDoc
+    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit, deleteDoc, deleteField
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1165,6 +1180,27 @@
     const y = Math.sin(λ2-λ1)*Math.cos(φ2);
     const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
     return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
+  }
+
+  /* ---------- приватность координат: храним только приблизительную точку (~1 км) ---------- */
+  const roundCoord = v => Number((Math.round(v * 100) / 100).toFixed(2));
+  const isRoughCoord = v => typeof v === 'number' && Math.abs(Math.round(v * 100) - v * 100) < 1e-6;
+  function fmtDist(km){ return km < 1 ? '< 1 км' : '≈ ' + Math.round(km) + ' км'; }
+  /* приблизительные центры районов — запасной вариант, если геопозиция недоступна */
+  const DISTRICT_CENTERS = {
+    'Академический': [56.79, 60.51], 'Верх-Исетский': [56.84, 60.54], 'Железнодорожный': [56.86, 60.61],
+    'Кировский': [56.83, 60.63], 'Ленинский': [56.84, 60.60], 'Октябрьский': [56.81, 60.61],
+    'Орджоникидзевский': [56.89, 60.61], 'Чкаловский': [56.79, 60.64],
+  };
+  function migratePrivacy(uid){
+    const p = currentProfile; if (!p) return;
+    const patch = {};
+    if ('email' in p){ patch.email = deleteField(); delete p.email; }
+    if (typeof p.lat === 'number' && typeof p.lng === 'number' && !(isRoughCoord(p.lat) && isRoughCoord(p.lng))){
+      p.lat = roundCoord(p.lat); p.lng = roundCoord(p.lng);
+      patch.lat = p.lat; patch.lng = p.lng;
+    }
+    if (Object.keys(patch).length) updateDoc(doc(db, 'profiles', uid), patch).catch(err => console.error(err));
   }
 
   const AVATAR_CLASSES = ['a1','a2','a3','a4','a5'];
@@ -1522,6 +1558,7 @@
       const snap = await getDoc(doc(db, 'profiles', user.uid));
       if (snap.exists()){
         currentProfile = { uid: user.uid, ...snap.data() };
+        migratePrivacy(user.uid);
         $('tabbar').style.display = 'flex';
         editingProfile = false;
         setActiveScreen('s-map');
@@ -1721,19 +1758,29 @@
     btn.disabled = true;
     showAnketaStatus('Определяю геопозицию…');
     let coords;
+    let usedFallback = false;
     try {
       coords = await getGeolocation();
     } catch (err){
-      btn.disabled = false;
-      showAnketaError('Не удалось получить геопозицию. Разреши доступ к местоположению в браузере и попробуй снова — без этого приложение не сможет находить музыкантов рядом.');
-      return;
+      const prev = currentProfile;
+      if (editingProfile && prev && typeof prev.lat === 'number' && prev.district === district){
+        coords = { lat: prev.lat, lng: prev.lng };
+      } else if (DISTRICT_CENTERS[district]){
+        coords = { lat: DISTRICT_CENTERS[district][0], lng: DISTRICT_CENTERS[district][1] };
+        usedFallback = true;
+      } else {
+        btn.disabled = false;
+        showAnketaError('Не удалось определить местоположение. Выбери район и попробуй ещё раз.');
+        return;
+      }
     }
+    coords = { lat: roundCoord(coords.lat), lng: roundCoord(coords.lng) };
 
     showAnketaStatus('Сохраняю…');
     try {
       const data = {
         uid: currentUser.uid,
-        email: currentUser.email,
+        email: deleteField(),
         name, age, instruments, instrumentDetails, level, genres, goal, goals, bio, district, lookingFor, kind, needs,
         activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS,
         avatarUrl: pendingAvatarUrl || null,
@@ -1745,6 +1792,7 @@
       };
       if (!editingProfile){ data.createdAt = serverTimestamp(); data.hidden = false; }
       await setDoc(doc(db, 'profiles', currentUser.uid), data, { merge: true });
+      if (usedFallback) showToast('Геопозиция недоступна — расстояния считаем от центра района.');
       const snap = await getDoc(doc(db, 'profiles', currentUser.uid));
       currentProfile = { uid: currentUser.uid, ...snap.data() };
       hideAnketaMsgs();
@@ -1841,6 +1889,7 @@
   wireChipGroup('sf-instrument', 'single');
   wireChipGroup('sf-level', 'single');
   wireChipGroup('sf-goal', 'single');
+  wireChipGroup('sf-genre', 'single');
   wireChipGroup('sf-radius', 'single');
   wireChipGroup('sf-kind', 'single');
 
@@ -1848,6 +1897,7 @@
     const instrument = getChipValues('sf-instrument')[0] || null;
     const level = getChipValues('sf-level')[0] || null;
     const goal = getChipValues('sf-goal')[0] || null;
+    const genre = getChipValues('sf-genre')[0] || null;
     const radius = Number(getChipValues('sf-radius')[0] || '25');
     const kindFilter = getChipValues('sf-kind')[0] || null;
 
@@ -1872,6 +1922,7 @@
     if (instrument) list = list.filter(p => (p.instruments||[]).includes(instrument));
     if (level) list = list.filter(p => p.level === level);
     if (goal) list = list.filter(p => goalsOf(p).includes(goal));
+    if (genre) list = list.filter(p => (p.genres || []).includes(genre));
     if (kindFilter) list = list.filter(p => (p.kind || 'musician') === kindFilter);
     list.sort((a,b) => a.dist - b.dist);
     renderSearchResults(list);
@@ -1911,7 +1962,7 @@
             <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.kind === 'band' ? '<span class="band-badge">группа</span>' : (p.age ? ' · '+p.age : '')}</div>
             <div class="card-meta">${escapeHtml((p.instruments||[]).join(', ') || '—')}${p.district ? ' · ' + escapeHtml(p.district) : ''}</div>
           </div>
-          <div class="dist">${p.dist.toFixed(1)} км</div>
+          <div class="dist">${fmtDist(p.dist)}</div>
         </div>
         ${p.kind === 'band' && (p.needs||[]).length ? '<div class="card-looking">Ищут: ' + escapeHtml(p.needs.join(', ')) + '</div>' : ''}
         ${p.lookingFor ? '<div class="card-looking">' + (p.kind === 'band' ? '' : 'Ищу: ') + escapeHtml(p.lookingFor) + '</div>' : ''}
@@ -1966,7 +2017,7 @@
 
   async function openOtherProfile(p){
     viewedOtherProfile = p;
-    const distText = (typeof p.dist === 'number') ? p.dist.toFixed(1) + ' км от тебя' : '';
+    const distText = (typeof p.dist === 'number') ? fmtDist(p.dist) + ' от тебя' : '';
     const locText = [p.district ? p.district + ' район' : '', distText].filter(Boolean).join(' · ');
     renderProfileCommon(p, locText);
     $('p-actions-other').style.display = 'flex';
@@ -2619,7 +2670,7 @@
       await addDoc(collection(db, 'cityRequests'), { city, createdAt: serverTimestamp() });
       try { localStorage.setItem('sn_city_sent', '1'); } catch (e){}
       $('about-city-input').value = '';
-      show('Записали «' + city + '». Спасибо — это поможет понять, куда расти дальше.');
+      show('Записали!');
     } catch (err){
       console.error(err);
       show('Не получилось отправить. Попробуй позже.');
