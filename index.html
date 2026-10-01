@@ -543,6 +543,10 @@
   .about-city .ghost-btn{white-space:normal;}
   .about-foot{text-align:center;color:var(--ink-quiet);font-size:11.5px;margin-top:22px;}
   .city-note{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 6px;font-size:12.5px;color:var(--ink-quiet);margin:0 0 14px;text-align:center;}
+  .install-hint{display:flex;align-items:center;gap:8px;margin:0 18px 10px;padding:10px 10px 10px 13px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;flex-shrink:0;}
+  .install-hint .ih-text{flex:1;min-width:0;font-size:12px;color:var(--ink-quiet);line-height:1.35;}
+  .install-hint .ih-text b{display:block;color:var(--ink);font-size:13px;margin-bottom:1px;}
+  .install-hint .ih-x{background:none;border:none;color:var(--ink-quiet);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px;font-family:inherit;}
   .res-head{display:flex;align-items:center;justify-content:space-between;scroll-margin-top:6px;}
   .res-head .quiet-link{text-transform:none;letter-spacing:0;font-weight:400;}
   .city-note .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;}
@@ -595,6 +599,7 @@
             <div class="field">
               <label>Пароль</label>
               <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 6 символов">
+              <div style="text-align:right;margin-top:4px;"><button class="quiet-link" id="auth-forgot-btn" type="button">Забыл пароль?</button></div>
             </div>
             <div class="field" id="consent-field" style="display:none;">
               <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400;">
@@ -603,6 +608,7 @@
               </label>
             </div>
             <div class="msg-line err" id="auth-error" style="display:none;"></div>
+            <div class="msg-line" id="auth-info" style="display:none;text-align:left;color:var(--good);margin:0 0 10px;"></div>
             <button class="primary-btn" id="auth-submit-btn">Войти</button>
             <button class="primary-btn" id="auth-toggle-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Нет аккаунта? Зарегистрироваться</button>
           </div>
@@ -754,6 +760,11 @@
             <button class="ghost-btn accent" id="map-invite-btn">+ Пригласить</button>
           </div>
           <div class="map-district" id="map-district"></div>
+          <div class="install-hint" id="install-hint" style="display:none;">
+            <div class="ih-text"><b>Установи на экран телефона</b><span>Откроется как обычное приложение — без браузера и без поиска ссылки</span></div>
+            <button class="ghost-btn accent" id="install-hint-open" type="button">Как</button>
+            <button class="ih-x" id="install-hint-close" type="button" aria-label="Закрыть">×</button>
+          </div>
           <div class="map-hidden-note" id="map-hidden-note">Твоя анкета сейчас скрыта от других · открыть профиль</div>
           <div class="filter-row" id="map-filter">
             <span class="filter-chip on" data-val="Все">Все</span>
@@ -1053,7 +1064,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut, sendEmailVerification,
+    onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail,
     EmailAuthProvider, reauthenticateWithCredential, deleteUser
   } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
   import {
@@ -1071,6 +1082,7 @@
   };
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  auth.languageCode = 'ru';
   const db = getFirestore(app);
 
   const MAP_RADIUS_KM = 25;
@@ -1410,7 +1422,7 @@
 
   /* ---------- auth ---------- */
   function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
-  function hideAuthError(){ $('auth-error').style.display = 'none'; }
+  function hideAuthError(){ $('auth-error').style.display = 'none'; $('auth-info').style.display = 'none'; }
 
   function mapAuthError(err){
     const code = err && err.code;
@@ -1433,7 +1445,34 @@
     $('auth-toggle-btn').textContent = authMode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
     $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
     $('consent-field').style.display = authMode === 'register' ? 'block' : 'none';
+    $('auth-forgot-btn').style.display = authMode === 'login' ? 'inline-block' : 'none';
     hideAuthError();
+  });
+
+  $('auth-forgot-btn').addEventListener('click', async () => {
+    hideAuthError();
+    const email = $('auth-email').value.trim();
+    if (!email){
+      showAuthError('Введи свой email выше — и мы отправим ссылку для нового пароля.');
+      $('auth-email').focus();
+      return;
+    }
+    const fb = $('auth-forgot-btn');
+    fb.disabled = true;
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (err){
+      /* «аккаунт не найден» не показываем — чтобы нельзя было проверять чужие адреса */
+      if (!err || err.code !== 'auth/user-not-found'){
+        showAuthError(mapAuthError(err));
+        fb.disabled = false;
+        return;
+      }
+    }
+    fb.disabled = false;
+    const info = $('auth-info');
+    info.textContent = 'Если аккаунт с адресом ' + email + ' существует, мы отправили письмо со ссылкой для нового пароля. Проверь и папку «Спам».';
+    info.style.display = 'block';
   });
 
   $('auth-submit-btn').addEventListener('click', async () => {
@@ -1486,6 +1525,7 @@
         $('tabbar').style.display = 'flex';
         editingProfile = false;
         setActiveScreen('s-map');
+        maybeShowInstallHint();
         loadMap();
         subscribeLikeWatchers();
         subscribeBlocks();
@@ -2585,6 +2625,20 @@
       show('Не получилось отправить. Попробуй позже.');
     } finally { btn.disabled = false; }
   });
+
+  /* ---------- подсказка «установи на экран» (один раз, закрывается навсегда) ---------- */
+  function hintClosed(){ try { return localStorage.getItem('sn_hint_closed') === '1'; } catch (e){ return false; } }
+  function closeInstallHint(){
+    $('install-hint').style.display = 'none';
+    try { localStorage.setItem('sn_hint_closed', '1'); } catch (e){}
+  }
+  function maybeShowInstallHint(){
+    const mobile = (window.matchMedia && window.matchMedia('(max-width:639px)').matches) || /Android|iPhone|iPad|iPod/.test(navigator.userAgent || '');
+    $('install-hint').style.display = (mobile && !isStandalone() && !hintClosed()) ? 'flex' : 'none';
+  }
+  $('install-hint-close').addEventListener('click', closeInstallHint);
+  $('install-hint-open').addEventListener('click', () => { closeInstallHint(); openAbout(); });
+  window.addEventListener('appinstalled', closeInstallHint);
 
   /* ---------- PWA: service worker + install prompt ---------- */
   if ('serviceWorker' in navigator){
