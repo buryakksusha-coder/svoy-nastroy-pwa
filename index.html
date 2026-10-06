@@ -8,13 +8,14 @@
 <meta property="og:site_name" content="Свой Настрой">
 <meta property="og:title" content="Свой Настрой — музыканты рядом с тобой">
 <meta property="og:description" content="Находи гитаристов, барабанщиков и вокалистов в своём районе Екатеринбурга. Собери группу, найди с кем поджемить — без ленты и лишнего шума.">
-<meta property="og:url" content="https://buryakksusha-coder.github.io/svoy-nastroy-pwa/">
+<meta property="og:url" content="https://svoynastroy.ru/">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:image" content="https://buryakksusha-coder.github.io/svoy-nastroy-pwa/icons/og-image.jpg">
+<meta property="og:image" content="https://svoynastroy.ru/icons/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 
+<link rel="canonical" href="https://svoynastroy.ru/">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F5C4A">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1030,7 +1031,7 @@
       <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и 15 МБ) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
       <details><summary>Как скрыть анкету?</summary><p>В Профиле есть карточка видимости. Нашёл группу — нажми «Я нашёл(ла) группу — скрыть меня». Вернуться можно в любой момент.</p></details>
       <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Каждое сохранение продлевает показ анкеты ещё на 30 дней.</p></details>
-      <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись исчезают из приложения, но сами файлы могут остаться на сервере хранения (Cloudinary).</p></details>
+      <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись тоже удаляются из хранилища.</p></details>
       <details><summary>Нужно ли подтверждать почту?</summary><p>При регистрации мы отправляем письмо. Подтвердить можно позже — это не мешает пользоваться приложением.</p></details>
     </div>
 
@@ -1075,36 +1076,121 @@
   </div>
 </div>
 
+<div id="reset-modal-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin:0 0 6px;font-size:16px;">Новый пароль</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;line-height:1.45;">Придумай пароль — от 8 символов.</div>
+    <input class="text-input" type="password" id="reset-password" autocomplete="new-password" placeholder="Новый пароль" style="margin-bottom:12px;">
+    <div class="msg-line err" id="reset-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="reset-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn" id="reset-confirm-btn" style="margin-top:0;">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail,
-    EmailAuthProvider, reauthenticateWithCredential, deleteUser
-  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-  import {
-    getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs,
-    addDoc, onSnapshot, query, where, orderBy, serverTimestamp, limit, deleteDoc, deleteField
-  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC1dt0X4PgVUVo0f_hFUU4bjhh-QrsKjhE",
-    authDomain: "svoy-nastroy.firebaseapp.com",
-    projectId: "svoy-nastroy",
-    storageBucket: "svoy-nastroy.firebasestorage.app",
-    messagingSenderId: "1124802067",
-    appId: "1:1124802067:web:7395ec5d219fac4f41e9e6"
+  /* ---------- слой данных: REST API (Yandex Cloud, РФ) ---------- */
+  const API_BASE = 'https://api.svoynastroy.ru/v1';
+  const POLICY_VERSION = '2026-10-06';
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch (e){ return null; } },
+    set(k, v){ try { localStorage.setItem(k, v); } catch (e){} },
+    del(k){ try { localStorage.removeItem(k); } catch (e){} },
   };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  auth.languageCode = 'ru';
-  const db = getFirestore(app);
+  let accessToken = store.get('sn_access');
+  let refreshToken = store.get('sn_refresh');
+  function setTokens(a, r){
+    accessToken = a || null; refreshToken = r || null;
+    if (a) store.set('sn_access', a); else store.del('sn_access');
+    if (r) store.set('sn_refresh', r); else store.del('sn_refresh');
+  }
+  class ApiError extends Error {
+    constructor(status, code, message){ super(message || code); this.status = status; this.code = code; }
+  }
+  let refreshing = null;
+  function refreshAccess(){
+    if (!refreshToken) return Promise.reject(new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'));
+    if (!refreshing){
+      refreshing = (async () => {
+        let res;
+        try {
+          res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: refreshToken }) });
+        } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+        if (!res.ok){ setTokens(null, null); throw new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'); }
+        const j = await res.json();
+        setTokens(j.access, j.refresh);
+      })().finally(() => { refreshing = null; });
+    }
+    return refreshing;
+  }
+  async function api(method, path, body){
+    const send = () => fetch(API_BASE + path, {
+      method,
+      headers: Object.assign({}, body !== undefined ? { 'Content-Type': 'application/json' } : {}, accessToken ? { Authorization: 'Bearer ' + accessToken } : {}),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+    const isAuthPath = path.startsWith('/auth/');
+    let res;
+    try { res = await send(); } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+    let data = null;
+    if (res.status !== 204) data = await res.json().catch(() => ({}));
+    const errOf = (d) => (d && d.error) || {};
+    if (res.status === 401 && errOf(data).code === 'UNAUTHORIZED' && !isAuthPath && refreshToken){
+      try { await refreshAccess(); }
+      catch (e){ if (e.code !== 'NETWORK') sessionLost(); throw e; }
+      try { res = await send(); } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+      data = res.status === 204 ? null : await res.json().catch(() => ({}));
+    }
+    if (!res.ok){
+      const er = errOf(data);
+      if (res.status === 401 && er.code === 'UNAUTHORIZED' && !isAuthPath) sessionLost();
+      throw new ApiError(res.status, er.code || 'ERROR', er.message || 'Что-то пошло не так. Попробуй ещё раз.');
+    }
+    return data;
+  }
+  let sessionLostFlag = false;
+  function sessionLost(){
+    if (sessionLostFlag) return;
+    sessionLostFlag = true;
+    setTokens(null, null);
+    Promise.resolve(onAuthChange(null)).finally(() => { sessionLostFlag = false; });
+  }
+  /* опрос вместо realtime: работает только пока вкладка видима; возвращает функцию остановки */
+  function startPoll(fn, ms){
+    let stopped = false, busy = false;
+    const tick = async () => {
+      if (stopped || busy || document.visibilityState === 'hidden') return;
+      busy = true;
+      try { await fn(); } catch (e){ if (!stopped) console.error(e); }
+      busy = false;
+    };
+    const onVis = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVis);
+    const t = setInterval(tick, ms);
+    tick();
+    return () => { stopped = true; clearInterval(t); document.removeEventListener('visibilitychange', onVis); };
+  }
+  function blobToBase64(blob){
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result).split(',')[1] || '');
+      fr.onerror = () => reject(new Error('read'));
+      fr.readAsDataURL(blob);
+    });
+  }
+  const AUDIO_TYPE_FIX = { 'audio/x-m4a': 'audio/mp4', 'audio/m4a': 'audio/mp4', 'audio/aac': 'audio/mp4', 'audio/mp3': 'audio/mpeg', 'audio/x-mpeg': 'audio/mpeg' };
+  async function uploadFile(kind, blob){
+    if (blob.size > 2 * 1024 * 1024) throw new ApiError(413, 'TOO_LARGE', 'Файл больше 2 МБ.');
+    let type = String(blob.type || '').split(';')[0].toLowerCase();
+    type = AUDIO_TYPE_FIX[type] || type;
+    const data = await blobToBase64(blob);
+    return api('POST', '/files', { kind, contentType: type, data });
+  }
 
   const MAP_RADIUS_KM = 25;
-  const CLOUDINARY_CLOUD_NAME = 'ngs9uhfn';
-  const CLOUDINARY_UPLOAD_PRESET = 'svoy_nastroy';
 
   let currentUser = null;
   let currentProfile = null;
@@ -1123,6 +1209,11 @@
   let unsubscribeOutgoingLikes = null;
   let unsubscribeIncomingLikes = null;
   let pendingAvatarUrl = null;
+  let pendingAvatarKey; /* undefined = не менялось, null = убрать, строка = новый файл */
+  let pendingAudioKey;
+  let chatPollNow = null;
+  let blockNames = {};
+  try { blockNames = JSON.parse(store.get('sn_block_names') || '{}') || {}; } catch (e){ blockNames = {}; }
   let pendingAudioUrl = null;
   let pendingAudioDuration = null;
   let audioUploading = false;
@@ -1134,7 +1225,7 @@
   let justRegistered = false;
   let reportTargetUid = null;
   let reportTargetChatId = null;
-  const APP_URL = 'https://buryakksusha-coder.github.io/svoy-nastroy-pwa/';
+  const APP_URL = 'https://svoynastroy.ru/';
   const VISIBLE_DAYS = 30;
   const MAX_GENRES = 3;
   const GENRE_TREE = {
@@ -1228,16 +1319,7 @@
     'Кировский': [56.83, 60.63], 'Ленинский': [56.84, 60.60], 'Октябрьский': [56.81, 60.61],
     'Орджоникидзевский': [56.89, 60.61], 'Чкаловский': [56.79, 60.64],
   };
-  function migratePrivacy(uid){
-    const p = currentProfile; if (!p) return;
-    const patch = {};
-    if ('email' in p){ patch.email = deleteField(); delete p.email; }
-    if (typeof p.lat === 'number' && typeof p.lng === 'number' && !(isRoughCoord(p.lat) && isRoughCoord(p.lng))){
-      p.lat = roundCoord(p.lat); p.lng = roundCoord(p.lng);
-      patch.lat = p.lat; patch.lng = p.lng;
-    }
-    if (Object.keys(patch).length) updateDoc(doc(db, 'profiles', uid), patch).catch(err => console.error(err));
-  }
+  function migratePrivacy(){ /* на сервере: координаты округляются, e-mail в анкете не хранится */ }
 
   const AVATAR_CLASSES = ['a1','a2','a3','a4','a5'];
   function avatarClassFor(uid){
@@ -1286,8 +1368,7 @@
 
   /* ---------- звук: запись в приложении / файл / ссылка ---------- */
   function playableAudioUrl(url){
-    if (!url) return null;
-    return url.replace('/upload/', '/upload/du_60/').replace(/\.[a-z0-9]+$/i, '.mp3');
+    return url || null;
   }
   function normalizeMusicLink(raw){
     const t = String(raw || '').trim();
@@ -1327,14 +1408,10 @@
     audioUploading = true;
     setRecStatus('Загружаю запись…');
     try {
-      const fd = new FormData();
-      fd.append('file', blob, filename);
-      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, { method: 'POST', body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.secure_url) throw new Error((data.error && data.error.message) || ('HTTP ' + res.status));
-      pendingAudioUrl = data.secure_url;
-      pendingAudioDuration = Math.min(REC_MAX_SEC, Math.round(data.duration || durationSec || 0)) || null;
+      const up = await uploadFile('audio', blob);
+      pendingAudioUrl = up.url;
+      pendingAudioKey = up.key;
+      pendingAudioDuration = Math.min(REC_MAX_SEC, Math.round(durationSec || 0)) || null;
       setRecStatus('Запись загружена. Не забудь сохранить анкету.');
     } catch (err){
       console.error(err);
@@ -1356,7 +1433,7 @@
       setRecStatus('Нет доступа к микрофону. Разреши его в настройках браузера и попробуй снова.');
       return;
     }
-    const types = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'];
+    const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
     const mimeType = types.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
     const chunks = [];
     const rec = new MediaRecorder(recStream, mimeType ? { mimeType, audioBitsPerSecond: 128000 } : {});
@@ -1519,18 +1596,8 @@
   function hideAuthError(){ $('auth-error').style.display = 'none'; $('auth-info').style.display = 'none'; }
 
   function mapAuthError(err){
-    const code = err && err.code;
-    const map = {
-      'auth/invalid-email': 'Некорректный email.',
-      'auth/user-not-found': 'Аккаунт с таким email не найден.',
-      'auth/wrong-password': 'Неверный пароль.',
-      'auth/invalid-credential': 'Неверный email или пароль.',
-      'auth/email-already-in-use': 'Этот email уже зарегистрирован. Попробуй войти.',
-      'auth/weak-password': 'Пароль слишком короткий — минимум 6 символов.',
-      'auth/too-many-requests': 'Слишком много попыток. Попробуй позже.',
-      'auth/network-request-failed': 'Проблема с сетью. Проверь соединение.',
-    };
-    return map[code] || 'Что-то пошло не так. Попробуй ещё раз.';
+    if (err && err.message && (err.status || err.code === 'NETWORK')) return err.message;
+    return 'Что-то пошло не так. Попробуй ещё раз.';
   }
 
   $('auth-toggle-btn').addEventListener('click', () => {
@@ -1554,14 +1621,11 @@
     const fb = $('auth-forgot-btn');
     fb.disabled = true;
     try {
-      await sendPasswordResetEmail(auth, email);
+      await api('POST', '/auth/forgot', { email });
     } catch (err){
-      /* «аккаунт не найден» не показываем — чтобы нельзя было проверять чужие адреса */
-      if (!err || err.code !== 'auth/user-not-found'){
-        showAuthError(mapAuthError(err));
-        fb.disabled = false;
-        return;
-      }
+      showAuthError(mapAuthError(err));
+      fb.disabled = false;
+      return;
     }
     fb.disabled = false;
     const info = $('auth-info');
@@ -1579,11 +1643,24 @@
     btn.disabled = true; btn.textContent = 'Подожди…';
     try {
       if (authMode === 'login'){
-        await signInWithEmailAndPassword(auth, email, password);
+        const r = await api('POST', '/auth/login', { email, password });
+        setTokens(r.access, r.refresh);
+        await onAuthChange(r.user);
       } else {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await api('POST', '/auth/register', { email, password, consent: { pd: true, adult: true, policyVersion: POLICY_VERSION } });
         justRegistered = true;
-        sendEmailVerification(cred.user).catch(err => console.error(err));
+        let r;
+        try { r = await api('POST', '/auth/login', { email, password }); }
+        catch (e){
+          justRegistered = false;
+          if (e.code === 'INVALID_CREDENTIALS'){
+            showAuthError('Если этого адреса ещё не было, аккаунт создан. Если такой аккаунт у тебя уже есть — нажми «Уже есть аккаунт? Войти» и введи прежний пароль.');
+            return;
+          }
+          throw e;
+        }
+        setTokens(r.access, r.refresh);
+        await onAuthChange(r.user);
       }
     } catch (err){
       showAuthError(mapAuthError(err));
@@ -1593,18 +1670,14 @@
     }
   });
 
-  onAuthStateChanged(auth, async (user) => {
+  async function onAuthChange(user, prefetched){
     currentUser = user;
     if (!user){
       currentProfile = null;
-      if (unsubscribeOutgoingLikes){ unsubscribeOutgoingLikes(); unsubscribeOutgoingLikes = null; }
-      if (unsubscribeIncomingLikes){ unsubscribeIncomingLikes(); unsubscribeIncomingLikes = null; }
+      stopAllPolling();
       myOutgoingLikeUids = new Set();
       incomingLikesRaw = [];
-      if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
-      if (unsubscribeBlocksOut){ unsubscribeBlocksOut(); unsubscribeBlocksOut = null; }
-      if (unsubscribeBlocksIn){ unsubscribeBlocksIn(); unsubscribeBlocksIn = null; }
-      blockedByMe = new Set(); blockedMe = new Set(); chatItemsCache = [];
+      blockedByMe = new Set(); blockedMe = new Set(); chatItemsCache = []; activeChatId = null; activeChatOtherUid = null;
       unreadChatsCount = 0;
       updateLikesBadge(0);
       $('tabbar').style.display = 'none';
@@ -1613,9 +1686,9 @@
       return;
     }
     try {
-      const snap = await getDoc(doc(db, 'profiles', user.uid));
-      if (snap.exists()){
-        currentProfile = { uid: user.uid, ...snap.data() };
+      const profile = prefetched !== undefined ? prefetched : (await api('GET', '/me')).profile;
+      if (profile){
+        currentProfile = Object.assign({ uid: user.uid }, profile);
         migratePrivacy(user.uid);
         $('tabbar').style.display = 'flex';
         editingProfile = false;
@@ -1635,11 +1708,71 @@
       }
     } catch (err){
       console.error(err);
+      if (err && err.status === 0) showAuthError(err.message);
     }
+  }
+
+  function stopAllPolling(){
+    [unsubscribeMessages, unsubscribeChatList, unsubscribeOutgoingLikes, unsubscribeIncomingLikes, unsubscribeBlocksOut, unsubscribeBlocksIn]
+      .forEach(fn => { if (fn) fn(); });
+    unsubscribeMessages = unsubscribeChatList = unsubscribeOutgoingLikes = unsubscribeIncomingLikes = unsubscribeBlocksOut = unsubscribeBlocksIn = null;
+    chatPollNow = null;
+  }
+
+  /* старт приложения: восстанавливаем сессию по токенам, затем обрабатываем ссылки из писем (#verify= / #reset=) */
+  async function bootApp(){
+    if (accessToken || refreshToken){
+      try {
+        const me = await api('GET', '/me');
+        await onAuthChange(me.user, me.profile);
+      } catch (e){
+        if (e.status === 0){ await onAuthChange(null); showAuthError(e.message); }
+        else await onAuthChange(null);
+      }
+    } else {
+      await onAuthChange(null);
+    }
+    handleEmailLink();
+  }
+  function handleEmailLink(){
+    const m = /^#(verify|reset)=([A-Za-z0-9_\-]{20,200})$/.exec(location.hash || '');
+    if (!m) return;
+    const kind = m[1], token = m[2];
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e){}
+    if (kind === 'verify'){
+      api('POST', '/auth/verify', { token })
+        .then(() => showToast('Почта подтверждена. Спасибо!'))
+        .catch(e => showToast(e.message || 'Ссылка недействительна или устарела.'));
+      return;
+    }
+    resetToken = token;
+    $('reset-password').value = '';
+    $('reset-error').style.display = 'none';
+    $('reset-modal-overlay').style.display = 'flex';
+  }
+  let resetToken = null;
+  $('reset-cancel-btn').addEventListener('click', () => { $('reset-modal-overlay').style.display = 'none'; resetToken = null; });
+  $('reset-confirm-btn').addEventListener('click', async () => {
+    const pw = $('reset-password').value;
+    const errEl = $('reset-error');
+    const showErr = (m) => { errEl.textContent = m; errEl.style.display = 'block'; };
+    if (pw.length < 8){ showErr('Пароль — от 8 символов.'); return; }
+    const btn = $('reset-confirm-btn');
+    btn.disabled = true;
+    try {
+      await api('POST', '/auth/reset', { token: resetToken, password: pw });
+      $('reset-modal-overlay').style.display = 'none';
+      resetToken = null;
+      showToast('Пароль сохранён. Теперь войди с новым паролем.');
+      if (authMode !== 'login') $('auth-toggle-btn').click();
+    } catch (e){
+      showErr(mapAuthError(e));
+    } finally { btn.disabled = false; }
   });
 
   /* ---------- anketa (create / edit profile) ---------- */
   function prepareAnketaForm(isEdit){
+    pendingAvatarKey = undefined; pendingAudioKey = undefined;
     $('anketa-title').textContent = isEdit ? 'Редактирование анкеты' : 'Анкета';
     $('anketa-sub').textContent = isEdit ? 'Обнови данные о себе' : 'Расскажи о себе — это займёт минуту';
     $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Показать меня на карте';
@@ -1720,18 +1853,9 @@
     statusEl.textContent = 'Загружаю фото…';
     try {
       const prepared = await compressImage(file);
-      const formData = new FormData();
-      formData.append('file', prepared, 'avatar.jpg');
-      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.secure_url){
-        throw new Error((data.error && data.error.message) || ('HTTP ' + res.status));
-      }
-      pendingAvatarUrl = data.secure_url;
+      const up = await uploadFile('avatar', prepared);
+      pendingAvatarUrl = up.url;
+      pendingAvatarKey = up.key;
       $('f-avatar-preview').innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl });
       statusEl.textContent = 'Фото загружено. Не забудь сохранить анкету.';
     } catch (err){
@@ -1748,7 +1872,7 @@
     const file = $('rec-file').files[0];
     $('rec-file').value = '';
     if (!file) return;
-    if (file.size > 15 * 1024 * 1024){ setRecStatus('Файл больше 15 МБ — выбери покороче.'); return; }
+    if (file.size > 2 * 1024 * 1024){ setRecStatus('Файл больше 2 МБ — выбери покороче (до минуты).'); return; }
     const dur = await new Promise(resolve => {
       const a = document.createElement('audio');
       a.preload = 'metadata';
@@ -1761,7 +1885,7 @@
   });
   $('rec-remove').addEventListener('click', () => {
     cancelRecording();
-    pendingAudioUrl = null; pendingAudioDuration = null;
+    pendingAudioUrl = null; pendingAudioDuration = null; pendingAudioKey = null;
     setRecStatus('Запись удалена из анкеты. Сохрани анкету, чтобы изменение применилось.');
     renderRecUI();
   });
@@ -1839,22 +1963,15 @@
     showAnketaStatus('Сохраняю…');
     try {
       const data = {
-        uid: currentUser.uid,
-        email: deleteField(),
-        name, age, instruments, instrumentDetails, level, genres, genreDetails, goal, goals, bio, district, lookingFor, kind, needs,
-        activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS,
-        avatarUrl: pendingAvatarUrl || null,
-        audioUrl: pendingAudioUrl || null,
-        audioDuration: pendingAudioUrl ? (pendingAudioDuration || null) : null,
+        name, age, instruments, instrumentDetails, level, genres, genreDetails, goals, bio, district, lookingFor, kind, needs,
         musicLink: linkCheck.url,
         lat: coords.lat, lng: coords.lng,
-        updatedAt: serverTimestamp(),
       };
-      if (!editingProfile){ data.createdAt = serverTimestamp(); data.hidden = false; }
-      await setDoc(doc(db, 'profiles', currentUser.uid), data, { merge: true });
+      if (pendingAvatarKey !== undefined) data.avatarKey = pendingAvatarKey;
+      if (pendingAudioKey !== undefined){ data.audioKey = pendingAudioKey; data.audioDuration = pendingAudioKey ? (pendingAudioDuration || null) : null; }
+      const saved = await api('PUT', '/me/profile', data);
       if (usedFallback) showToast('Геопозиция недоступна — расстояния считаем от центра района.');
-      const snap = await getDoc(doc(db, 'profiles', currentUser.uid));
-      currentProfile = { uid: currentUser.uid, ...snap.data() };
+      currentProfile = Object.assign({ uid: currentUser.uid }, saved.profile);
       hideAnketaMsgs();
       $('tabbar').style.display = 'flex';
       setActiveScreen('s-map');
@@ -1864,25 +1981,16 @@
       if (!unsubscribeBlocksOut) subscribeBlocks();
     } catch (err){
       console.error(err);
-      showAnketaError('Не удалось сохранить анкету. Попробуй ещё раз.');
+      showAnketaError(err && err.status && err.status < 500 ? err.message : 'Не удалось сохранить анкету. Попробуй ещё раз.');
     } finally {
       btn.disabled = false;
     }
   });
 
   /* ---------- profiles fetch ---------- */
-  async function fetchAllProfiles(){
-    const snap = await getDocs(collection(db, 'profiles'));
-    const list = [];
-    snap.forEach(d => {
-      if (d.id === currentUser.uid) return;
-      if (isBlockedPair(d.id)) return;
-      const data = d.data();
-      if (!isProfileVisible(data)) return;
-      if (typeof data.lat !== 'number' || typeof data.lng !== 'number') return;
-      list.push({ uid: d.id, ...data });
-    });
-    return list;
+  async function fetchMapProfiles(){
+    const r = await api('GET', '/map');
+    return r.items || [];
   }
 
   /* ---------- map ---------- */
@@ -1890,18 +1998,14 @@
     $('map-sub').textContent = 'Загружаю…';
     let profiles;
     try {
-      profiles = await fetchAllProfiles();
+      profiles = await fetchMapProfiles();
     } catch (err){
       $('map-sub').textContent = 'Не удалось загрузить анкеты.';
       return;
     }
     const me = currentProfile;
     renderOwnDistrict();
-    const withDist = profiles.map(p => ({
-      ...p,
-      dist: haversineKm(me.lat, me.lng, p.lat, p.lng),
-      bearing: bearingDeg(me.lat, me.lng, p.lat, p.lng),
-    })).filter(p => p.dist <= MAP_RADIUS_KM);
+    const withDist = profiles; /* расстояние и направление считает сервер; чужие координаты клиенту не отдаются */
     window.__mapProfiles = withDist;
     window.__mapLoaded = true;
     renderMapPins(withDist, currentMapFilter);
@@ -2071,26 +2175,24 @@
     submitBtn.textContent = 'Ищу…';
     resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
 
-    let profiles;
+    let list, total = 0;
     try {
-      profiles = await fetchAllProfiles();
+      const qs = new URLSearchParams({ radius: String(radius), limit: '50' });
+      if (instrument) qs.set('instrument', instrument);
+      if (level) qs.set('level', level);
+      if (goal) qs.set('goal', goal);
+      if (genre) qs.set('genre', genre);
+      if (genre && genreDetail) qs.set('genreDetail', genreDetail);
+      if (kindFilter) qs.set('kind', kindFilter);
+      const r = await api('GET', '/search?' + qs.toString());
+      list = r.items || []; total = r.total || list.length;
     } catch (err){
       resultsEl.innerHTML = '<div class="msg-line err">Не удалось загрузить анкеты.</div>';
       submitBtn.disabled = false;
       submitBtn.textContent = 'Показать совпадения';
       return;
     }
-    const me = currentProfile;
-    let list = profiles.map(p => ({ ...p, dist: haversineKm(me.lat, me.lng, p.lat, p.lng) }))
-      .filter(p => p.dist <= radius);
-    if (instrument) list = list.filter(p => (p.instruments||[]).includes(instrument));
-    if (level) list = list.filter(p => p.level === level);
-    if (goal) list = list.filter(p => goalsOf(p).includes(goal));
-    if (genre) list = list.filter(p => normGenres(p).families.includes(genre));
-    if (genre && genreDetail) list = list.filter(p => normGenres(p).details.includes(genreDetail));
-    if (kindFilter) list = list.filter(p => (p.kind || 'musician') === kindFilter);
-    list.sort((a,b) => a.dist - b.dist);
-    renderSearchResults(list);
+    renderSearchResults(list, total);
     submitBtn.disabled = false;
     submitBtn.textContent = 'Показать совпадения';
     /* результаты ниже фильтров — сами прокручиваем экран к ним, чтобы было видно, что поиск сработал */
@@ -2103,7 +2205,7 @@
     if (sc) sc.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  function renderSearchResults(list){
+  function renderSearchResults(list, total){
     const resultsEl = $('search-results');
     $('search-up-btn').style.display = 'inline-block';
     if (list.length === 0){
@@ -2111,7 +2213,7 @@
       resultsEl.innerHTML = '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.</div>';
       return;
     }
-    $('search-count').textContent = 'Найдено: ' + list.length;
+    $('search-count').textContent = 'Найдено: ' + (total || list.length) + (total && total > list.length ? ' · показаны ближайшие ' + list.length : '');
     resultsEl.innerHTML = '';
     list.forEach(p => {
       const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(goalsOf(p));
@@ -2197,10 +2299,8 @@
   function likeId(fromUid, toUid){ return fromUid + '_' + toUid; }
 
   async function getMatchStatus(otherUid){
-    const myLikeRef = doc(db, 'likes', likeId(currentUser.uid, otherUid));
-    const theirLikeRef = doc(db, 'likes', likeId(otherUid, currentUser.uid));
-    const [mySnap, theirSnap] = await Promise.all([getDoc(myLikeRef), getDoc(theirLikeRef)]);
-    return { iLiked: mySnap.exists(), theyLiked: theirSnap.exists() };
+    const r = await api('GET', '/profiles/' + encodeURIComponent(otherUid));
+    return { iLiked: !!r.liked, theyLiked: !!r.likedMe };
   }
 
   async function refreshLikeButton(otherUid){
@@ -2236,9 +2336,8 @@
     btn.disabled = true;
     btn.textContent = '…';
     try {
-      await setDoc(doc(db, 'likes', likeId(currentUser.uid, otherUid)), {
-        from: currentUser.uid, to: otherUid, createdAt: serverTimestamp()
-      });
+      await api('PUT', '/likes/' + encodeURIComponent(otherUid));
+      myOutgoingLikeUids.add(otherUid);
       await refreshLikeButton(otherUid);
     } catch (err){
       console.error(err);
@@ -2247,19 +2346,15 @@
     }
   });
 
+  async function pollLikes(){
+    const r = await api('GET', '/likes');
+    myOutgoingLikeUids = new Set(r.outgoing || []);
+    incomingLikesRaw = (r.incoming || []).map(i => ({ from: i.profile.uid, profile: i.profile, createdAt: i.createdAt }));
+    renderIncomingLikes();
+  }
   function subscribeLikeWatchers(){
     if (unsubscribeOutgoingLikes) unsubscribeOutgoingLikes();
-    if (unsubscribeIncomingLikes) unsubscribeIncomingLikes();
-    const outQ = query(collection(db, 'likes'), where('from', '==', currentUser.uid));
-    unsubscribeOutgoingLikes = onSnapshot(outQ, (snap) => {
-      myOutgoingLikeUids = new Set(snap.docs.map(d => d.data().to));
-      renderIncomingLikes();
-    }, (err) => console.error(err));
-    const inQ = query(collection(db, 'likes'), where('to', '==', currentUser.uid));
-    unsubscribeIncomingLikes = onSnapshot(inQ, (snap) => {
-      incomingLikesRaw = snap.docs.map(d => d.data());
-      renderIncomingLikes();
-    }, (err) => console.error(err));
+    unsubscribeOutgoingLikes = unsubscribeIncomingLikes = startPoll(pollLikes, 30000);
   }
 
   function getSeenLikeUids(){
@@ -2307,15 +2402,8 @@
     list.innerHTML = '';
     for (const like of pending){
       const uid = like.from;
-      let profile = likerProfilesCache.get(uid);
-      if (!profile){
-        try {
-          const snap = await getDoc(doc(db, 'profiles', uid));
-          if (!snap.exists()) continue;
-          profile = { uid, ...snap.data() };
-          likerProfilesCache.set(uid, profile);
-        } catch (err){ console.error(err); continue; }
-      }
+      const profile = like.profile;
+      if (!profile) continue;
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;cursor:pointer;';
       item.innerHTML = `
@@ -2349,10 +2437,12 @@
     setActiveScreen('s-anketa');
   });
   $('p-logout-btn').addEventListener('click', async () => {
-    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
-    if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
+    const rt = refreshToken;
+    stopAllPolling();
     activeChatId = null;
-    await signOut(auth);
+    if (rt) api('POST', '/auth/logout', { refresh: rt }).catch(() => {});
+    setTokens(null, null);
+    await onAuthChange(null);
   });
   $('p-msg-btn').addEventListener('click', async () => {
     if (!viewedOtherProfile) return;
@@ -2365,24 +2455,13 @@
   function chatIdFor(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
 
   async function openChatWith(otherProfile){
-    const cid = chatIdFor(currentUser.uid, otherProfile.uid);
-    const chatRef = doc(db, 'chats', cid);
     try {
-      const snap = await getDoc(chatRef);
-      if (!snap.exists()){
-        await setDoc(chatRef, {
-          participants: [currentUser.uid, otherProfile.uid],
-          participantNames: { [currentUser.uid]: currentProfile.name, [otherProfile.uid]: otherProfile.name },
-          participantAvatars: { [currentUser.uid]: currentProfile.avatarUrl || null, [otherProfile.uid]: otherProfile.avatarUrl || null },
-          createdAt: serverTimestamp(),
-          lastMessage: '',
-          lastMessageAt: serverTimestamp(),
-        });
-      }
+      const r = await api('POST', '/chats/open', { uid: otherProfile.uid });
+      openChatThread(r.chat.id, otherProfile.uid, otherProfile.name, otherProfile.avatarUrl);
     } catch (err){
       console.error(err);
+      showToast(err.message || 'Не удалось открыть чат.');
     }
-    openChatThread(cid, otherProfile.uid, otherProfile.name, otherProfile.avatarUrl);
   }
 
   function openChatThread(chatId, otherUid, otherName, otherAvatarUrl){
@@ -2401,29 +2480,48 @@
 
   function subscribeMessages(chatId){
     if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
-    const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'), limit(200));
-    unsubscribeMessages = onSnapshot(q, (snap) => {
-      const box = $('chat-messages');
-      box.innerHTML = '';
-      snap.forEach(d => {
-        const m = d.data();
+    const box = $('chat-messages');
+    box.innerHTML = '';
+    let after = 0;
+    const seen = new Set();
+    const poll = async () => {
+      let r;
+      try { r = await api('GET', '/chats/' + encodeURIComponent(chatId) + '/messages?after=' + after); }
+      catch (e){
+        if (e && (e.status === 403 || e.status === 404) && activeChatId === chatId){
+          if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+          activeChatId = null; activeChatOtherUid = null;
+          showToast('Чат больше недоступен.');
+          openChatList();
+          return;
+        }
+        throw e;
+      }
+      if (activeChatId !== chatId) return;
+      const items = (r.items || []).filter(m => !seen.has(m.id));
+      if (!items.length) return;
+      const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80 || after === 0;
+      items.forEach(m => {
+        seen.add(m.id);
+        after = Math.max(after, m.createdAt);
         const bubble = document.createElement('div');
         bubble.className = 'bubble ' + (m.senderId === currentUser.uid ? 'out' : 'in');
         bubble.textContent = m.text;
         box.appendChild(bubble);
       });
-      box.scrollTop = box.scrollHeight;
-      const lastDoc = snap.docs[snap.docs.length - 1];
-      if (lastDoc && lastDoc.data().senderId !== currentUser.uid && activeChatId === chatId){
-        markChatRead(chatId);
-      }
-    }, (err) => console.error(err));
+      if (nearBottom) box.scrollTop = box.scrollHeight;
+      const last = items[items.length - 1];
+      if (last.senderId !== currentUser.uid) markChatRead(chatId);
+    };
+    chatPollNow = poll;
+    unsubscribeMessages = startPoll(poll, 3000);
   }
 
   function markChatRead(chatId){
     if (!currentUser || !chatId) return;
-    updateDoc(doc(db, 'chats', chatId), {
-      ['lastReadAt.' + currentUser.uid]: serverTimestamp(),
+    api('POST', '/chats/' + encodeURIComponent(chatId) + '/read').then(() => {
+      const c = chatItemsCache.find(x => x.id === chatId);
+      if (c){ c.unread = false; renderChatList(); }
     }).catch(err => console.error(err));
   }
 
@@ -2451,19 +2549,12 @@
     if (!safety.ok){ showChatInputError(safety.reason); return; }
     field.value = '';
     try {
-      await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
-        senderId: currentUser.uid,
-        text,
-        createdAt: serverTimestamp(),
-      });
-      await updateDoc(doc(db, 'chats', activeChatId), {
-        lastMessage: text,
-        lastMessageAt: serverTimestamp(),
-        lastSenderId: currentUser.uid,
-      });
+      await api('POST', '/chats/' + encodeURIComponent(activeChatId) + '/messages', { text });
+      if (chatPollNow) await chatPollNow();
     } catch (err){
       console.error(err);
       field.value = text;
+      showChatInputError(err && err.status ? err.message : 'Не удалось отправить. Проверь соединение.');
     }
   }
   $('chat-send-btn').addEventListener('click', sendMessage);
@@ -2475,35 +2566,29 @@
     $('chat-thread-view').style.display = 'none';
     $('chat-list-view').style.display = 'flex';
     setActiveScreen('s-chat');
-    if (!unsubscribeChatList) subscribeChatList();
+    if (!unsubscribeChatList) subscribeChatList(); else pollChats().catch(() => {});
   }
 
   function subscribeChatList(){
     if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
-    const q = query(collection(db, 'chats'), where('participants', 'array-contains', currentUser.uid));
-    unsubscribeChatList = onSnapshot(q, (snap) => {
-      const items = [];
-      snap.forEach(d => items.push({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) }));
-      chatItemsCache = items;
-      renderChatList();
-    }, (err) => console.error(err));
+    unsubscribeChatList = startPoll(pollChats, 15000);
+  }
+  async function pollChats(){
+    const r = await api('GET', '/chats');
+    chatItemsCache = r.items || [];
+    renderChatList();
   }
 
   function renderChatList(){
     if (!currentUser) return;
-    const toMs = t => (t && t.toMillis) ? t.toMillis() : 0;
-    const items = chatItemsCache
-      .map(chat => ({ ...chat, otherUid: (chat.participants || []).find(u => u !== currentUser.uid) }))
-      .filter(chat => chat.otherUid && !isBlockedPair(chat.otherUid));
-    items.sort((a,b) => toMs(b.lastMessageAt) - toMs(a.lastMessageAt));
+    const items = chatItemsCache.filter(chat => chat.otherUid && !isBlockedPair(chat.otherUid));
+    items.sort((a,b) => (b.lastMessageAt || 0) - (a.lastMessageAt || 0));
     const container = $('chat-list-items');
     const empty = $('chat-list-empty');
     container.innerHTML = '';
     const threadOpen = $('chat-thread-view').style.display !== 'none' && $('s-chat').classList.contains('active');
     items.forEach(chat => {
-      const lastReadMs = toMs(chat.lastReadAt && chat.lastReadAt[currentUser.uid]);
-      chat.unread = !!chat.lastSenderId && chat.lastSenderId !== currentUser.uid &&
-        toMs(chat.lastMessageAt) > lastReadMs && !(threadOpen && chat.id === activeChatId);
+      chat.unread = !!chat.unread && !(threadOpen && chat.id === activeChatId);
     });
     unreadChatsCount = items.filter(c => c.unread).length;
     renderTotalBadge();
@@ -2511,8 +2596,8 @@
     empty.style.display = 'none';
     items.forEach(chat => {
       const otherUid = chat.otherUid;
-      const otherName = (chat.participantNames && chat.participantNames[otherUid]) || 'Без имени';
-      const otherAvatarUrl = (chat.participantAvatars && chat.participantAvatars[otherUid]) || null;
+      const otherName = chat.otherName || 'Без имени';
+      const otherAvatarUrl = chat.otherAvatarUrl || null;
       const row = document.createElement('div');
       row.className = 'chat-list-item' + (chat.unread ? ' unread' : '');
       row.innerHTML = `
@@ -2538,23 +2623,20 @@
       if (window.__mapLoaded) renderMapPins(window.__mapProfiles || [], currentMapFilter);
       if ($('p-own-extra').style.display === 'block') renderBlockedList();
     };
-    unsubscribeBlocksOut = onSnapshot(query(collection(db, 'blocks'), where('from', '==', currentUser.uid)), (snap) => {
-      blockedByMe = new Set(snap.docs.map(d => d.data().to));
-      refreshAll();
-    }, (err) => console.error(err));
-    unsubscribeBlocksIn = onSnapshot(query(collection(db, 'blocks'), where('to', '==', currentUser.uid)), (snap) => {
-      blockedMe = new Set(snap.docs.map(d => d.data().from));
-      refreshAll();
-    }, (err) => console.error(err));
+    /* блокировки меняются только действиями самого пользователя; обратные (меня заблокировали) сервер скрывает сам */
+    unsubscribeBlocksOut = unsubscribeBlocksIn = startPoll(async () => {
+      const r = await api('GET', '/blocks');
+      const next = new Set(r.blocked || []);
+      if (next.size !== blockedByMe.size || [...next].some(u => !blockedByMe.has(u))){ blockedByMe = next; refreshAll(); }
+    }, 60000);
   }
 
   async function blockUser(uid, name){
     if (!uid || !currentUser || uid === currentUser.uid) return false;
     try {
-      await setDoc(doc(db, 'blocks', currentUser.uid + '_' + uid), {
-        from: currentUser.uid, to: uid, createdAt: serverTimestamp(),
-      });
+      await api('PUT', '/blocks/' + encodeURIComponent(uid));
       blockedByMe.add(uid);
+      if (name){ blockNames[uid] = name; store.set('sn_block_names', JSON.stringify(blockNames)); }
       if (activeChatOtherUid === uid){
         if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
         activeChatId = null; activeChatOtherUid = null;
@@ -2576,11 +2658,7 @@
     wrap.style.display = 'block';
     list.innerHTML = '';
     for (const uid of uids){
-      let name = 'Пользователь';
-      try {
-        const snap = await getDoc(doc(db, 'profiles', uid));
-        if (snap.exists()) name = snap.data().name || name;
-      } catch (e){}
+      const name = blockNames[uid] || 'Заблокированный пользователь';
       const row = document.createElement('div');
       row.className = 'blocked-row';
       row.innerHTML = '<span>' + escapeHtml(name) + '</span>';
@@ -2589,7 +2667,10 @@
       btn.textContent = 'Разблокировать';
       btn.addEventListener('click', async () => {
         try {
-          await deleteDoc(doc(db, 'blocks', currentUser.uid + '_' + uid));
+          await api('DELETE', '/blocks/' + encodeURIComponent(uid));
+          blockedByMe.delete(uid);
+          renderBlockedList(); renderChatList(); renderIncomingLikes();
+          if (window.__mapLoaded) loadMap();
           showToast(name + ' разблокирован(а)');
         } catch (err){ console.error(err); }
       });
@@ -2609,14 +2690,12 @@
   async function openProfileByUid(uid){
     if (!uid) return;
     try {
-      const snap = await getDoc(doc(db, 'profiles', uid));
-      if (!snap.exists()){ showToast('Анкета удалена или недоступна'); return; }
-      const p = { uid, ...snap.data() };
-      if (currentProfile && typeof p.lat === 'number'){
-        p.dist = haversineKm(currentProfile.lat, currentProfile.lng, p.lat, p.lng);
-      }
-      await openOtherProfile(p);
-    } catch (err){ console.error(err); }
+      const r = await api('GET', '/profiles/' + encodeURIComponent(uid));
+      await openOtherProfile(r.profile);
+    } catch (err){
+      console.error(err);
+      showToast(err && err.status === 404 ? 'Анкета удалена или недоступна' : (err.message || 'Не удалось открыть анкету'));
+    }
   }
   $('chat-peer').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
   $('chat-avatar').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
@@ -2658,7 +2737,7 @@
       ? { hidden: true }
       : { hidden: false, activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS };
     try {
-      await updateDoc(doc(db, 'profiles', currentUser.uid), patch);
+      await api('POST', action === 'found' ? '/me/profile/hide' : '/me/profile/show');
       currentProfile = { ...currentProfile, ...patch };
       renderVisibilityCard();
       showToast(action === 'found' ? 'Анкета скрыта. Удачи и хороших репетиций!' : 'Анкета снова видна до ' + formatDate(currentProfile.activeUntil));
@@ -2689,36 +2768,16 @@
     if (!password){ showErr('Введи пароль.'); return; }
     const btn = $('delete-confirm-btn');
     btn.disabled = true; btn.textContent = 'Удаляю…';
-    const user = auth.currentUser;
     try {
-      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
-    } catch (err){
-      btn.disabled = false; btn.textContent = 'Удалить навсегда';
-      showErr(mapAuthError(err));
-      return;
-    }
-    try {
-      const uid = user.uid;
-      [unsubscribeMessages, unsubscribeChatList, unsubscribeOutgoingLikes, unsubscribeIncomingLikes, unsubscribeBlocksOut, unsubscribeBlocksIn]
-        .forEach(fn => { if (fn) fn(); });
-      unsubscribeMessages = unsubscribeChatList = unsubscribeOutgoingLikes = unsubscribeIncomingLikes = unsubscribeBlocksOut = unsubscribeBlocksIn = null;
-      const chats = await getDocs(query(collection(db, 'chats'), where('participants', 'array-contains', uid)));
-      for (const c of chats.docs){
-        const msgs = await getDocs(collection(db, 'chats', c.id, 'messages'));
-        await Promise.all(msgs.docs.map(m => deleteDoc(m.ref)));
-        await deleteDoc(c.ref);
-      }
-      const likesOut = await getDocs(query(collection(db, 'likes'), where('from', '==', uid)));
-      const likesIn = await getDocs(query(collection(db, 'likes'), where('to', '==', uid)));
-      const blocksOut = await getDocs(query(collection(db, 'blocks'), where('from', '==', uid)));
-      await Promise.all([...likesOut.docs, ...likesIn.docs, ...blocksOut.docs].map(d => deleteDoc(d.ref)));
-      await deleteDoc(doc(db, 'profiles', uid));
-      await deleteUser(user);
+      await api('DELETE', '/me', { password });
+      stopAllPolling();
+      setTokens(null, null);
+      await onAuthChange(null);
       closeDeleteModal();
       showToast('Аккаунт удалён. Спасибо, что был(а) с нами.');
     } catch (err){
       console.error(err);
-      showErr('Удаление прервалось: ' + (err.message || err) + '. Попробуй ещё раз.');
+      showErr(err && err.status ? err.message : 'Удаление прервалось. Попробуй ещё раз.');
     } finally {
       btn.disabled = false; btn.textContent = 'Удалить навсегда';
     }
@@ -2752,15 +2811,7 @@
     const btn = $('report-submit-btn');
     btn.disabled = true;
     try {
-      const payload = {
-        reporterId: currentUser.uid,
-        targetUid: reportTargetUid,
-        reason,
-        comment: $('report-comment').value.trim(),
-        createdAt: serverTimestamp(),
-      };
-      if (reportTargetChatId) payload.chatId = reportTargetChatId;
-      await addDoc(collection(db, 'reports'), payload);
+      await api('POST', '/reports', { targetUid: reportTargetUid, reason, text: $('report-comment').value.trim(), chatId: reportTargetChatId || undefined });
       const alsoBlock = $('report-also-block').checked;
       const targetUid = reportTargetUid;
       closeReportModal();
@@ -2832,13 +2883,13 @@
     const btn = $('about-city-btn');
     btn.disabled = true;
     try {
-      await addDoc(collection(db, 'cityRequests'), { city, createdAt: serverTimestamp() });
+      await api('POST', '/city-requests', { city });
       try { localStorage.setItem('sn_city_sent', '1'); } catch (e){}
       $('about-city-input').value = '';
       show('Записали!');
     } catch (err){
       console.error(err);
-      show('Не получилось отправить. Попробуй позже.');
+      show(err && err.status === 429 ? err.message : 'Не получилось отправить. Попробуй позже.');
     } finally { btn.disabled = false; }
   });
 
@@ -2879,6 +2930,9 @@
   window.addEventListener('appinstalled', () => {
     installBtn.style.display = 'none';
   });
+
+  window.addEventListener('hashchange', handleEmailLink);
+  bootApp();
 </script>
 
 </body>

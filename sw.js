@@ -1,4 +1,4 @@
-const CACHE = 'svoy-nastroy-v2';
+const CACHE = 'svoy-nastroy-v3';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
