@@ -1,0 +1,2941 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Свой Настрой — музыканты рядом с тобой</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Свой Настрой">
+<meta property="og:title" content="Свой Настрой — музыканты рядом с тобой">
+<meta property="og:description" content="Находи гитаристов, барабанщиков и вокалистов в своём районе Екатеринбурга. Собери группу, найди с кем поджемить — без ленты и лишнего шума.">
+<meta property="og:url" content="https://svoynastroy.ru/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://svoynastroy.ru/icons/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="canonical" href="https://svoynastroy.ru/">
+<base href="/">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F5C4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Свой Настрой">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Свой Настрой — находи музыкантов рядом с собой в Екатеринбурге">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+
+<style>
+  :root{
+    --bg:#0e0f12;
+    --panel:#17181d;
+    --panel-2:#1f2026;
+    --line:#2a2b32;
+    --ink:#f2f2f4;
+    --ink-quiet:#9a9ba3;
+    --accent:#2E8B6E;
+    --accent-2:#C88B3D;
+    --accent-ink:#ffffff;
+    --good:#33c17a;
+    --warn:#e8a13d;
+    --chip:#25262d;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #10281f 0%, transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, #2a1c0f 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  .top{
+    max-width:920px;
+    width:100%;
+    text-align:center;
+    margin-bottom:26px;
+  }
+  .top h1{
+    font-size:22px;
+    margin:0 0 6px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .top p{
+    margin:0;
+    color:var(--ink-quiet);
+    font-size:14px;
+    line-height:1.5;
+  }
+  .top .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:12px;
+    padding:5px 12px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+
+  #install-btn{
+    display:none;
+    margin:0 auto 18px;
+    padding:10px 18px;
+    border-radius:999px;
+    border:1px solid var(--accent);
+    background:rgba(46,139,110,.12);
+    color:var(--accent);
+    font-weight:700;
+    font-size:13px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  .layout{
+    display:flex;
+    gap:36px;
+    align-items:flex-start;
+    justify-content:center;
+    flex-wrap:wrap;
+    max-width:1000px;
+  }
+
+  /* app shell — реальная адаптивная вёрстка, без декоративной рамки телефона */
+  .app-shell{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--panel);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    flex-shrink:0;
+  }
+  @media (min-width:640px){
+    .app-shell{
+      min-height:700px;
+      max-height:860px;
+      margin:0 auto;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px #2c2c33;
+    }
+  }
+
+  .screen{
+    display:none;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+  }
+  .screen.active{display:flex;}
+
+  .app-header{
+    padding:6px 18px 12px;
+    flex-shrink:0;
+  }
+  .app-header h2{
+    margin:0;
+    font-size:20px;
+    font-weight:700;
+  }
+  .app-header .sub{
+    color:var(--ink-quiet);
+    font-size:12.5px;
+    margin-top:2px;
+  }
+
+  .scroll{
+    flex:1;
+    overflow-y:auto;
+    padding:0 18px 18px;
+  }
+  .scroll::-webkit-scrollbar{width:0;}
+
+  /* bottom nav */
+  .tabbar{
+    flex-shrink:0;
+    display:none;
+    justify-content:space-around;
+    align-items:center;
+    padding:10px 6px 16px;
+    border-top:1px solid var(--line);
+    background:var(--panel);
+  }
+  .tab-btn{
+    background:none;
+    border:none;
+    color:var(--ink-quiet);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-size:10.5px;
+    font-family:inherit;
+    cursor:pointer;
+    padding:4px 8px;
+    position:relative;
+  }
+  .tab-btn svg{width:22px;height:22px;stroke:var(--ink-quiet);fill:none;stroke-width:1.8;}
+  .tab-btn.active{color:var(--accent);}
+  .tab-btn.active svg{stroke:var(--accent);}
+  .tab-badge{
+    position:absolute; top:-2px; right:10px;
+    min-width:16px; height:16px; border-radius:8px;
+    background:#ff6b8b; color:#fff; font-size:9.5px; font-weight:800;
+    display:none; align-items:center; justify-content:center;
+    padding:0 4px; line-height:1;
+  }
+  .tab-badge.show{display:flex;}
+
+  /* form elements */
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-quiet);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    padding:8px 13px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    font-size:12.5px;
+    color:var(--ink);
+    cursor:pointer;
+    user-select:none;
+  }
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+  .text-input, textarea.text-input{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+    font-size:13px;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  textarea.text-input{resize:vertical;min-height:70px;}
+  .text-input:focus{outline:none;border-color:var(--accent);}
+  .text-input::placeholder{color:var(--ink-quiet);}
+
+  .primary-btn{
+    width:100%;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    font-size:14.5px;
+    font-weight:700;
+    margin-top:6px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .primary-btn:disabled{opacity:.6;cursor:default;}
+
+  /* avatar */
+  .avatar{
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;color:#fff;flex-shrink:0;
+    overflow:hidden;
+  }
+  .a1{background:linear-gradient(135deg,#2E8B6E,#1F5C4A);}
+  .a2{background:linear-gradient(135deg,#33c17a,#1e8f57);}
+  .a3{background:linear-gradient(135deg,#C88B3D,#a86a1f);}
+  .a4{background:linear-gradient(135deg,#ff6b8b,#c93e5f);}
+  .a5{background:linear-gradient(135deg,#38bdf8,#1d7fb3);}
+
+  /* map screen */
+  .map-area{
+    position:relative;
+    flex:1;
+    margin:0 18px 12px;
+    border-radius:18px;
+    overflow:hidden;
+    background:#12211c;
+    min-height:260px;
+  }
+  .me-dot{
+    position:absolute; left:50%; top:52%;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 6px rgba(46,139,110,.3);
+    transform:translate(-50%,-50%);
+    z-index:2;
+  }
+  .radar-ring{position:absolute;border-radius:50%;border:1px dashed rgba(46,139,110,.5);transform:translate(-50%,-50%);pointer-events:none;}
+  .radar-ring span{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--ink-quiet);background:#12211c;padding:0 4px;white-space:nowrap;}
+  .cluster{position:absolute;width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);box-shadow:0 4px 10px rgba(0,0,0,.45),0 0 0 3px rgba(46,139,110,.3);cursor:pointer;z-index:3;}
+  .view-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 18px 8px;flex-shrink:0;}
+  .view-toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+  .view-toggle button{background:none;border:none;color:var(--ink-quiet);padding:6px 14px;font-size:12.5px;font-family:inherit;cursor:pointer;}
+  .view-toggle button.on{background:var(--chip);color:var(--accent);font-weight:700;}
+  .map-scale{font-size:11.5px;color:var(--ink-quiet);text-align:right;}
+  #map-list{display:none;flex:1;min-height:0;overflow-y:auto;padding:0 18px 18px;overscroll-behavior:contain;}
+  .map-list-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--ink-quiet);margin:2px 0 8px;}
+  .genre-detail-row{margin-top:10px;}
+  .genre-detail-row .sd-title{font-size:11.5px;color:var(--ink-quiet);margin-bottom:6px;}
+  .pin{
+    position:absolute;
+    width:34px;height:34px;border-radius:50% 50% 50% 0;
+    transform:translate(-50%,-100%) rotate(-45deg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,.4);
+    cursor:pointer;
+    z-index:2;
+  }
+  .pin span{transform:rotate(45deg);}
+  .pin.band{border:2px solid var(--accent-2);}
+  .band-badge{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent-2);border:1px solid var(--accent-2);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle;}
+  .skill-detail-row{margin-top:10px;}
+  .skill-detail-row .sd-title{font-size:11.5px;color:var(--ink-quiet);margin-bottom:6px;}
+  .chip.small{padding:6px 11px;font-size:12px;}
+  .tag.goal{color:var(--accent-2);}
+  .rec-box{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px;}
+  .rec-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .rec-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .rec-btn.stop{background:#c93e5f;}
+  .rec-dot{width:10px;height:10px;border-radius:50%;background:#fff;}
+  .rec-btn.stop .rec-dot{border-radius:2px;animation:recpulse 1s infinite;}
+  @keyframes recpulse{50%{opacity:.4;}}
+  .rec-timer{font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-quiet);}
+  .rec-box audio, .listen-box audio{width:100%;margin-top:10px;height:40px;}
+  .rec-file-label{font-size:12px;color:var(--ink-quiet);text-decoration:underline;cursor:pointer;}
+  .listen-link{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;}
+  .tag.sound{color:var(--accent);}
+  .tag.match{background:rgba(46,139,110,.2);color:var(--accent);font-weight:600;}
+  .filter-row{
+    display:flex;gap:8px;overflow-x:auto;
+    padding:0 18px 12px;
+    flex-shrink:0;
+  }
+  .filter-chip{
+    white-space:nowrap;
+    padding:7px 12px;
+    border-radius:999px;
+    background:var(--chip);
+    border:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink);
+    cursor:pointer;
+    user-select:none;
+  }
+  .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+  .map-district{
+    text-align:center;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:.02em;
+    padding:0 18px 8px;
+    display:none;
+  }
+  .map-district.show{display:block;}
+  .map-district .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;}
+
+  /* card list (feed) */
+  .card{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .card-top{display:flex;gap:12px;align-items:center;}
+  .card-name{font-weight:700;font-size:14px;}
+  .card-meta{font-size:12px;color:var(--ink-quiet);margin-top:1px;}
+  .card-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .tag{
+    font-size:11px;
+    padding:4px 9px;
+    border-radius:999px;
+    background:var(--chip);
+    color:var(--ink-quiet);
+  }
+  .dist{
+    margin-left:auto;
+    font-size:11.5px;
+    color:var(--good);
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  /* profile */
+  .profile-hero{
+    text-align:center;
+    padding:10px 18px 16px;
+  }
+  .profile-hero .avatar{width:84px;height:84px;font-size:28px;margin:0 auto 10px;}
+  .profile-hero h3{margin:0;font-size:18px;}
+  .profile-hero .loc{color:var(--ink-quiet);font-size:12.5px;margin-top:3px;}
+  .stat-row{display:flex;justify-content:center;gap:26px;margin:14px 0 6px;}
+  .stat{text-align:center;}
+  .stat b{display:block;font-size:15px;}
+  .stat span{font-size:11px;color:var(--ink-quiet);}
+  .section-title{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-quiet);
+    margin:16px 0 8px;
+    font-weight:700;
+  }
+  .bio-text{font-size:13px;line-height:1.55;color:#d8d8dd;}
+  .contact-btn{
+    display:flex;gap:8px;margin-top:16px;
+  }
+  .contact-btn button{
+    flex:1;
+    border-radius:14px;
+    padding:13px;
+    font-size:13.5px;
+    font-weight:700;
+    font-family:inherit;
+    border:none;
+    cursor:pointer;
+  }
+  .contact-btn .msg{background:var(--accent);color:#fff;}
+  .contact-btn .save{background:var(--chip);color:var(--ink);border:1px solid var(--line);}
+
+  /* chat */
+  .chat-header{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 18px 12px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .chat-header .avatar{width:36px;height:36px;font-size:13px;}
+  .chat-header h4{margin:0;font-size:14.5px;}
+  .chat-header .status{font-size:11px;color:var(--ink-quiet);}
+  .bubble{
+    max-width:74%;
+    padding:10px 13px;
+    border-radius:16px;
+    font-size:13px;
+    line-height:1.4;
+    margin-bottom:8px;
+    word-wrap:break-word;
+  }
+  .bubble.in{background:var(--panel-2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px;}
+  .bubble.out{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .chat-scroll{display:flex;flex-direction:column;}
+  .chat-input{
+    display:flex;gap:8px;padding:10px 14px 16px;
+    border-top:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .chat-input input.box{
+    flex:1;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:20px;padding:10px 16px;color:var(--ink);font-size:13px;
+    font-family:inherit;outline:none;
+  }
+  .chat-input input.box::placeholder{color:var(--ink-quiet);}
+  .chat-input .send{
+    width:38px;height:38px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    border:none;cursor:pointer;
+  }
+  .chat-input .send svg{width:16px;height:16px;fill:#fff;}
+
+  .chat-list-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 4px;border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .chat-list-item .meta{flex:1;min-width:0;}
+  .chat-list-item .name{font-weight:700;font-size:13.5px;}
+  .chat-list-item .preview{font-size:12px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .msg-line{font-size:12.5px;text-align:center;margin-top:10px;}
+  .msg-line.err{color:#ff6b8b;}
+  .msg-line.muted{color:var(--ink-quiet);}
+
+  /* ---------- поведение как у нативного приложения ---------- */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{overflow-x:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  .layout{width:100%;}
+  .app-shell, .screen, .scroll, .filter-row, .map-area{min-width:0;}
+  .text-input, textarea.text-input, .chat-input input.box{font-size:16px;}
+  .district-chip-note{font-size:11.5px;color:var(--ink-quiet);margin-top:6px;}
+  .chat-list-item.unread .name{color:var(--accent);}
+  .chat-list-item.unread .preview{color:var(--ink);font-weight:600;}
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:#ff6b8b;flex-shrink:0;}
+  .brand-bar{display:none;align-items:center;gap:8px;padding:8px 18px 4px;font-size:13.5px;font-weight:700;letter-spacing:.02em;color:var(--ink);flex-shrink:0;}
+  .brand-bar img{width:24px;height:24px;border-radius:7px;display:block;}
+  .brand-logo{width:56px;height:56px;border-radius:14px;display:block;margin-bottom:10px;}
+  .header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .ghost-btn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .ghost-btn.accent{border-color:var(--accent);color:var(--accent);}
+  .quiet-link{background:none;border:none;color:var(--ink-quiet);font-size:12px;font-family:inherit;cursor:pointer;text-decoration:underline;padding:4px 6px;}
+  .quiet-link.danger{color:#ff6b8b;}
+  .looking-for{margin:10px auto 0;max-width:320px;font-size:13px;color:var(--accent-2);line-height:1.4;}
+  .card-looking{font-size:12px;color:var(--accent-2);margin-top:8px;}
+  .vis-card{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:16px;font-size:12.5px;line-height:1.45;}
+  .vis-card .vis-status{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink);}
+  .vis-card .vis-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--good);}
+  .vis-card.off .vis-dot{background:var(--ink-quiet);}
+  .vis-card .vis-note{color:var(--ink-quiet);margin-top:4px;}
+  .vis-card .vis-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .map-empty{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:78%;text-align:center;z-index:3;font-size:13px;color:var(--ink);line-height:1.45;}
+  .map-empty .ghost-btn{margin-top:10px;}
+  .map-hidden-note{text-align:center;font-size:12px;color:var(--warn);padding:0 18px 8px;cursor:pointer;display:none;}
+  .blocked-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2a2b32;color:var(--ink);padding:10px 16px;border-radius:12px;font-size:13px;z-index:80;max-width:88vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;}
+  .toast.show{opacity:1;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;align-items:center;justify-content:center;padding:20px;}
+  .modal-box{background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:360px;width:100%;}
+  .danger-btn{background:#c93e5f !important;}
+
+  /* ---------- «О приложении» ---------- */
+  .about-overlay{display:none;position:fixed;inset:0;z-index:60;background:var(--panel);flex-direction:column;}
+  .about-overlay.open{display:flex;}
+  .about-head{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .about-head button{background:none;border:none;color:var(--ink-quiet);font-size:18px;cursor:pointer;padding:4px 8px 4px 0;font-family:inherit;}
+  .about-head h2{margin:0;font-size:17px;}
+  .about-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 18px calc(28px + env(safe-area-inset-bottom));}
+  .about-inner{max-width:520px;margin:0 auto;}
+  .about-body p{font-size:13.5px;line-height:1.5;margin:6px 0;color:var(--ink);}
+  .about-body p.q{color:var(--ink-quiet);font-size:12.5px;}
+  .about-steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:st;}
+  .about-steps li{counter-increment:st;position:relative;padding:0 0 10px 34px;font-size:13.5px;line-height:1.45;}
+  .about-steps li::before{content:counter(st);position:absolute;left:0;top:-1px;width:23px;height:23px;border-radius:50%;background:var(--chip);border:1px solid var(--line);color:var(--accent);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
+  .about-tabs{display:flex;gap:8px;margin:8px 0 10px;}
+  .about-tabs .chip{flex:1;text-align:center;}
+  .about-ok{background:rgba(46,139,110,.14);border:1px solid var(--accent);border-radius:12px;padding:10px 13px;font-size:13px;margin:10px 0;}
+  .about-faq details{border-bottom:1px solid var(--line);padding:10px 0;}
+  .about-faq summary{cursor:pointer;font-size:13.5px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px;}
+  .about-faq summary::-webkit-details-marker{display:none;}
+  .about-faq summary::after{content:'+';color:var(--ink-quiet);font-weight:400;}
+  .about-faq details[open] summary::after{content:'–';}
+  .about-faq details p{color:var(--ink-quiet);}
+  .about-city{display:flex;gap:8px;margin-top:10px;}
+  .about-city .text-input{flex:1;min-width:0;}
+  .about-city .ghost-btn{white-space:normal;}
+  .about-foot{text-align:center;color:var(--ink-quiet);font-size:11.5px;margin-top:22px;}
+  .city-note{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 6px;font-size:12.5px;color:var(--ink-quiet);margin:0 0 14px;text-align:center;}
+  .install-hint{display:flex;align-items:center;gap:8px;margin:0 18px 10px;padding:10px 10px 10px 13px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;flex-shrink:0;}
+  .install-hint .ih-text{flex:1;min-width:0;font-size:12px;color:var(--ink-quiet);line-height:1.35;}
+  .install-hint .ih-text b{display:block;color:var(--ink);font-size:13px;margin-bottom:1px;}
+  .install-hint .ih-x{background:none;border:none;color:var(--ink-quiet);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px;font-family:inherit;}
+  .res-head{display:flex;align-items:center;justify-content:space-between;scroll-margin-top:6px;}
+  .res-head .quiet-link{text-transform:none;letter-spacing:0;font-weight:400;}
+  .city-note .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;}
+
+  @media (max-width:639px){
+    html, body{height:100%;overflow:hidden;overscroll-behavior:none;}
+    body{padding:0;display:block;background:var(--panel);}
+    .top{display:none;}
+    #install-btn{position:fixed;top:calc(8px + env(safe-area-inset-top));right:10px;margin:0;z-index:30;padding:7px 12px;font-size:12px;background:var(--panel-2);}
+    .layout{display:block;gap:0;max-width:none;}
+    .app-shell{
+      position:fixed;
+      top:0; right:0; bottom:0; left:0;
+      width:auto;
+      max-width:none;
+      height:auto;
+      min-height:0;
+      padding-top:calc(10px + env(safe-area-inset-top));
+    }
+    .tabbar{padding-bottom:calc(12px + env(safe-area-inset-bottom));}
+    .scroll{overscroll-behavior:contain;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="badge">СВОЙ НАСТРОЙ</div>
+  <h1>Найди музыкантов рядом с собой</h1>
+  <p>Екатеринбург · зарегистрируйся, заполни анкету — и смотри, кто рядом.</p>
+</div>
+
+<button id="install-btn">Установить на телефон</button>
+
+<div class="layout">
+  <div class="app-shell" id="app-shell">
+        <div class="brand-bar" id="brand-bar"><img src="icons/icon-192.png" alt=""><span>Свой Настрой</span></div>
+
+        <!-- SCREEN: AUTH -->
+        <section class="screen active" id="s-auth">
+          <div class="app-header">
+            <img class="brand-logo" src="icons/icon-192.png" alt="">
+            <h2>Свой Настрой</h2>
+            <div class="sub" id="auth-sub">Проверяю сессию…</div>
+          </div>
+          <div class="scroll">
+            <div class="city-note"><span class="dot"></span><span>Пока работаем только в Екатеринбурге</span><button class="quiet-link" id="auth-about-btn" type="button">О приложении и установка</button></div>
+            <div class="field">
+              <label>Email</label>
+              <input class="text-input" type="email" id="auth-email" autocomplete="email" placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label>Пароль</label>
+              <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 6 символов">
+              <div style="text-align:right;margin-top:4px;"><button class="quiet-link" id="auth-forgot-btn" type="button">Забыл пароль?</button></div>
+            </div>
+            <div class="field" id="consent-field" style="display:none;">
+              <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400;">
+                <input type="checkbox" id="auth-consent" style="margin-top:3px;">
+                <span style="font-size:12px;color:var(--ink-quiet);line-height:1.4;">Согласен(на) с <a href="privacy.html" target="_blank" style="color:var(--accent);">политикой конфиденциальности</a> и обработкой персональных данных, включая геолокацию</span>
+              </label>
+            </div>
+            <div class="msg-line err" id="auth-error" style="display:none;"></div>
+            <div class="msg-line" id="auth-info" style="display:none;text-align:left;color:var(--good);margin:0 0 10px;"></div>
+            <button class="primary-btn" id="auth-submit-btn">Войти</button>
+            <button class="primary-btn" id="auth-toggle-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Нет аккаунта? Зарегистрироваться</button>
+          </div>
+        </section>
+
+        <!-- SCREEN: ANKETA (создание / редактирование профиля) -->
+        <section class="screen" id="s-anketa">
+          <div class="app-header">
+            <h2 id="anketa-title">Анкета</h2>
+            <div class="sub" id="anketa-sub">Расскажи о себе — это займёт минуту</div>
+          </div>
+          <div class="scroll">
+            <div class="msg-line muted" id="anketa-verify-notice" style="display:none;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:16px;">Мы отправили письмо для подтверждения на твой email — можно проверить позже, это не мешает пользоваться приложением.</div>
+            <div class="field">
+              <label>Кто ты</label>
+              <div class="chips" id="f-kind">
+                <span class="chip on" data-val="musician">Музыкант</span>
+                <span class="chip" data-val="band">Группа ищет участника</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Фото профиля (необязательно)</label>
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div class="avatar a1" id="f-avatar-preview" style="width:64px;height:64px;font-size:22px;">?</div>
+                <div style="flex:1;">
+                  <input type="file" id="f-avatar-input" accept="image/*" style="font-size:12px;color:var(--ink-quiet);max-width:100%;">
+                  <div class="msg-line muted" id="f-avatar-status" style="display:none;margin-top:6px;text-align:left;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label id="f-name-label">Имя</label>
+              <input class="text-input" type="text" id="f-name" placeholder="Как тебя зовут?">
+            </div>
+            <div class="field">
+              <label>Возраст (обязательно, сервис только для совершеннолетних)</label>
+              <input class="text-input" type="number" id="f-age" min="18" max="99" placeholder="Например, 27">
+            </div>
+            <div class="field">
+              <label>Район</label>
+              <div class="chips" id="f-district">
+                <span class="chip" data-val="Академический">Академический</span>
+                <span class="chip" data-val="Верх-Исетский">Верх-Исетский</span>
+                <span class="chip" data-val="Железнодорожный">Железнодорожный</span>
+                <span class="chip" data-val="Кировский">Кировский</span>
+                <span class="chip" data-val="Ленинский">Ленинский</span>
+                <span class="chip" data-val="Октябрьский">Октябрьский</span>
+                <span class="chip" data-val="Орджоникидзевский">Орджоникидзевский</span>
+                <span class="chip" data-val="Чкаловский">Чкаловский</span>
+              </div>
+              <div class="district-chip-note">Подсказка: ВИЗ — Верх-Исетский, Уралмаш и Эльмаш — Орджоникидзевский, Втузгородок — Кировский, Юго-Запад — Ленинский, Ботаника и Химмаш — Чкаловский, Сортировка — Железнодорожный, Синие Камни — Октябрьский.</div>
+            </div>
+            <div class="field">
+              <label id="f-instr-label">Что умеешь</label>
+              <div class="chips" id="f-instruments">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
+              </div>
+              <div id="f-skill-details"></div>
+            </div>
+            <div class="field" id="f-needs-field" style="display:none;">
+              <label>Кого ищете</label>
+              <div class="chips" id="f-needs">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Уровень</label>
+              <div class="chips" id="f-level">
+                <span class="chip" data-val="Новичок">Новичок</span>
+                <span class="chip" data-val="Средний">Средний</span>
+                <span class="chip" data-val="Профи">Профи</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Жанры (до трёх)</label>
+              <div class="chips" id="f-genres">
+                <span class="chip" data-val="Рок">Рок</span>
+                <span class="chip" data-val="Метал">Метал</span>
+                <span class="chip" data-val="Поп">Поп</span>
+                <span class="chip" data-val="Джаз и блюз">Джаз и блюз</span>
+                <span class="chip" data-val="Фолк">Фолк</span>
+                <span class="chip" data-val="Классика">Классика</span>
+                <span class="chip" data-val="Электроника">Электроника</span>
+                <span class="chip" data-val="Хип-хоп">Хип-хоп</span>
+              </div>
+              <div id="f-genre-details"></div>
+            </div>
+            <div class="field">
+              <label>Цели (до трёх)</label>
+              <div class="chips" id="f-goal">
+                <span class="chip" data-val="Играть в группе">Играть в группе</span>
+                <span class="chip" data-val="Поджемить">Поджемить</span>
+                <span class="chip" data-val="Записать трек">Записать трек</span>
+                <span class="chip" data-val="Выступать и подрабатывать">Выступать и подрабатывать</span>
+                <span class="chip" data-val="Прокачаться">Прокачаться</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Кого ищешь сейчас (необязательно)</label>
+              <input class="text-input" type="text" id="f-looking" maxlength="80" placeholder="Например: барабанщик в кавер-группу, репетиции по выходным">
+            </div>
+            <div class="field">
+              <label>Как ты звучишь (необязательно)</label>
+              <div class="rec-box">
+                <div class="rec-row">
+                  <button type="button" class="rec-btn" id="rec-btn"><span class="rec-dot"></span><span id="rec-btn-text">Записать до 60 сек</span></button>
+                  <span class="rec-timer" id="rec-timer"></span>
+                </div>
+                <div class="msg-line muted" id="rec-status" style="display:none;text-align:left;margin-top:8px;"></div>
+                <audio id="rec-preview" controls preload="none" style="display:none;"></audio>
+                <div class="rec-row" style="margin-top:10px;">
+                  <label class="rec-file-label" for="rec-file">или загрузить файл</label>
+                  <input type="file" id="rec-file" accept="audio/*" style="display:none;">
+                  <button type="button" class="quiet-link danger" id="rec-remove" style="display:none;">Удалить запись</button>
+                </div>
+                <div class="district-chip-note">Сыграй кусочек, спой куплет или покажи свой звук. Телефон лучше поставить в полуметре от инструмента.</div>
+              </div>
+              <input class="text-input" type="url" id="f-music-link" placeholder="Ссылка на твою музыку: Яндекс Музыка, VK, YouTube…" style="margin-top:10px;">
+            </div>
+            <div class="field">
+              <label>О себе (характер, бэкграунд)</label>
+              <textarea class="text-input" id="f-bio" placeholder="Люблю Radiohead и советский рок, играю 4 года, ищу барабанщика и басиста в районе Уралмаша…"></textarea>
+            </div>
+            <div class="msg-line err" id="anketa-error" style="display:none;"></div>
+            <div class="msg-line muted" id="anketa-status" style="display:none;"></div>
+            <button class="primary-btn" id="anketa-submit-btn">Показать меня на карте</button>
+          </div>
+        </section>
+
+        <!-- SCREEN: MAP -->
+        <section class="screen" id="s-map">
+          <div class="app-header header-row">
+            <div>
+              <h2>Рядом с тобой</h2>
+              <div class="sub" id="map-sub">Загружаю…</div>
+            </div>
+            <button class="ghost-btn accent" id="map-invite-btn">+ Пригласить</button>
+          </div>
+          <div class="map-district" id="map-district"></div>
+          <div class="install-hint" id="install-hint" style="display:none;">
+            <div class="ih-text"><b>Установи на экран телефона</b><span>Откроется как обычное приложение — без браузера и без поиска ссылки</span></div>
+            <button class="ghost-btn accent" id="install-hint-open" type="button">Как</button>
+            <button class="ih-x" id="install-hint-close" type="button" aria-label="Закрыть">×</button>
+          </div>
+          <div class="map-hidden-note" id="map-hidden-note">Твоя анкета сейчас скрыта от других · открыть профиль</div>
+          <div class="filter-row" id="map-filter">
+            <span class="filter-chip on" data-val="Все">Все</span>
+            <span class="filter-chip" data-val="Гитара">Гитара</span>
+            <span class="filter-chip" data-val="Вокал">Вокал</span>
+            <span class="filter-chip" data-val="Барабаны">Барабаны</span>
+            <span class="filter-chip" data-val="Бас">Бас</span>
+            <span class="filter-chip" data-val="Клавиши">Клавиши</span>
+            <span class="filter-chip" data-val="Струнные">Струнные</span>
+            <span class="filter-chip" data-val="Духовые">Духовые</span>
+            <span class="filter-chip" data-val="За пультом">За пультом</span>
+            <span class="filter-chip" data-val="Группы">Группы</span>
+          </div>
+          <div class="view-row">
+            <div class="view-toggle" id="map-view-toggle"><button type="button" class="on" data-v="scheme">Схема</button><button type="button" data-v="list">Список</button></div>
+            <div class="map-scale" id="map-scale"></div>
+          </div>
+          <div class="map-area" id="map-area">
+            <div class="me-dot"></div>
+            <div class="map-empty" id="map-empty" style="display:none;">Рядом пока никого с такими фильтрами.<br>Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="map-empty-invite-btn">Пригласить</button></div>
+          </div>
+          <div id="map-list"></div>
+        </section>
+
+        <!-- SCREEN: SEARCH -->
+        <section class="screen" id="s-search">
+          <div class="app-header">
+            <h2>Кого ищешь?</h2>
+            <div class="sub">Фильтры + радиус поиска</div>
+          </div>
+          <div class="scroll">
+            <div class="field">
+              <label>Кто</label>
+              <div class="chips" id="sf-kind">
+                <span class="chip" data-val="musician">Музыканты</span>
+                <span class="chip" data-val="band">Группы</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Что умеет</label>
+              <div class="chips" id="sf-instrument">
+                <span class="chip" data-val="Гитара">Гитара</span>
+                <span class="chip" data-val="Бас">Бас</span>
+                <span class="chip" data-val="Барабаны">Барабаны</span>
+                <span class="chip" data-val="Клавиши">Клавиши</span>
+                <span class="chip" data-val="Вокал">Вокал</span>
+                <span class="chip" data-val="Струнные">Струнные</span>
+                <span class="chip" data-val="Духовые">Духовые</span>
+                <span class="chip" data-val="За пультом">За пультом</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Уровень</label>
+              <div class="chips" id="sf-level">
+                <span class="chip" data-val="Новичок">Новичок</span>
+                <span class="chip" data-val="Средний">Средний</span>
+                <span class="chip" data-val="Профи">Профи</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Цель</label>
+              <div class="chips" id="sf-goal">
+                <span class="chip" data-val="Играть в группе">Играть в группе</span>
+                <span class="chip" data-val="Поджемить">Поджемить</span>
+                <span class="chip" data-val="Записать трек">Записать трек</span>
+                <span class="chip" data-val="Выступать и подрабатывать">Выступать и подрабатывать</span>
+                <span class="chip" data-val="Прокачаться">Прокачаться</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Жанр</label>
+              <div class="chips" id="sf-genre">
+                <span class="chip" data-val="Рок">Рок</span>
+                <span class="chip" data-val="Метал">Метал</span>
+                <span class="chip" data-val="Поп">Поп</span>
+                <span class="chip" data-val="Джаз и блюз">Джаз и блюз</span>
+                <span class="chip" data-val="Фолк">Фолк</span>
+                <span class="chip" data-val="Классика">Классика</span>
+                <span class="chip" data-val="Электроника">Электроника</span>
+                <span class="chip" data-val="Хип-хоп">Хип-хоп</span>
+              </div>
+              <div id="sf-genre-details"></div>
+            </div>
+            <div class="field">
+              <label>Радиус</label>
+              <div class="chips" id="sf-radius">
+                <span class="chip" data-val="1">1 км</span>
+                <span class="chip" data-val="3">3 км</span>
+                <span class="chip" data-val="5">5 км</span>
+                <span class="chip" data-val="10">10 км</span>
+                <span class="chip on" data-val="25">25 км</span>
+              </div>
+            </div>
+            <button class="primary-btn" id="search-submit-btn">Показать совпадения</button>
+
+            <div class="section-title res-head" id="search-results-title" style="margin-top:22px;"><span id="search-count">Результаты</span><button class="quiet-link" id="search-up-btn" type="button" style="display:none;">↑ К фильтрам</button></div>
+            <div id="search-results"><div class="msg-line muted">Настрой фильтры и нажми «Показать совпадения».</div></div>
+          </div>
+        </section>
+
+        <!-- SCREEN: PROFILE -->
+        <section class="screen" id="s-profile">
+          <div class="scroll">
+            <div class="profile-hero">
+              <div class="avatar a1" id="p-avatar">?</div>
+              <h3 id="p-name">—</h3>
+              <div class="loc" id="p-loc"></div>
+              <div class="looking-for" id="p-looking" style="display:none;"></div>
+              <div class="stat-row">
+                <div class="stat"><b id="p-age">—</b><span>возраст</span></div>
+                <div class="stat"><b id="p-level">—</b><span>уровень</span></div>
+                <div class="stat"><b id="p-goal">—</b><span>цель</span></div>
+              </div>
+            </div>
+            <div class="section-title">О себе</div>
+            <div class="bio-text" id="p-bio">—</div>
+            <div id="p-listen" class="listen-box" style="display:none;">
+              <div class="section-title">Послушать</div>
+              <audio id="p-audio" controls preload="none" style="display:none;"></audio>
+              <a id="p-music-link" class="listen-link" target="_blank" rel="noopener noreferrer nofollow" style="display:none;">Слушать на площадке ↗</a>
+            </div>
+            <div class="section-title">Что умеет и чего хочет</div>
+            <div class="card-tags" id="p-tags"></div>
+            <div class="contact-btn" id="p-actions-other" style="display:none;">
+              <button class="save" id="p-like-btn" style="width:100%;">Мне интересно</button>
+              <button class="msg" id="p-msg-btn" style="width:100%;display:none;">Написать</button>
+            </div>
+            <div id="p-actions-other-report" style="display:none;text-align:center;margin-top:10px;">
+              <button class="quiet-link" id="p-report-btn">⚑ Пожаловаться</button>
+              <button class="quiet-link" id="p-block-btn">Заблокировать</button>
+            </div>
+            <div class="contact-btn" id="p-actions-own" style="display:none;">
+              <button class="save" id="p-edit-btn">Редактировать</button>
+              <button class="msg" id="p-logout-btn" style="background:#3a2630;">Выйти</button>
+            </div>
+            <div id="p-own-extra" style="display:none;">
+              <div class="vis-card" id="p-visibility"></div>
+              <button class="primary-btn" id="p-invite-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:12px;">Пригласить знакомых музыкантов</button>
+              <button class="primary-btn" id="p-about-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">О приложении · установка · помощь</button>
+              <div id="p-blocked-wrap" style="display:none;">
+                <div class="section-title">Заблокированные</div>
+                <div id="p-blocked-list"></div>
+              </div>
+              <div style="text-align:center;margin-top:22px;">
+                <button class="quiet-link danger" id="p-delete-btn">Удалить аккаунт</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: CHAT -->
+        <section class="screen" id="s-chat">
+          <div id="chat-list-view" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+            <div class="app-header">
+              <h2>Чаты</h2>
+              <div class="sub">Переписка открывается только после взаимного «интересно»</div>
+            </div>
+            <div id="likes-you-row" style="display:none;padding:0 18px 10px;flex-shrink:0;">
+              <div class="section-title" style="margin:0 0 8px;">Тобой заинтересовались</div>
+              <div id="likes-you-list" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;"></div>
+            </div>
+            <div class="scroll" id="chat-list-scroll">
+              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.<br><button class="ghost-btn accent" id="chat-empty-invite-btn" style="margin-top:12px;">Пригласить знакомых</button></div>
+              <div id="chat-list-items"></div>
+            </div>
+          </div>
+          <div id="chat-thread-view" style="display:none;flex-direction:column;flex:1;min-height:0;">
+            <div class="chat-header">
+              <button id="chat-back-btn" style="background:none;border:none;color:var(--ink-quiet);font-size:18px;cursor:pointer;padding:0 6px 0 0;">←</button>
+              <div class="avatar a1" id="chat-avatar" style="cursor:pointer;">?</div>
+              <div id="chat-peer" style="cursor:pointer;">
+                <h4 id="chat-name">—</h4>
+                <div class="status">чат</div>
+              </div>
+              <button id="chat-report-btn" title="Пожаловаться" style="margin-left:auto;background:none;border:none;color:var(--ink-quiet);font-size:17px;cursor:pointer;padding:4px 6px;">⚑</button>
+            </div>
+            <div class="scroll chat-scroll" id="chat-messages"></div>
+            <div class="msg-line err" id="chat-input-error" style="display:none;margin:0 14px 6px;"></div>
+            <div class="chat-input">
+              <input class="box" id="chat-input-field" placeholder="Сообщение…">
+              <button class="send" id="chat-send-btn"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <div class="tabbar" id="tabbar">
+          <button class="tab-btn" data-screen="s-map">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            Карта
+          </button>
+          <button class="tab-btn" data-screen="s-search">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></svg>
+            Поиск
+          </button>
+          <button class="tab-btn" data-screen="s-chat">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.9 8.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+            <span class="tab-badge" id="chat-tab-badge">0</span>
+            Чат
+          </button>
+          <button class="tab-btn" data-screen="s-profile">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+            Профиль
+          </button>
+        </div>
+  </div>
+</div>
+
+<div class="about-overlay" id="about-overlay" role="dialog" aria-label="О приложении">
+  <div class="about-head"><button id="about-close-btn" aria-label="Назад">←</button><h2>О приложении</h2></div>
+  <div class="about-body"><div class="about-inner">
+
+    <div class="section-title">Установка на экран телефона</div>
+    <div class="about-ok" id="about-installed" style="display:none;">Приложение уже установлено — ты открыл(а) его с экрана телефона.</div>
+    <p class="q">Так оно открывается на весь экран, как обычное приложение, и ссылку не нужно искать.</p>
+    <div class="about-tabs" id="about-os-tabs">
+      <span class="chip" data-os="ios">iPhone</span>
+      <span class="chip" data-os="android">Android</span>
+    </div>
+    <div id="about-ios">
+      <ol class="about-steps">
+        <li>Открой ссылку в <b>Safari</b> или Chrome. Во встроенных браузерах (ВК, Telegram) установка не работает — там открой меню и выбери «Открыть в Safari».</li>
+        <li>Нажми «Поделиться» — квадрат со стрелкой вверх (в Safari он внизу экрана, в Chrome — в адресной строке).</li>
+        <li>Пролистай меню и выбери <b>«На экран «Домой»»</b>.</li>
+        <li>Нажми «Добавить» — иконка появится среди приложений.</li>
+      </ol>
+    </div>
+    <div id="about-android" style="display:none;">
+      <ol class="about-steps">
+        <li>Открой ссылку в <b>Chrome</b>. Если открыл из ВК или другого приложения — нажми ⋮ → «Открыть в браузере».</li>
+        <li>Нажми ⋮ в правом верхнем углу.</li>
+        <li>Выбери <b>«Установить приложение»</b> (или «Добавить на главный экран»).</li>
+        <li>Подтверди — иконка появится на экране.</li>
+      </ol>
+      <button class="primary-btn" id="about-install-btn" style="display:none;margin-top:4px;">Установить сейчас</button>
+    </div>
+
+    <div class="section-title">Как это работает</div>
+    <ol class="about-steps">
+      <li><b>Заполни анкету:</b> на чём играешь, уровень, жанры, чего ищешь. По желанию добавь, как ты звучишь: запиши до 60 секунд прямо в приложении, загрузи аудиофайл или вставь ссылку на Яндекс Музыку, VK, YouTube и другие площадки.</li>
+      <li><b>Смотри, кто рядом:</b> на карте или в поиске. В поиске можно отфильтровать по тому, кто нужен, что умеет, уровню, цели, жанру (с поджанрами) и радиусу.</li>
+      <li><b>Нажми «Мне интересно».</b> Если интерес взаимный — открывается чат. Спама в личку нет.</li>
+    </ol>
+    <p class="q">Чтобы считать расстояния, браузер спросит доступ к геопозиции. Мы сохраняем только примерную точку (около 1 км): другие видят «≈ 2 км» и район, а не твой адрес. Не разрешишь — возьмём центр выбранного района.</p>
+
+    <div class="section-title">Наш подход</div>
+    <p>Приложение нужно, чтобы договориться и пойти играть, а не чтобы листать ленту. Поэтому здесь нет рекламы, бесконечного скролла и навязчивых уведомлений.</p>
+    <p>Анкета показывается 30 дней — на карте только те, кто ищет прямо сейчас. Нашёл группу — скрой анкету одной кнопкой.</p>
+
+    <div class="section-title">География</div>
+    <p>Сейчас Свой Настрой работает только в <b>Екатеринбурге</b>: в анкете выбирается район города. Живёшь в другом месте? Напиши город — так мы узнаем, где приложение ждут.</p>
+    <div class="about-city">
+      <input class="text-input" id="about-city-input" maxlength="40" placeholder="Твой город" autocomplete="off">
+      <button class="ghost-btn accent" id="about-city-btn" type="button">Хочу в своём городе</button>
+    </div>
+    <div class="msg-line muted" id="about-city-msg" style="display:none;text-align:left;margin-top:8px;"></div>
+
+    <div class="section-title">Правила и безопасность</div>
+    <p>Только для тех, кому исполнилось 18 лет. Без оскорблений, спама и экстремистских материалов.</p>
+    <p>Если что-то не так — нажми «⚑ Пожаловаться» в анкете или в чате. «Заблокировать» скроет вас друг от друга.</p>
+    <p>Первую встречу лучше назначать в людном месте: на репетиционной базе, в студии или кафе.</p>
+    <p><a href="privacy.html" target="_blank" rel="noopener" style="color:var(--accent);">Политика конфиденциальности</a></p>
+
+    <div class="section-title">Частые вопросы</div>
+    <div class="about-faq">
+      <details><summary>Почему я никого не вижу?</summary><p>Приложение только запускается, и людей пока немного. Загляни в «Поиск», сними часть фильтров и позови знакомых музыкантов — кнопка «Пригласить» есть в Профиле.</p></details>
+      <details><summary>Зачем нужна геопозиция?</summary><p>Чтобы показать, кто рядом. Мы округляем её до примерно 1 км, а другим показываем расстояние вроде «≈ 2 км» и район. Если доступ закрыт, используем центр выбранного района. Разрешить доступ позже: на iPhone — Настройки → Конфиденциальность → Службы геолокации; на Android — значок слева от адреса сайта → Разрешения → Местоположение.</p></details>
+      <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и 15 МБ) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
+      <details><summary>Как скрыть анкету?</summary><p>В Профиле есть карточка видимости. Нашёл группу — нажми «Я нашёл(ла) группу — скрыть меня». Вернуться можно в любой момент.</p></details>
+      <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Каждое сохранение продлевает показ анкеты ещё на 30 дней.</p></details>
+      <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись исчезают из приложения, но сами файлы могут остаться на сервере хранения (Cloudinary).</p></details>
+      <details><summary>Нужно ли подтверждать почту?</summary><p>При регистрации мы отправляем письмо. Подтвердить можно позже — это не мешает пользоваться приложением.</p></details>
+    </div>
+
+    <div class="section-title">Связаться с нами</div>
+    <p>Нашёл ошибку или есть идея — напиши:<br><a href="mailto:greenbergsound@gmail.com?subject=%D0%A1%D0%B2%D0%BE%D0%B9%20%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9" style="color:var(--accent);">greenbergsound@gmail.com</a></p>
+
+    <div class="about-foot">Свой Настрой · v1.2 · Екатеринбург</div>
+  </div></div>
+</div>
+
+<div id="report-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:360px;width:100%;">
+    <h3 style="margin:0 0 4px;font-size:16px;">Пожаловаться</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;">Жалоба уходит модератору вручную — ответа в приложении не будет.</div>
+    <div class="chips" id="report-reasons" style="margin-bottom:14px;">
+      <span class="chip" data-val="Спам">Спам</span>
+      <span class="chip" data-val="Оскорбления/буллинг">Оскорбления/буллинг</span>
+      <span class="chip" data-val="Экстремистские материалы">Экстремистские материалы</span>
+      <span class="chip" data-val="Мошенничество">Мошенничество</span>
+      <span class="chip" data-val="Другое">Другое</span>
+    </div>
+    <textarea class="text-input" id="report-comment" placeholder="Необязательный комментарий" style="margin-bottom:14px;"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-quiet);margin-bottom:14px;cursor:pointer;"><input type="checkbox" id="report-also-block"> Также заблокировать этого человека</label>
+    <div class="msg-line err" id="report-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="report-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn" id="report-submit-btn" style="margin-top:0;">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<div id="delete-modal-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin:0 0 6px;font-size:16px;">Удалить аккаунт?</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;line-height:1.45;">Удалим навсегда: анкету, лайки, блокировки и все переписки (у собеседников они тоже исчезнут). Восстановить будет нельзя. Для подтверждения введи пароль.</div>
+    <input class="text-input" type="password" id="delete-password" autocomplete="current-password" placeholder="Пароль" style="margin-bottom:12px;">
+    <div class="msg-line err" id="delete-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="delete-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn danger-btn" id="delete-confirm-btn" style="margin-top:0;">Удалить навсегда</button>
+    </div>
+  </div>
+</div>
+
+<div id="reset-modal-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3 style="margin:0 0 6px;font-size:16px;">Новый пароль</h3>
+    <div class="msg-line muted" style="text-align:left;margin:0 0 14px;line-height:1.45;">Придумай пароль — от 8 символов.</div>
+    <input class="text-input" type="password" id="reset-password" autocomplete="new-password" placeholder="Новый пароль" style="margin-bottom:12px;">
+    <div class="msg-line err" id="reset-error" style="display:none;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="primary-btn" id="reset-cancel-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:0;">Отмена</button>
+      <button class="primary-btn" id="reset-confirm-btn" style="margin-top:0;">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  /* ---------- слой данных: REST API (Yandex Cloud, РФ) ---------- */
+  const API_BASE = 'https://api.svoynastroy.ru/v1';
+  const POLICY_VERSION = '2026-10-06';
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch (e){ return null; } },
+    set(k, v){ try { localStorage.setItem(k, v); } catch (e){} },
+    del(k){ try { localStorage.removeItem(k); } catch (e){} },
+  };
+  let accessToken = store.get('sn_access');
+  let refreshToken = store.get('sn_refresh');
+  function setTokens(a, r){
+    accessToken = a || null; refreshToken = r || null;
+    if (a) store.set('sn_access', a); else store.del('sn_access');
+    if (r) store.set('sn_refresh', r); else store.del('sn_refresh');
+  }
+  class ApiError extends Error {
+    constructor(status, code, message){ super(message || code); this.status = status; this.code = code; }
+  }
+  let refreshing = null;
+  function refreshAccess(){
+    if (!refreshToken) return Promise.reject(new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'));
+    if (!refreshing){
+      refreshing = (async () => {
+        let res;
+        try {
+          res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: refreshToken }) });
+        } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+        if (!res.ok){ setTokens(null, null); throw new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'); }
+        const j = await res.json();
+        setTokens(j.access, j.refresh);
+      })().finally(() => { refreshing = null; });
+    }
+    return refreshing;
+  }
+  async function api(method, path, body){
+    const send = () => fetch(API_BASE + path, {
+      method,
+      headers: Object.assign({}, body !== undefined ? { 'Content-Type': 'application/json' } : {}, accessToken ? { Authorization: 'Bearer ' + accessToken } : {}),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+    const isAuthPath = path.startsWith('/auth/');
+    let res;
+    try { res = await send(); } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+    let data = null;
+    if (res.status !== 204) data = await res.json().catch(() => ({}));
+    const errOf = (d) => (d && d.error) || {};
+    if (res.status === 401 && errOf(data).code === 'UNAUTHORIZED' && !isAuthPath && refreshToken){
+      try { await refreshAccess(); }
+      catch (e){ if (e.code !== 'NETWORK') sessionLost(); throw e; }
+      try { res = await send(); } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
+      data = res.status === 204 ? null : await res.json().catch(() => ({}));
+    }
+    if (!res.ok){
+      const er = errOf(data);
+      if (res.status === 401 && er.code === 'UNAUTHORIZED' && !isAuthPath) sessionLost();
+      throw new ApiError(res.status, er.code || 'ERROR', er.message || 'Что-то пошло не так. Попробуй ещё раз.');
+    }
+    return data;
+  }
+  let sessionLostFlag = false;
+  function sessionLost(){
+    if (sessionLostFlag) return;
+    sessionLostFlag = true;
+    setTokens(null, null);
+    Promise.resolve(onAuthChange(null)).finally(() => { sessionLostFlag = false; });
+  }
+  /* опрос вместо realtime: работает только пока вкладка видима; возвращает функцию остановки */
+  function startPoll(fn, ms){
+    let stopped = false, busy = false;
+    const tick = async () => {
+      if (stopped || busy || document.visibilityState === 'hidden') return;
+      busy = true;
+      try { await fn(); } catch (e){ if (!stopped) console.error(e); }
+      busy = false;
+    };
+    const onVis = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVis);
+    const t = setInterval(tick, ms);
+    tick();
+    return () => { stopped = true; clearInterval(t); document.removeEventListener('visibilitychange', onVis); };
+  }
+  function blobToBase64(blob){
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result).split(',')[1] || '');
+      fr.onerror = () => reject(new Error('read'));
+      fr.readAsDataURL(blob);
+    });
+  }
+  const AUDIO_TYPE_FIX = { 'audio/x-m4a': 'audio/mp4', 'audio/m4a': 'audio/mp4', 'audio/aac': 'audio/mp4', 'audio/mp3': 'audio/mpeg', 'audio/x-mpeg': 'audio/mpeg' };
+  async function uploadFile(kind, blob){
+    if (blob.size > 2 * 1024 * 1024) throw new ApiError(413, 'TOO_LARGE', 'Файл больше 2 МБ.');
+    let type = String(blob.type || '').split(';')[0].toLowerCase();
+    type = AUDIO_TYPE_FIX[type] || type;
+    const data = await blobToBase64(blob);
+    return api('POST', '/files', { kind, contentType: type, data });
+  }
+
+  const MAP_RADIUS_KM = 25;
+
+  let currentUser = null;
+  let currentProfile = null;
+  let editingProfile = false;
+  let authMode = 'login';
+  let currentMapFilter = 'Все';
+  let viewedOtherProfile = null;
+  let activeChatId = null;
+  let activeChatOtherUid = null;
+  let unsubscribeMessages = null;
+  let unsubscribeChatList = null;
+  window.__mapProfiles = [];
+  let myOutgoingLikeUids = new Set();
+  let incomingLikesRaw = [];
+  let likerProfilesCache = new Map();
+  let unsubscribeOutgoingLikes = null;
+  let unsubscribeIncomingLikes = null;
+  let pendingAvatarUrl = null;
+  let pendingAvatarKey; /* undefined = не менялось, null = убрать, строка = новый файл */
+  let pendingAudioKey;
+  let chatPollNow = null;
+  let blockNames = {};
+  try { blockNames = JSON.parse(store.get('sn_block_names') || '{}') || {}; } catch (e){ blockNames = {}; }
+  let pendingAudioUrl = null;
+  let pendingAudioDuration = null;
+  let audioUploading = false;
+  let mediaRecorder = null;
+  let recStream = null;
+  let recTimerId = null;
+  const REC_MAX_SEC = 60;
+  const MUSIC_LINK_HOSTS = ['music.yandex.ru', 'music.yandex.com', 'vk.com', 'vk.ru', 'youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be', 'soundcloud.com', 'on.soundcloud.com', 'bandcamp.com', 't.me', 'zvuk.com', 'music.apple.com', 'open.spotify.com', 'band.link', 'mts-music.ru', 'music.mts.ru'];
+  let justRegistered = false;
+  let reportTargetUid = null;
+  let reportTargetChatId = null;
+  const APP_URL = 'https://svoynastroy.ru/';
+  const VISIBLE_DAYS = 30;
+  const MAX_GENRES = 3;
+  const GENRE_TREE = {
+    'Рок': ['Рок-н-ролл', 'Хард-рок', 'Альтернатива и инди', 'Панк и хардкор', 'Пост-панк'],
+    'Метал': ['Хеви и пауэр', 'Трэш и дэт', 'Дум и сладж'],
+    'Поп': ['Инди-поп', 'Синти-поп', 'Эстрада'],
+    'Джаз и блюз': ['Джаз', 'Блюз', 'Фанк и соул'],
+    'Фолк': ['Фолк-рок', 'Кантри', 'Бардовская песня', 'Народная музыка'],
+    'Классика': ['Академическая', 'Камерная', 'Неоклассика'],
+    'Электроника': ['Эмбиент', 'Хаус и техно', 'Синтвейв'],
+    'Хип-хоп': ['Рэп', 'R&B'],
+  };
+  /* старые значения (до v11) читаются как семья + поджанр */
+  const LEGACY_GENRES = {
+    'Инди-рок': ['Рок', 'Альтернатива и инди'],
+    'Пост-панк': ['Рок', 'Пост-панк'],
+    'Джаз': ['Джаз и блюз', 'Джаз'],
+  };
+  function normGenres(p){
+    const fams = [], dets = [];
+    (p && p.genres || []).forEach(g => {
+      if (GENRE_TREE[g]){ if (!fams.includes(g)) fams.push(g); }
+      else if (LEGACY_GENRES[g]){
+        const [f, d] = LEGACY_GENRES[g];
+        if (!fams.includes(f)) fams.push(f);
+        if (!dets.includes(d)) dets.push(d);
+      }
+    });
+    (p && p.genreDetails || []).forEach(d => {
+      const f = Object.keys(GENRE_TREE).find(k => GENRE_TREE[k].includes(d));
+      if (f && fams.includes(f) && !dets.includes(d)) dets.push(d);
+    });
+    return { families: fams, details: dets };
+  }
+  function genreTags(p){ const g = normGenres(p); return g.families.concat(g.details); }
+  const SKILL_DETAILS = {
+    'Гитара': ['Акустика', 'Электро'],
+    'Барабаны': ['Перкуссия'],
+    'Клавиши': ['Пианино', 'Синтезатор', 'Сэмплы и MIDI'],
+    'Струнные': ['Скрипка', 'Альт', 'Виолончель', 'Контрабас'],
+    'Духовые': ['Саксофон', 'Труба', 'Тромбон', 'Флейта', 'Кларнет'],
+    'За пультом': ['Концертный звук', 'Сведение и запись'],
+  };
+  const OLD_GOALS = { 'Собрать группу': 'Играть в группе', 'Джемы': 'Поджемить', 'Уроки': 'Прокачаться' };
+  const MAX_GOALS = 3;
+  function goalsOf(p){
+    if (p && Array.isArray(p.goals) && p.goals.length) return p.goals;
+    if (p && p.goal) return [OLD_GOALS[p.goal] || p.goal];
+    return [];
+  }
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  let blockedByMe = new Set();
+  let blockedMe = new Set();
+  let unsubscribeBlocksOut = null;
+  let unsubscribeBlocksIn = null;
+  let chatItemsCache = [];
+  let unseenLikesCount = 0;
+  let unreadChatsCount = 0;
+  const BASE_TITLE = document.title;
+
+  /* ---------- helpers ---------- */
+  function $(id){ return document.getElementById(id); }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2){
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+  function bearingDeg(lat1, lon1, lat2, lon2){
+    const φ1 = lat1*Math.PI/180, φ2 = lat2*Math.PI/180;
+    const λ1 = lon1*Math.PI/180, λ2 = lon2*Math.PI/180;
+    const y = Math.sin(λ2-λ1)*Math.cos(φ2);
+    const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+    return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
+  }
+
+  /* ---------- приватность координат: храним только приблизительную точку (~1 км) ---------- */
+  const roundCoord = v => Number((Math.round(v * 100) / 100).toFixed(2));
+  const isRoughCoord = v => typeof v === 'number' && Math.abs(Math.round(v * 100) - v * 100) < 1e-6;
+  function fmtDist(km){ return km < 1 ? '< 1 км' : '≈ ' + Math.round(km) + ' км'; }
+  /* приблизительные центры районов — запасной вариант, если геопозиция недоступна */
+  const DISTRICT_CENTERS = {
+    'Академический': [56.79, 60.51], 'Верх-Исетский': [56.84, 60.54], 'Железнодорожный': [56.86, 60.61],
+    'Кировский': [56.83, 60.63], 'Ленинский': [56.84, 60.60], 'Октябрьский': [56.81, 60.61],
+    'Орджоникидзевский': [56.89, 60.61], 'Чкаловский': [56.79, 60.64],
+  };
+  function migratePrivacy(){ /* на сервере: координаты округляются, e-mail в анкете не хранится */ }
+
+  const AVATAR_CLASSES = ['a1','a2','a3','a4','a5'];
+  function avatarClassFor(uid){
+    let sum = 0; for (const ch of uid) sum += ch.charCodeAt(0);
+    return AVATAR_CLASSES[sum % AVATAR_CLASSES.length];
+  }
+  function initialsFor(p){
+    if (p.instruments && p.instruments[0]) return p.instruments[0][0].toUpperCase();
+    return (p.name || '?')[0].toUpperCase();
+  }
+  function avatarInnerHtml(p){
+    return (p && p.avatarUrl)
+      ? '<img src="' + escapeHtml(p.avatarUrl) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">'
+      : escapeHtml(initialsFor(p || {}));
+  }
+
+  let toastTimer = null;
+  function showToast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  async function inviteFriends(){
+    const text = 'Нашёл(ла) приложение, где музыканты Екатеринбурга ищут друг друга по районам — без ленты и лишнего шума. Заходи:';
+    if (navigator.share){
+      try { await navigator.share({ title: 'Свой Настрой', text, url: APP_URL }); } catch (e){}
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text + ' ' + APP_URL);
+      showToast('Ссылка скопирована — отправь её знакомым');
+    } catch (e){
+      prompt('Скопируй ссылку и отправь знакомым:', APP_URL);
+    }
+  }
+
+  function isBlockedPair(uid){ return blockedByMe.has(uid) || blockedMe.has(uid); }
+
+  function isProfileVisible(p){
+    if (!p || p.hidden) return false;
+    return !p.activeUntil || p.activeUntil > Date.now();
+  }
+
+  /* ---------- звук: запись в приложении / файл / ссылка ---------- */
+  function playableAudioUrl(url){
+    return url || null;
+  }
+  function normalizeMusicLink(raw){
+    const t = String(raw || '').trim();
+    if (!t) return { ok: true, url: null };
+    let u;
+    try { u = new URL(/^https?:\/\//i.test(t) ? t : 'https://' + t); } catch (e){ return { ok: false }; }
+    const host = u.hostname.toLowerCase();
+    const allowed = MUSIC_LINK_HOSTS.some(h => host === h || host.endsWith('.' + h));
+    if (!allowed || u.protocol !== 'https:') return { ok: false };
+    return { ok: true, url: u.toString() };
+  }
+  function fmtSec(sec){ sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+  function setRecStatus(msg){ const el = $('rec-status'); el.textContent = msg || ''; el.style.display = msg ? 'block' : 'none'; }
+  function renderRecUI(){
+    const has = !!pendingAudioUrl;
+    const prev = $('rec-preview');
+    prev.style.display = has ? 'block' : 'none';
+    if (has && prev.dataset.src !== pendingAudioUrl){ prev.src = playableAudioUrl(pendingAudioUrl); prev.dataset.src = pendingAudioUrl; }
+    if (!has){ prev.removeAttribute('src'); prev.dataset.src = ''; }
+    $('rec-remove').style.display = has ? 'inline-block' : 'none';
+    if (!mediaRecorder){
+      $('rec-btn').classList.remove('stop');
+      $('rec-btn-text').textContent = has ? 'Перезаписать' : 'Записать до 60 сек';
+      $('rec-timer').textContent = has && pendingAudioDuration ? fmtSec(pendingAudioDuration) : '';
+    }
+  }
+  function stopRecStream(){
+    if (recStream){ recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+    clearInterval(recTimerId); recTimerId = null;
+  }
+  function cancelRecording(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive'){ mediaRecorder.onstop = null; mediaRecorder.stop(); }
+    mediaRecorder = null;
+    stopRecStream();
+  }
+  async function uploadAudio(blob, durationSec, filename){
+    audioUploading = true;
+    setRecStatus('Загружаю запись…');
+    try {
+      const up = await uploadFile('audio', blob);
+      pendingAudioUrl = up.url;
+      pendingAudioKey = up.key;
+      pendingAudioDuration = Math.min(REC_MAX_SEC, Math.round(durationSec || 0)) || null;
+      setRecStatus('Запись загружена. Не забудь сохранить анкету.');
+    } catch (err){
+      console.error(err);
+      setRecStatus('Не удалось загрузить запись (' + err.message + '). Попробуй ещё раз.');
+    } finally {
+      audioUploading = false;
+      renderRecUI();
+    }
+  }
+  async function startRecording(){
+    if (!navigator.mediaDevices || !window.MediaRecorder){
+      setRecStatus('Этот браузер не умеет записывать звук. Загрузи файл или обнови браузер.');
+      return;
+    }
+    try {
+      // для музыки выключаем «телефонную» обработку голоса — она режет звук инструментов
+      recStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    } catch (err){
+      setRecStatus('Нет доступа к микрофону. Разреши его в настройках браузера и попробуй снова.');
+      return;
+    }
+    const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+    const mimeType = types.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+    const chunks = [];
+    const rec = new MediaRecorder(recStream, mimeType ? { mimeType, audioBitsPerSecond: 128000 } : {});
+    mediaRecorder = rec;
+    const startedAt = Date.now();
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      const dur = (Date.now() - startedAt) / 1000;
+      mediaRecorder = null;
+      stopRecStream();
+      const type = rec.mimeType || mimeType || 'audio/webm';
+      const ext = type.includes('mp4') ? 'm4a' : type.includes('ogg') ? 'ogg' : 'webm';
+      if (dur < 2){ setRecStatus('Слишком коротко — запиши хотя бы пару секунд.'); renderRecUI(); return; }
+      uploadAudio(new Blob(chunks, { type }), dur, 'sample.' + ext);
+    };
+    rec.start(1000);
+    $('rec-btn').classList.add('stop');
+    $('rec-btn-text').textContent = 'Стоп';
+    setRecStatus('Идёт запись…');
+    recTimerId = setInterval(() => {
+      const sec = (Date.now() - startedAt) / 1000;
+      $('rec-timer').textContent = fmtSec(sec) + ' / ' + fmtSec(REC_MAX_SEC);
+      if (sec >= REC_MAX_SEC && rec.state === 'recording') rec.stop();
+    }, 250);
+  }
+
+  /* ---------- фильтр контента: экстремизм + буллинг ---------- */
+  const EXTREMISM_PATTERNS = [
+    'игил', 'исис', 'aль-каида', 'аль-каида', 'аль каида', 'ауе', 'а.у.е',
+    'мизантропик division', 'мизантропик дивижн', 'колумбайн', 'скулшутинг', 'скул шутинг',
+    'талибан', 'хизб ут-тахрир', 'хизб ут тахрир', 'нацбат',
+    'зига', 'зиг хайль', 'sieg heil', '14/88', '1488',
+    'россия для русских', 'смерть хачам', 'бей хачей', 'бей чурок', 'бей жидов',
+    'резать русских', 'джихад против', 'газават'
+  ];
+  const BULLYING_INSULTS = [
+    'тварь', 'урод', 'ублюдок', 'дебил', 'даун', 'ничтожество',
+    'конченая', 'конченый', 'отброс', 'мразь', 'чмо', 'позорище'
+  ];
+  const BULLYING_THREATS = [
+    'убью', 'сдохни', 'найду и', 'пожалеешь', 'проучу', 'закопаю', 'урою', 'зарежу'
+  ];
+  function normalizeForFilter(text){
+    return String(text || '').toLowerCase().replace(/ё/g, 'е');
+  }
+  function containsAny(normalized, list){
+    return list.some(marker => normalized.includes(marker));
+  }
+  function checkContentSafety(rawText){
+    const text = normalizeForFilter(rawText);
+    if (!text) return { ok: true };
+    if (containsAny(text, EXTREMISM_PATTERNS)){
+      return { ok: false, reason: 'Текст похож на экстремистские материалы — сохранение заблокировано.' };
+    }
+    const hasInsult = containsAny(text, BULLYING_INSULTS);
+    const hasThreat = containsAny(text, BULLYING_THREATS);
+    const hasDirectAddress = /\bты\b/.test(text) || /\bтебя\b/.test(text) || /\bтебе\b/.test(text);
+    if ((hasInsult && hasDirectAddress) || hasThreat){
+      return { ok: false, reason: 'Похоже на оскорбление или угрозу в чей-то адрес — сохранение заблокировано. Мат сам по себе не запрещён.' };
+    }
+    return { ok: true };
+  }
+
+  function setActiveScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active');
+    $('brand-bar').style.display = id === 's-auth' ? 'none' : 'flex';
+    if (id !== 's-anketa' && mediaRecorder) cancelRecording();
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+  }
+
+  function wireChipGroup(containerId, mode){
+    const el = $(containerId);
+    el.querySelectorAll('.chip, .filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (mode === 'single'){
+          const isOn = chip.classList.contains('on');
+          el.querySelectorAll('.chip, .filter-chip').forEach(c => c.classList.remove('on'));
+          if (!isOn) chip.classList.add('on');
+        } else {
+          chip.classList.toggle('on');
+        }
+      });
+    });
+  }
+  function getChipValues(containerId){
+    return [...document.querySelectorAll('#'+containerId+' .on')].map(c => c.dataset.val);
+  }
+  function setChipValues(containerId, values){
+    const set = new Set(Array.isArray(values) ? values : (values ? [values] : []));
+    document.querySelectorAll('#'+containerId+' .chip').forEach(c => {
+      c.classList.toggle('on', set.has(c.dataset.val));
+    });
+  }
+
+  wireChipGroup('f-instruments', 'multi');
+  function renderSkillDetails(selectedDetails){
+    const wrap = $('f-skill-details');
+    const keep = new Set(selectedDetails || [...wrap.querySelectorAll('.chip.on')].map(c => c.dataset.val));
+    wrap.innerHTML = '';
+    getChipValues('f-instruments').forEach(skill => {
+      const subs = SKILL_DETAILS[skill];
+      if (!subs) return;
+      const row = document.createElement('div');
+      row.className = 'skill-detail-row';
+      row.innerHTML = '<div class="sd-title">' + escapeHtml(skill) + ' — уточни, если хочешь</div><div class="chips">' +
+        subs.map(v => '<span class="chip small' + (keep.has(v) ? ' on' : '') + '" data-val="' + escapeHtml(v) + '">' + escapeHtml(v) + '</span>').join('') + '</div>';
+      row.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+      wrap.appendChild(row);
+    });
+  }
+  document.querySelectorAll('#f-instruments .chip').forEach(c => c.addEventListener('click', () => renderSkillDetails()));
+  wireChipGroup('f-level', 'single');
+  wireChipGroup('f-genres', 'multi');
+  function renderGenreDetails(selectedDetails){
+    const wrap = $('f-genre-details');
+    const keep = new Set(selectedDetails || [...wrap.querySelectorAll('.chip.on')].map(c => c.dataset.val));
+    wrap.innerHTML = '';
+    getChipValues('f-genres').forEach(fam => {
+      const subs = GENRE_TREE[fam];
+      if (!subs) return;
+      const row = document.createElement('div');
+      row.className = 'genre-detail-row';
+      row.innerHTML = '<div class="sd-title">' + escapeHtml(fam) + ' — уточни, если хочешь</div><div class="chips">' +
+        subs.map(v => '<span class="chip small' + (keep.has(v) ? ' on' : '') + '" data-val="' + escapeHtml(v) + '">' + escapeHtml(v) + '</span>').join('') + '</div>';
+      row.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+      wrap.appendChild(row);
+    });
+  }
+  document.querySelectorAll('#f-genres .chip').forEach(c => c.addEventListener('click', () => {
+    if (getChipValues('f-genres').length > MAX_GENRES){
+      c.classList.remove('on');
+      showToast('Можно выбрать до трёх жанров');
+    }
+    renderGenreDetails();
+  }));
+  wireChipGroup('f-goal', 'multi');
+  document.querySelectorAll('#f-goal .chip').forEach(c => c.addEventListener('click', () => {
+    if (getChipValues('f-goal').length > MAX_GOALS){
+      c.classList.remove('on');
+      showToast('Можно выбрать до трёх целей');
+    }
+  }));
+  wireChipGroup('f-district', 'single');
+  wireChipGroup('f-kind', 'single');
+  wireChipGroup('f-needs', 'multi');
+  function getAnketaKind(){ return getChipValues('f-kind')[0] || 'musician'; }
+  function applyKindUI(){
+    const band = getAnketaKind() === 'band';
+    $('f-needs-field').style.display = band ? 'block' : 'none';
+    $('f-name-label').textContent = band ? 'Название группы' : 'Имя';
+    $('f-name').placeholder = band ? 'Как называется группа?' : 'Как тебя зовут?';
+    $('f-instr-label').textContent = band ? 'Кто уже есть в группе' : 'Что умеешь';
+    $('f-looking').placeholder = band ? 'Например: барабанщик, репетиции 2 раза в неделю на ВИЗе' : 'Например: барабанщик в кавер-группу, репетиции по выходным';
+  }
+  document.querySelectorAll('#f-kind .chip').forEach(c => c.addEventListener('click', applyKindUI));
+
+  /* ---------- auth ---------- */
+  function showAuthError(msg){ const el = $('auth-error'); el.textContent = msg; el.style.display = 'block'; }
+  function hideAuthError(){ $('auth-error').style.display = 'none'; $('auth-info').style.display = 'none'; }
+
+  function mapAuthError(err){
+    if (err && err.message && (err.status || err.code === 'NETWORK')) return err.message;
+    return 'Что-то пошло не так. Попробуй ещё раз.';
+  }
+
+  $('auth-toggle-btn').addEventListener('click', () => {
+    authMode = authMode === 'login' ? 'register' : 'login';
+    $('auth-submit-btn').textContent = authMode === 'login' ? 'Войти' : 'Создать аккаунт';
+    $('auth-toggle-btn').textContent = authMode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
+    $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
+    $('consent-field').style.display = authMode === 'register' ? 'block' : 'none';
+    $('auth-forgot-btn').style.display = authMode === 'login' ? 'inline-block' : 'none';
+    hideAuthError();
+  });
+
+  $('auth-forgot-btn').addEventListener('click', async () => {
+    hideAuthError();
+    const email = $('auth-email').value.trim();
+    if (!email){
+      showAuthError('Введи свой email выше — и мы отправим ссылку для нового пароля.');
+      $('auth-email').focus();
+      return;
+    }
+    const fb = $('auth-forgot-btn');
+    fb.disabled = true;
+    try {
+      await api('POST', '/auth/forgot', { email });
+    } catch (err){
+      showAuthError(mapAuthError(err));
+      fb.disabled = false;
+      return;
+    }
+    fb.disabled = false;
+    const info = $('auth-info');
+    info.textContent = 'Если аккаунт с адресом ' + email + ' существует, мы отправили письмо со ссылкой для нового пароля. Проверь и папку «Спам».';
+    info.style.display = 'block';
+  });
+
+  $('auth-submit-btn').addEventListener('click', async () => {
+    hideAuthError();
+    const email = $('auth-email').value.trim();
+    const password = $('auth-password').value;
+    if (!email || !password){ showAuthError('Заполни email и пароль.'); return; }
+    if (authMode === 'register' && !$('auth-consent').checked){ showAuthError('Нужно согласие на обработку персональных данных.'); return; }
+    const btn = $('auth-submit-btn');
+    btn.disabled = true; btn.textContent = 'Подожди…';
+    try {
+      if (authMode === 'login'){
+        const r = await api('POST', '/auth/login', { email, password });
+        setTokens(r.access, r.refresh);
+        await onAuthChange(r.user);
+      } else {
+        await api('POST', '/auth/register', { email, password, consent: { pd: true, adult: true, policyVersion: POLICY_VERSION } });
+        justRegistered = true;
+        let r;
+        try { r = await api('POST', '/auth/login', { email, password }); }
+        catch (e){
+          justRegistered = false;
+          if (e.code === 'INVALID_CREDENTIALS'){
+            showAuthError('Если этого адреса ещё не было, аккаунт создан. Если такой аккаунт у тебя уже есть — нажми «Уже есть аккаунт? Войти» и введи прежний пароль.');
+            return;
+          }
+          throw e;
+        }
+        setTokens(r.access, r.refresh);
+        await onAuthChange(r.user);
+      }
+    } catch (err){
+      showAuthError(mapAuthError(err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = authMode === 'login' ? 'Войти' : 'Создать аккаунт';
+    }
+  });
+
+  async function onAuthChange(user, prefetched){
+    currentUser = user;
+    if (!user){
+      currentProfile = null;
+      stopAllPolling();
+      myOutgoingLikeUids = new Set();
+      incomingLikesRaw = [];
+      blockedByMe = new Set(); blockedMe = new Set(); chatItemsCache = []; activeChatId = null; activeChatOtherUid = null;
+      unreadChatsCount = 0;
+      updateLikesBadge(0);
+      $('tabbar').style.display = 'none';
+      $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
+      setActiveScreen('s-auth');
+      return;
+    }
+    try {
+      const profile = prefetched !== undefined ? prefetched : (await api('GET', '/me')).profile;
+      if (profile){
+        currentProfile = Object.assign({ uid: user.uid }, profile);
+        migratePrivacy(user.uid);
+        $('tabbar').style.display = 'flex';
+        editingProfile = false;
+        setActiveScreen('s-map');
+        maybeShowInstallHint();
+        loadMap();
+        subscribeLikeWatchers();
+        subscribeBlocks();
+        subscribeChatList();
+      } else {
+        currentProfile = null;
+        $('tabbar').style.display = 'none';
+        prepareAnketaForm(false);
+        $('anketa-verify-notice').style.display = justRegistered ? 'block' : 'none';
+        justRegistered = false;
+        setActiveScreen('s-anketa');
+      }
+    } catch (err){
+      console.error(err);
+      if (err && err.status === 0) showAuthError(err.message);
+    }
+  }
+
+  function stopAllPolling(){
+    [unsubscribeMessages, unsubscribeChatList, unsubscribeOutgoingLikes, unsubscribeIncomingLikes, unsubscribeBlocksOut, unsubscribeBlocksIn]
+      .forEach(fn => { if (fn) fn(); });
+    unsubscribeMessages = unsubscribeChatList = unsubscribeOutgoingLikes = unsubscribeIncomingLikes = unsubscribeBlocksOut = unsubscribeBlocksIn = null;
+    chatPollNow = null;
+  }
+
+  /* старт приложения: восстанавливаем сессию по токенам, затем обрабатываем ссылки из писем (#verify= / #reset=) */
+  async function bootApp(){
+    if (accessToken || refreshToken){
+      try {
+        const me = await api('GET', '/me');
+        await onAuthChange(me.user, me.profile);
+      } catch (e){
+        if (e.status === 0){ await onAuthChange(null); showAuthError(e.message); }
+        else await onAuthChange(null);
+      }
+    } else {
+      await onAuthChange(null);
+    }
+    handleEmailLink();
+  }
+  function handleEmailLink(){
+    const m = /^#(verify|reset)=([A-Za-z0-9_\-]{20,200})$/.exec(location.hash || '');
+    if (!m) return;
+    const kind = m[1], token = m[2];
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e){}
+    if (kind === 'verify'){
+      api('POST', '/auth/verify', { token })
+        .then(() => showToast('Почта подтверждена. Спасибо!'))
+        .catch(e => showToast(e.message || 'Ссылка недействительна или устарела.'));
+      return;
+    }
+    resetToken = token;
+    $('reset-password').value = '';
+    $('reset-error').style.display = 'none';
+    $('reset-modal-overlay').style.display = 'flex';
+  }
+  let resetToken = null;
+  $('reset-cancel-btn').addEventListener('click', () => { $('reset-modal-overlay').style.display = 'none'; resetToken = null; });
+  $('reset-confirm-btn').addEventListener('click', async () => {
+    const pw = $('reset-password').value;
+    const errEl = $('reset-error');
+    const showErr = (m) => { errEl.textContent = m; errEl.style.display = 'block'; };
+    if (pw.length < 8){ showErr('Пароль — от 8 символов.'); return; }
+    const btn = $('reset-confirm-btn');
+    btn.disabled = true;
+    try {
+      await api('POST', '/auth/reset', { token: resetToken, password: pw });
+      $('reset-modal-overlay').style.display = 'none';
+      resetToken = null;
+      showToast('Пароль сохранён. Теперь войди с новым паролем.');
+      if (authMode !== 'login') $('auth-toggle-btn').click();
+    } catch (e){
+      showErr(mapAuthError(e));
+    } finally { btn.disabled = false; }
+  });
+
+  /* ---------- anketa (create / edit profile) ---------- */
+  function prepareAnketaForm(isEdit){
+    pendingAvatarKey = undefined; pendingAudioKey = undefined;
+    $('anketa-title').textContent = isEdit ? 'Редактирование анкеты' : 'Анкета';
+    $('anketa-sub').textContent = isEdit ? 'Обнови данные о себе' : 'Расскажи о себе — это займёт минуту';
+    $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Показать меня на карте';
+    if (isEdit && currentProfile){
+      $('f-name').value = currentProfile.name || '';
+      $('f-age').value = currentProfile.age || '';
+      setChipValues('f-instruments', currentProfile.instruments || []);
+      renderSkillDetails(currentProfile.instrumentDetails || []);
+      setChipValues('f-level', currentProfile.level || null);
+      { const g = normGenres(currentProfile); setChipValues('f-genres', g.families); renderGenreDetails(g.details); }
+      setChipValues('f-goal', goalsOf(currentProfile));
+      setChipValues('f-district', currentProfile.district || null);
+      $('f-bio').value = currentProfile.bio || '';
+      $('f-looking').value = currentProfile.lookingFor || '';
+      setChipValues('f-kind', currentProfile.kind || 'musician');
+      setChipValues('f-needs', currentProfile.needs || []);
+      pendingAvatarUrl = currentProfile.avatarUrl || null;
+      pendingAudioUrl = currentProfile.audioUrl || null;
+      pendingAudioDuration = currentProfile.audioDuration || null;
+      $('f-music-link').value = currentProfile.musicLink || '';
+    } else {
+      $('f-name').value = '';
+      $('f-age').value = '';
+      setChipValues('f-instruments', []);
+      renderSkillDetails([]);
+      setChipValues('f-level', null);
+      setChipValues('f-genres', []);
+      renderGenreDetails([]);
+      setChipValues('f-goal', null);
+      setChipValues('f-district', null);
+      $('f-bio').value = '';
+      $('f-looking').value = '';
+      setChipValues('f-kind', 'musician');
+      setChipValues('f-needs', []);
+      pendingAvatarUrl = null;
+      pendingAudioUrl = null;
+      pendingAudioDuration = null;
+      $('f-music-link').value = '';
+    }
+    $('f-avatar-input').value = '';
+    $('f-avatar-status').style.display = 'none';
+    const preview = $('f-avatar-preview');
+    preview.className = 'avatar a1';
+    preview.style.width = '64px'; preview.style.height = '64px'; preview.style.fontSize = '22px';
+    preview.innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl, name: (isEdit && currentProfile) ? currentProfile.name : '' });
+    applyKindUI();
+    cancelRecording();
+    setRecStatus('');
+    renderRecUI();
+    hideAnketaMsgs();
+    editingProfile = isEdit;
+  }
+
+  /* сжимаем фото на телефоне перед загрузкой: длинная сторона до 800px, JPEG */
+  function compressImage(file, maxSide = 800, quality = 0.85){
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
+  $('f-avatar-input').addEventListener('change', async () => {
+    const file = $('f-avatar-input').files[0];
+    if (!file) return;
+    const statusEl = $('f-avatar-status');
+    statusEl.style.display = 'block';
+    statusEl.textContent = 'Загружаю фото…';
+    try {
+      const prepared = await compressImage(file);
+      const up = await uploadFile('avatar', prepared);
+      pendingAvatarUrl = up.url;
+      pendingAvatarKey = up.key;
+      $('f-avatar-preview').innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl });
+      statusEl.textContent = 'Фото загружено. Не забудь сохранить анкету.';
+    } catch (err){
+      console.error(err);
+      statusEl.textContent = 'Не удалось загрузить фото (' + err.message + '). Можно продолжить без него.';
+    }
+  });
+  $('rec-btn').addEventListener('click', () => {
+    if (audioUploading) return;
+    if (mediaRecorder && mediaRecorder.state === 'recording'){ mediaRecorder.stop(); return; }
+    startRecording();
+  });
+  $('rec-file').addEventListener('change', async () => {
+    const file = $('rec-file').files[0];
+    $('rec-file').value = '';
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024){ setRecStatus('Файл больше 2 МБ — выбери покороче (до минуты).'); return; }
+    const dur = await new Promise(resolve => {
+      const a = document.createElement('audio');
+      a.preload = 'metadata';
+      a.onloadedmetadata = () => { resolve(a.duration); URL.revokeObjectURL(a.src); };
+      a.onerror = () => resolve(null);
+      a.src = URL.createObjectURL(file);
+    });
+    if (dur && isFinite(dur) && dur > REC_MAX_SEC + 1){ setRecStatus('Запись длиннее минуты — отрежь самый яркий кусок до 60 секунд.'); return; }
+    uploadAudio(file, dur, file.name || 'sample');
+  });
+  $('rec-remove').addEventListener('click', () => {
+    cancelRecording();
+    pendingAudioUrl = null; pendingAudioDuration = null; pendingAudioKey = null;
+    setRecStatus('Запись удалена из анкеты. Сохрани анкету, чтобы изменение применилось.');
+    renderRecUI();
+  });
+
+  function showAnketaError(msg){ $('anketa-error').textContent = msg; $('anketa-error').style.display = 'block'; $('anketa-status').style.display = 'none'; }
+  function showAnketaStatus(msg){ $('anketa-status').textContent = msg; $('anketa-status').style.display = 'block'; $('anketa-error').style.display = 'none'; }
+  function hideAnketaMsgs(){ $('anketa-error').style.display = 'none'; $('anketa-status').style.display = 'none'; }
+
+  function getGeolocation(){
+    return new Promise((resolve, reject) => {
+      if (!('geolocation' in navigator)){ reject(new Error('no-geo')); return; }
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        err => reject(err),
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+      );
+    });
+  }
+
+  $('anketa-submit-btn').addEventListener('click', async () => {
+    hideAnketaMsgs();
+    const name = $('f-name').value.trim();
+    const age = $('f-age').value ? Number($('f-age').value) : null;
+    const instruments = getChipValues('f-instruments');
+    const level = getChipValues('f-level')[0] || null;
+    const kind = getAnketaKind();
+    const needs = kind === 'band' ? getChipValues('f-needs') : [];
+    const genres = getChipValues('f-genres').slice(0, MAX_GENRES);
+    const genreDetails = [...document.querySelectorAll('#f-genre-details .chip.on')].map(c => c.dataset.val);
+    const goals = getChipValues('f-goal').slice(0, MAX_GOALS);
+    const goal = goals[0] || null;
+    const instrumentDetails = [...document.querySelectorAll('#f-skill-details .chip.on')].map(c => c.dataset.val);
+    const bio = $('f-bio').value.trim();
+    const lookingFor = $('f-looking').value.trim().slice(0, 80);
+    const district = getChipValues('f-district')[0] || null;
+
+    if (!name){ showAnketaError(kind === 'band' ? 'Укажи название группы.' : 'Укажи имя.'); return; }
+    if (kind === 'band' && needs.length === 0){ showAnketaError('Отметь, кого ищете в группу.'); return; }
+    if (!age || !Number.isInteger(age) || age < 18 || age > 99){ showAnketaError('Сервис только для совершеннолетних — укажи корректный возраст (18+).'); return; }
+    if (instruments.length === 0){ showAnketaError('Отметь, что умеешь.'); return; }
+    if (!level){ showAnketaError('Выбери уровень.'); return; }
+    if (!goal){ showAnketaError('Выбери хотя бы одну цель.'); return; }
+    if (!district){ showAnketaError('Выбери свой район.'); return; }
+    const bioCheck = checkContentSafety(bio);
+    if (!bioCheck.ok){ showAnketaError(bioCheck.reason); return; }
+    const lookingCheck = checkContentSafety(lookingFor);
+    if (!lookingCheck.ok){ showAnketaError(lookingCheck.reason); return; }
+    if (mediaRecorder){ showAnketaError('Сначала останови запись.'); return; }
+    if (audioUploading){ showAnketaError('Подожди, запись ещё загружается.'); return; }
+    const linkCheck = normalizeMusicLink($('f-music-link').value);
+    if (!linkCheck.ok){ showAnketaError('Ссылка должна вести на музыкальную площадку: Яндекс Музыка, VK, YouTube, SoundCloud, Bandcamp, Звук, Telegram, Apple Music или Spotify.'); return; }
+
+    const btn = $('anketa-submit-btn');
+    btn.disabled = true;
+    showAnketaStatus('Определяю геопозицию…');
+    let coords;
+    let usedFallback = false;
+    try {
+      coords = await getGeolocation();
+    } catch (err){
+      const prev = currentProfile;
+      if (editingProfile && prev && typeof prev.lat === 'number' && prev.district === district){
+        coords = { lat: prev.lat, lng: prev.lng };
+      } else if (DISTRICT_CENTERS[district]){
+        coords = { lat: DISTRICT_CENTERS[district][0], lng: DISTRICT_CENTERS[district][1] };
+        usedFallback = true;
+      } else {
+        btn.disabled = false;
+        showAnketaError('Не удалось определить местоположение. Выбери район и попробуй ещё раз.');
+        return;
+      }
+    }
+    coords = { lat: roundCoord(coords.lat), lng: roundCoord(coords.lng) };
+
+    showAnketaStatus('Сохраняю…');
+    try {
+      const data = {
+        name, age, instruments, instrumentDetails, level, genres, genreDetails, goals, bio, district, lookingFor, kind, needs,
+        musicLink: linkCheck.url,
+        lat: coords.lat, lng: coords.lng,
+      };
+      if (pendingAvatarKey !== undefined) data.avatarKey = pendingAvatarKey;
+      if (pendingAudioKey !== undefined){ data.audioKey = pendingAudioKey; data.audioDuration = pendingAudioKey ? (pendingAudioDuration || null) : null; }
+      const saved = await api('PUT', '/me/profile', data);
+      if (usedFallback) showToast('Геопозиция недоступна — расстояния считаем от центра района.');
+      currentProfile = Object.assign({ uid: currentUser.uid }, saved.profile);
+      hideAnketaMsgs();
+      $('tabbar').style.display = 'flex';
+      setActiveScreen('s-map');
+      loadMap();
+      if (!unsubscribeOutgoingLikes) subscribeLikeWatchers();
+      if (!unsubscribeChatList) subscribeChatList();
+      if (!unsubscribeBlocksOut) subscribeBlocks();
+    } catch (err){
+      console.error(err);
+      showAnketaError(err && err.status && err.status < 500 ? err.message : 'Не удалось сохранить анкету. Попробуй ещё раз.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* ---------- profiles fetch ---------- */
+  async function fetchMapProfiles(){
+    const r = await api('GET', '/map');
+    return r.items || [];
+  }
+
+  /* ---------- map ---------- */
+  async function loadMap(){
+    $('map-sub').textContent = 'Загружаю…';
+    let profiles;
+    try {
+      profiles = await fetchMapProfiles();
+    } catch (err){
+      $('map-sub').textContent = 'Не удалось загрузить анкеты.';
+      return;
+    }
+    const me = currentProfile;
+    renderOwnDistrict();
+    const withDist = profiles; /* расстояние и направление считает сервер; чужие координаты клиенту не отдаются */
+    window.__mapProfiles = withDist;
+    window.__mapLoaded = true;
+    renderMapPins(withDist, currentMapFilter);
+  }
+
+  let mapView = 'scheme';
+  function ruAnkety(n){ const a = n % 100, b = n % 10; return n + ' ' + ((a > 10 && a < 20) ? 'анкет' : b === 1 ? 'анкета' : (b >= 2 && b <= 4) ? 'анкеты' : 'анкет'); }
+  function pickScale(maxD){ for (const k of [2, 5, 10, 25]) if (maxD <= k) return k; return 25; }
+  function fmtKm(k){ return (Math.round(k * 10) / 10).toString().replace('.', ',') + ' км'; }
+  function syncMapViewUi(){
+    document.querySelectorAll('#map-view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.v === mapView));
+    $('map-area').style.display = mapView === 'scheme' ? '' : 'none';
+    $('map-list').style.display = mapView === 'list' ? 'block' : 'none';
+    if (mapView === 'list') $('map-scale').textContent = '';
+  }
+  function mapListCard(p){
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cursor = 'pointer';
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="avatar ${avatarClassFor(p.uid)}">${avatarInnerHtml(p)}</div>
+        <div>
+          <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.kind === 'band' ? '<span class="band-badge">группа</span>' : (p.age ? ' · ' + p.age : '')}</div>
+          <div class="card-meta">${escapeHtml((p.instruments || []).join(', ') || '—')}${p.district ? ' · ' + escapeHtml(p.district) : ''}</div>
+        </div>
+        <div class="dist">${fmtDist(p.dist)}</div>
+      </div>`;
+    card.addEventListener('click', () => openOtherProfile(p));
+    return card;
+  }
+  function renderMapList(items, title){
+    const box = $('map-list');
+    box.innerHTML = '';
+    if (title){
+      const head = document.createElement('div');
+      head.className = 'map-list-head';
+      head.innerHTML = '<span>' + escapeHtml(title) + '</span><button class="ghost-btn accent" type="button">← Вся схема</button>';
+      head.querySelector('button').addEventListener('click', () => { mapView = 'scheme'; syncMapViewUi(); renderMapPins(window.__mapProfiles || [], currentMapFilter); });
+      box.appendChild(head);
+    }
+    if (items.length === 0){
+      box.insertAdjacentHTML('beforeend', '<div class="msg-line muted">Рядом пока никого с такими фильтрами. Позови знакомых музыкантов — вместе интереснее.</div>');
+      return;
+    }
+    items.slice().sort((a, b) => a.dist - b.dist).forEach(p => box.appendChild(mapListCard(p)));
+  }
+
+  function renderMapPins(list, filter){
+    const mapArea = $('map-area');
+    mapArea.querySelectorAll('.pin, .cluster, .radar-ring').forEach(p => p.remove());
+    const base = list.filter(p => !isBlockedPair(p.uid));
+    const filtered = filter === 'Все' ? base
+      : filter === 'Группы' ? base.filter(p => p.kind === 'band')
+      : base.filter(p => (p.instruments||[]).includes(filter));
+    $('map-empty').style.display = (mapView === 'scheme' && filtered.length === 0) ? 'block' : 'none';
+    $('map-hidden-note').style.display = (currentProfile && !isProfileVisible(currentProfile)) ? 'block' : 'none';
+    $('map-sub').textContent = `В радиусе ${MAP_RADIUS_KM} км · ${ruAnkety(filtered.length)}`;
+    if (mapView === 'list'){ renderMapList(filtered, null); return; }
+    const w = mapArea.clientWidth, h = mapArea.clientHeight;
+    if (!w || !h) return;
+    const cx = w / 2, cy = h * 0.52;
+    const R = Math.max(40, Math.min(cx - 22, cy - 44, h - cy - 12));
+    const maxD = filtered.reduce((m, p) => Math.max(m, p.dist), 0);
+    const scale = pickScale(maxD);
+    $('map-scale').textContent = 'Схема, не карта · до ' + fmtKm(scale);
+    [scale / 2, scale].forEach(km => {
+      const ring = document.createElement('div');
+      ring.className = 'radar-ring';
+      const d = 2 * R * (km / scale);
+      ring.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;width:' + d + 'px;height:' + d + 'px;';
+      ring.innerHTML = '<span>' + fmtKm(km) + '</span>';
+      mapArea.appendChild(ring);
+    });
+    const clusters = [];
+    filtered.forEach(p => {
+      const rad = p.bearing * Math.PI / 180;
+      const r = Math.min(p.dist / scale, 1) * R;
+      const x = cx + Math.sin(rad) * r, y = cy - Math.cos(rad) * r;
+      const c = clusters.find(k => Math.hypot(k.x - x, k.y - y) < 34);
+      if (c){
+        c.items.push(p);
+        c.x = (c.x * (c.items.length - 1) + x) / c.items.length;
+        c.y = (c.y * (c.items.length - 1) + y) / c.items.length;
+      } else clusters.push({ x, y, items: [p] });
+    });
+    clusters.forEach(c => {
+      if (c.items.length > 1){
+        const el = document.createElement('div');
+        el.className = 'cluster';
+        el.style.left = c.x + 'px';
+        el.style.top = c.y + 'px';
+        el.textContent = c.items.length;
+        el.title = 'Здесь ' + c.items.length + ' анкет';
+        el.addEventListener('click', () => {
+          mapView = 'list';
+          syncMapViewUi();
+          renderMapList(c.items, 'В этой точке · ' + c.items.length);
+        });
+        mapArea.appendChild(el);
+        return;
+      }
+      const p = c.items[0];
+      const pin = document.createElement('div');
+      pin.className = 'pin ' + avatarClassFor(p.uid) + (p.kind === 'band' ? ' band' : '');
+      pin.style.left = c.x + 'px';
+      pin.style.top = c.y + 'px';
+      pin.innerHTML = p.avatarUrl
+        ? '<span style="display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;transform:rotate(45deg);"><img src="' + escapeHtml(p.avatarUrl) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></span>'
+        : '<span>' + escapeHtml(initialsFor(p)) + '</span>';
+      pin.title = p.name || '';
+      pin.addEventListener('click', () => openOtherProfile(p));
+      mapArea.appendChild(pin);
+    });
+  }
+  document.querySelectorAll('#map-view-toggle button').forEach(b => b.addEventListener('click', () => {
+    mapView = b.dataset.v;
+    syncMapViewUi();
+    renderMapPins(window.__mapProfiles || [], currentMapFilter);
+  }));
+  let mapResizeT = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(mapResizeT);
+    mapResizeT = setTimeout(() => { if (window.__mapLoaded && mapView === 'scheme') renderMapPins(window.__mapProfiles || [], currentMapFilter); }, 150);
+  });
+
+  wireChipGroup('map-filter', 'single');
+  document.querySelectorAll('#map-filter .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      currentMapFilter = chip.dataset.val;
+      renderMapPins(window.__mapProfiles || [], currentMapFilter);
+    });
+  });
+
+  /* ---------- search ---------- */
+  wireChipGroup('sf-instrument', 'single');
+  wireChipGroup('sf-level', 'single');
+  wireChipGroup('sf-goal', 'single');
+  wireChipGroup('sf-genre', 'single');
+  document.querySelectorAll('#sf-genre .chip').forEach(c => c.addEventListener('click', () => {
+    const fam = getChipValues('sf-genre')[0];
+    const wrap = $('sf-genre-details');
+    wrap.innerHTML = '';
+    if (!fam || !GENRE_TREE[fam]) return;
+    const row = document.createElement('div');
+    row.className = 'genre-detail-row';
+    row.innerHTML = '<div class="sd-title">' + escapeHtml(fam) + ' — можно сузить</div><div class="chips" id="sf-genre-sub">' +
+      GENRE_TREE[fam].map(v => '<span class="chip small" data-val="' + escapeHtml(v) + '">' + escapeHtml(v) + '</span>').join('') + '</div>';
+    wrap.appendChild(row);
+    wireChipGroup('sf-genre-sub', 'single');
+  }));
+  wireChipGroup('sf-radius', 'single');
+  wireChipGroup('sf-kind', 'single');
+
+  $('search-submit-btn').addEventListener('click', async () => {
+    const instrument = getChipValues('sf-instrument')[0] || null;
+    const level = getChipValues('sf-level')[0] || null;
+    const goal = getChipValues('sf-goal')[0] || null;
+    const genre = getChipValues('sf-genre')[0] || null;
+    const genreDetail = getChipValues('sf-genre-sub')[0] || null;
+    const radius = Number(getChipValues('sf-radius')[0] || '25');
+    const kindFilter = getChipValues('sf-kind')[0] || null;
+
+    const resultsEl = $('search-results');
+    const submitBtn = $('search-submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Ищу…';
+    resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
+
+    let list, total = 0;
+    try {
+      const qs = new URLSearchParams({ radius: String(radius), limit: '50' });
+      if (instrument) qs.set('instrument', instrument);
+      if (level) qs.set('level', level);
+      if (goal) qs.set('goal', goal);
+      if (genre) qs.set('genre', genre);
+      if (genre && genreDetail) qs.set('genreDetail', genreDetail);
+      if (kindFilter) qs.set('kind', kindFilter);
+      const r = await api('GET', '/search?' + qs.toString());
+      list = r.items || []; total = r.total || list.length;
+    } catch (err){
+      resultsEl.innerHTML = '<div class="msg-line err">Не удалось загрузить анкеты.</div>';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Показать совпадения';
+      return;
+    }
+    renderSearchResults(list, total);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Показать совпадения';
+    /* результаты ниже фильтров — сами прокручиваем экран к ним, чтобы было видно, что поиск сработал */
+    const title = $('search-results-title');
+    const smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    requestAnimationFrame(() => title.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }));
+  });
+  $('search-up-btn').addEventListener('click', () => {
+    const sc = $('s-search').querySelector('.scroll');
+    if (sc) sc.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function renderSearchResults(list, total){
+    const resultsEl = $('search-results');
+    $('search-up-btn').style.display = 'inline-block';
+    if (list.length === 0){
+      $('search-count').textContent = 'Никого не нашлось';
+      resultsEl.innerHTML = '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.</div>';
+      return;
+    }
+    $('search-count').textContent = 'Найдено: ' + (total || list.length) + (total && total > list.length ? ' · показаны ближайшие ' + list.length : '');
+    resultsEl.innerHTML = '';
+    list.forEach(p => {
+      const tags = (p.instruments||[]).concat(p.level ? [p.level] : []).concat(goalsOf(p));
+      const myInstr = (currentProfile && currentProfile.instruments) || [];
+      const wantsMe = p.kind === 'band' && (currentProfile && currentProfile.kind !== 'band') && (p.needs||[]).some(n => myInstr.includes(n));
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.cursor = 'pointer';
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="avatar ${avatarClassFor(p.uid)}">${avatarInnerHtml(p)}</div>
+          <div>
+            <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.kind === 'band' ? '<span class="band-badge">группа</span>' : (p.age ? ' · '+p.age : '')}</div>
+            <div class="card-meta">${escapeHtml((p.instruments||[]).join(', ') || '—')}${p.district ? ' · ' + escapeHtml(p.district) : ''}</div>
+          </div>
+          <div class="dist">${fmtDist(p.dist)}</div>
+        </div>
+        ${p.kind === 'band' && (p.needs||[]).length ? '<div class="card-looking">Ищут: ' + escapeHtml(p.needs.join(', ')) + '</div>' : ''}
+        ${p.lookingFor ? '<div class="card-looking">' + (p.kind === 'band' ? '' : 'Ищу: ') + escapeHtml(p.lookingFor) + '</div>' : ''}
+        <div class="card-tags">${wantsMe ? '<span class="tag match">Ищут твой инструмент</span>' : ''}${p.audioUrl ? '<span class="tag sound">♪ есть запись</span>' : ''}${tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('')}</div>
+      `;
+      card.addEventListener('click', () => openOtherProfile(p));
+      resultsEl.appendChild(card);
+    });
+  }
+
+  /* ---------- profile view ---------- */
+  function renderProfileCommon(p, locText){
+    $('p-avatar').className = 'avatar ' + avatarClassFor(p.uid);
+    $('p-avatar').innerHTML = avatarInnerHtml(p);
+    const isBand = p.kind === 'band';
+    $('p-name').innerHTML = escapeHtml(p.name || '') + (isBand ? '<span class="band-badge">группа</span>' : (p.age ? ', ' + escapeHtml(p.age) : ''));
+    $('p-loc').textContent = locText;
+    const lookingParts = [];
+    if (isBand && (p.needs||[]).length) lookingParts.push('Ищем: ' + p.needs.join(', '));
+    if (p.lookingFor) lookingParts.push((isBand ? '' : 'Ищу: ') + p.lookingFor);
+    $('p-looking').style.display = lookingParts.length ? 'block' : 'none';
+    $('p-looking').textContent = lookingParts.join(' · ');
+    $('p-age').textContent = p.age || '—';
+    $('p-level').textContent = p.level || '—';
+    const pGoals = goalsOf(p);
+    $('p-goal').textContent = pGoals.length ? pGoals[0] + (pGoals.length > 1 ? ' +' + (pGoals.length - 1) : '') : '—';
+    $('p-bio').textContent = p.bio || 'Пока ничего не рассказал(а) о себе.';
+    const pAudio = $('p-audio');
+    pAudio.pause();
+    if (p.audioUrl){ pAudio.src = playableAudioUrl(p.audioUrl); pAudio.style.display = 'block'; }
+    else { pAudio.removeAttribute('src'); pAudio.style.display = 'none'; }
+    const linkOk = p.musicLink && normalizeMusicLink(p.musicLink).ok;
+    $('p-music-link').style.display = linkOk ? 'inline-block' : 'none';
+    if (linkOk) $('p-music-link').href = p.musicLink;
+    $('p-listen').style.display = (p.audioUrl || linkOk) ? 'block' : 'none';
+    const tags = (p.instruments||[]).concat(p.instrumentDetails||[]).concat(genreTags(p));
+    $('p-tags').innerHTML = (tags.map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('') +
+      pGoals.map(g=>'<span class="tag goal">'+escapeHtml(g)+'</span>').join('')) || '<span class="tag">—</span>';
+  }
+
+  function openOwnProfile(){
+    if (!currentProfile) return;
+    renderProfileCommon(currentProfile, currentProfile.district ? currentProfile.district + ' район · Екатеринбург' : 'Екатеринбург');
+    $('p-actions-other').style.display = 'none';
+    $('p-actions-other-report').style.display = 'none';
+    $('p-actions-own').style.display = 'flex';
+    $('p-own-extra').style.display = 'block';
+    renderVisibilityCard();
+    renderBlockedList();
+    setActiveScreen('s-profile');
+  }
+
+  async function openOtherProfile(p){
+    viewedOtherProfile = p;
+    const distText = (typeof p.dist === 'number') ? fmtDist(p.dist) + ' от тебя' : '';
+    const locText = [p.district ? p.district + ' район' : '', distText].filter(Boolean).join(' · ');
+    renderProfileCommon(p, locText);
+    $('p-actions-other').style.display = 'flex';
+    $('p-actions-other-report').style.display = 'block';
+    $('p-actions-own').style.display = 'none';
+    $('p-own-extra').style.display = 'none';
+    setActiveScreen('s-profile');
+    await refreshLikeButton(p.uid);
+  }
+
+  /* ---------- likes / matching ---------- */
+  function likeId(fromUid, toUid){ return fromUid + '_' + toUid; }
+
+  async function getMatchStatus(otherUid){
+    const r = await api('GET', '/profiles/' + encodeURIComponent(otherUid));
+    return { iLiked: !!r.liked, theyLiked: !!r.likedMe };
+  }
+
+  async function refreshLikeButton(otherUid){
+    const likeBtn = $('p-like-btn');
+    const msgBtn = $('p-msg-btn');
+    likeBtn.disabled = true;
+    likeBtn.textContent = '…';
+    likeBtn.style.display = 'block';
+    msgBtn.style.display = 'none';
+    try {
+      const { iLiked, theyLiked } = await getMatchStatus(otherUid);
+      if (iLiked && theyLiked){
+        likeBtn.style.display = 'none';
+        msgBtn.style.display = 'block';
+      } else if (iLiked){
+        likeBtn.disabled = true;
+        likeBtn.textContent = 'Ждём взаимности…';
+      } else {
+        likeBtn.disabled = false;
+        likeBtn.textContent = 'Мне интересно';
+      }
+    } catch (err){
+      console.error(err);
+      likeBtn.disabled = false;
+      likeBtn.textContent = 'Мне интересно';
+    }
+  }
+
+  $('p-like-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    const otherUid = viewedOtherProfile.uid;
+    const btn = $('p-like-btn');
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      await api('PUT', '/likes/' + encodeURIComponent(otherUid));
+      myOutgoingLikeUids.add(otherUid);
+      await refreshLikeButton(otherUid);
+    } catch (err){
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = 'Мне интересно';
+    }
+  });
+
+  async function pollLikes(){
+    const r = await api('GET', '/likes');
+    myOutgoingLikeUids = new Set(r.outgoing || []);
+    incomingLikesRaw = (r.incoming || []).map(i => ({ from: i.profile.uid, profile: i.profile, createdAt: i.createdAt }));
+    renderIncomingLikes();
+  }
+  function subscribeLikeWatchers(){
+    if (unsubscribeOutgoingLikes) unsubscribeOutgoingLikes();
+    unsubscribeOutgoingLikes = unsubscribeIncomingLikes = startPoll(pollLikes, 30000);
+  }
+
+  function getSeenLikeUids(){
+    try { return new Set(JSON.parse(localStorage.getItem('sn_seen_likes') || '[]')); }
+    catch(e){ return new Set(); }
+  }
+  function markLikeSeen(uid){
+    try {
+      const seen = getSeenLikeUids();
+      seen.add(uid);
+      localStorage.setItem('sn_seen_likes', JSON.stringify([...seen]));
+    } catch(e){}
+  }
+
+  function updateLikesBadge(pendingCount){
+    unseenLikesCount = pendingCount;
+    renderTotalBadge();
+  }
+  function renderTotalBadge(){
+    const total = unseenLikesCount + unreadChatsCount;
+    const badge = $('chat-tab-badge');
+    if (badge){
+      if (total > 0){
+        badge.textContent = total > 9 ? '9+' : String(total);
+        badge.classList.add('show');
+      } else {
+        badge.classList.remove('show');
+      }
+    }
+    document.title = total > 0 ? '(' + total + ') ' + BASE_TITLE : BASE_TITLE;
+  }
+
+  async function renderIncomingLikes(){
+    if (!currentUser) return;
+    const pending = incomingLikesRaw.filter(l => l.from && !myOutgoingLikeUids.has(l.from) && !isBlockedPair(l.from));
+    const seen = getSeenLikeUids();
+    const unseenCount = pending.filter(l => !seen.has(l.from)).length;
+    updateLikesBadge(unseenCount);
+
+    const row = $('likes-you-row');
+    const list = $('likes-you-list');
+    if (!row || !list) return;
+    if (pending.length === 0){ row.style.display = 'none'; return; }
+    row.style.display = 'block';
+    list.innerHTML = '';
+    for (const like of pending){
+      const uid = like.from;
+      const profile = like.profile;
+      if (!profile) continue;
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;cursor:pointer;';
+      item.innerHTML = `
+        <div class="avatar ${avatarClassFor(uid)}" style="width:48px;height:48px;font-size:17px;">${avatarInnerHtml(profile)}</div>
+        <div style="font-size:10.5px;color:var(--ink-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56px;">${escapeHtml(profile.name || '?')}</div>
+      `;
+      item.addEventListener('click', async () => {
+        markLikeSeen(uid);
+        renderIncomingLikes();
+        await openOtherProfile(profile);
+      });
+      list.appendChild(item);
+    }
+  }
+
+  /* ---------- район (выбирается в анкете) ---------- */
+  function renderOwnDistrict(){
+    const el = $('map-district');
+    if (!el) return;
+    const d = currentProfile && currentProfile.district;
+    if (d){
+      el.innerHTML = '<span class="dot"></span>' + escapeHtml(d) + ' район';
+      el.classList.add('show');
+    } else {
+      el.classList.remove('show');
+    }
+  }
+
+  $('p-edit-btn').addEventListener('click', () => {
+    prepareAnketaForm(true);
+    setActiveScreen('s-anketa');
+  });
+  $('p-logout-btn').addEventListener('click', async () => {
+    const rt = refreshToken;
+    stopAllPolling();
+    activeChatId = null;
+    if (rt) api('POST', '/auth/logout', { refresh: rt }).catch(() => {});
+    setTokens(null, null);
+    await onAuthChange(null);
+  });
+  $('p-msg-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    const { iLiked, theyLiked } = await getMatchStatus(viewedOtherProfile.uid);
+    if (!iLiked || !theyLiked){ await refreshLikeButton(viewedOtherProfile.uid); return; }
+    await openChatWith(viewedOtherProfile);
+  });
+
+  /* ---------- chat ---------- */
+  function chatIdFor(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
+
+  async function openChatWith(otherProfile){
+    try {
+      const r = await api('POST', '/chats/open', { uid: otherProfile.uid });
+      openChatThread(r.chat.id, otherProfile.uid, otherProfile.name, otherProfile.avatarUrl);
+    } catch (err){
+      console.error(err);
+      showToast(err.message || 'Не удалось открыть чат.');
+    }
+  }
+
+  function openChatThread(chatId, otherUid, otherName, otherAvatarUrl){
+    activeChatId = chatId;
+    activeChatOtherUid = otherUid;
+    $('chat-list-view').style.display = 'none';
+    $('chat-thread-view').style.display = 'flex';
+    $('chat-name').textContent = otherName || 'Без имени';
+    const av = $('chat-avatar');
+    av.className = 'avatar ' + avatarClassFor(otherUid);
+    av.innerHTML = avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName });
+    $('chat-input-error').style.display = 'none';
+    setActiveScreen('s-chat');
+    subscribeMessages(chatId);
+  }
+
+  function subscribeMessages(chatId){
+    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+    const box = $('chat-messages');
+    box.innerHTML = '';
+    let after = 0;
+    const seen = new Set();
+    const poll = async () => {
+      let r;
+      try { r = await api('GET', '/chats/' + encodeURIComponent(chatId) + '/messages?after=' + after); }
+      catch (e){
+        if (e && (e.status === 403 || e.status === 404) && activeChatId === chatId){
+          if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+          activeChatId = null; activeChatOtherUid = null;
+          showToast('Чат больше недоступен.');
+          openChatList();
+          return;
+        }
+        throw e;
+      }
+      if (activeChatId !== chatId) return;
+      const items = (r.items || []).filter(m => !seen.has(m.id));
+      if (!items.length) return;
+      const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80 || after === 0;
+      items.forEach(m => {
+        seen.add(m.id);
+        after = Math.max(after, m.createdAt);
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (m.senderId === currentUser.uid ? 'out' : 'in');
+        bubble.textContent = m.text;
+        box.appendChild(bubble);
+      });
+      if (nearBottom) box.scrollTop = box.scrollHeight;
+      const last = items[items.length - 1];
+      if (last.senderId !== currentUser.uid) markChatRead(chatId);
+    };
+    chatPollNow = poll;
+    unsubscribeMessages = startPoll(poll, 3000);
+  }
+
+  function markChatRead(chatId){
+    if (!currentUser || !chatId) return;
+    api('POST', '/chats/' + encodeURIComponent(chatId) + '/read').then(() => {
+      const c = chatItemsCache.find(x => x.id === chatId);
+      if (c){ c.unread = false; renderChatList(); }
+    }).catch(err => console.error(err));
+  }
+
+  $('chat-back-btn').addEventListener('click', () => {
+    if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+    activeChatId = null;
+    openChatList();
+  });
+
+  function showChatInputError(msg){
+    const el = $('chat-input-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideChatInputError(){
+    $('chat-input-error').style.display = 'none';
+  }
+
+  async function sendMessage(){
+    const field = $('chat-input-field');
+    const text = field.value.trim();
+    if (!text || !activeChatId) return;
+    hideChatInputError();
+    const safety = checkContentSafety(text);
+    if (!safety.ok){ showChatInputError(safety.reason); return; }
+    field.value = '';
+    try {
+      await api('POST', '/chats/' + encodeURIComponent(activeChatId) + '/messages', { text });
+      if (chatPollNow) await chatPollNow();
+    } catch (err){
+      console.error(err);
+      field.value = text;
+      showChatInputError(err && err.status ? err.message : 'Не удалось отправить. Проверь соединение.');
+    }
+  }
+  $('chat-send-btn').addEventListener('click', sendMessage);
+  $('chat-input-field').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); sendMessage(); }
+  });
+
+  function openChatList(){
+    $('chat-thread-view').style.display = 'none';
+    $('chat-list-view').style.display = 'flex';
+    setActiveScreen('s-chat');
+    if (!unsubscribeChatList) subscribeChatList(); else pollChats().catch(() => {});
+  }
+
+  function subscribeChatList(){
+    if (unsubscribeChatList){ unsubscribeChatList(); unsubscribeChatList = null; }
+    unsubscribeChatList = startPoll(pollChats, 15000);
+  }
+  async function pollChats(){
+    const r = await api('GET', '/chats');
+    chatItemsCache = r.items || [];
+    renderChatList();
+  }
+
+  function renderChatList(){
+    if (!currentUser) return;
+    const items = chatItemsCache.filter(chat => chat.otherUid && !isBlockedPair(chat.otherUid));
+    items.sort((a,b) => (b.lastMessageAt || 0) - (a.lastMessageAt || 0));
+    const container = $('chat-list-items');
+    const empty = $('chat-list-empty');
+    container.innerHTML = '';
+    const threadOpen = $('chat-thread-view').style.display !== 'none' && $('s-chat').classList.contains('active');
+    items.forEach(chat => {
+      chat.unread = !!chat.unread && !(threadOpen && chat.id === activeChatId);
+    });
+    unreadChatsCount = items.filter(c => c.unread).length;
+    renderTotalBadge();
+    if (items.length === 0){ empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    items.forEach(chat => {
+      const otherUid = chat.otherUid;
+      const otherName = chat.otherName || 'Без имени';
+      const otherAvatarUrl = chat.otherAvatarUrl || null;
+      const row = document.createElement('div');
+      row.className = 'chat-list-item' + (chat.unread ? ' unread' : '');
+      row.innerHTML = `
+        <div class="avatar ${avatarClassFor(otherUid)}">${avatarInnerHtml({ avatarUrl: otherAvatarUrl, name: otherName })}</div>
+        <div class="meta">
+          <div class="name">${escapeHtml(otherName)}</div>
+          <div class="preview">${escapeHtml(chat.lastMessage || 'Начните диалог')}</div>
+        </div>
+        ${chat.unread ? '<span class="unread-dot"></span>' : ''}
+      `;
+      row.addEventListener('click', () => openChatThread(chat.id, otherUid, otherName, otherAvatarUrl));
+      container.appendChild(row);
+    });
+  }
+
+  /* ---------- блокировки ---------- */
+  function subscribeBlocks(){
+    if (unsubscribeBlocksOut) unsubscribeBlocksOut();
+    if (unsubscribeBlocksIn) unsubscribeBlocksIn();
+    const refreshAll = () => {
+      renderChatList();
+      renderIncomingLikes();
+      if (window.__mapLoaded) renderMapPins(window.__mapProfiles || [], currentMapFilter);
+      if ($('p-own-extra').style.display === 'block') renderBlockedList();
+    };
+    /* блокировки меняются только действиями самого пользователя; обратные (меня заблокировали) сервер скрывает сам */
+    unsubscribeBlocksOut = unsubscribeBlocksIn = startPoll(async () => {
+      const r = await api('GET', '/blocks');
+      const next = new Set(r.blocked || []);
+      if (next.size !== blockedByMe.size || [...next].some(u => !blockedByMe.has(u))){ blockedByMe = next; refreshAll(); }
+    }, 60000);
+  }
+
+  async function blockUser(uid, name){
+    if (!uid || !currentUser || uid === currentUser.uid) return false;
+    try {
+      await api('PUT', '/blocks/' + encodeURIComponent(uid));
+      blockedByMe.add(uid);
+      if (name){ blockNames[uid] = name; store.set('sn_block_names', JSON.stringify(blockNames)); }
+      if (activeChatOtherUid === uid){
+        if (unsubscribeMessages){ unsubscribeMessages(); unsubscribeMessages = null; }
+        activeChatId = null; activeChatOtherUid = null;
+      }
+      showToast((name || 'Пользователь') + ' заблокирован(а). Вы больше не видите друг друга.');
+      return true;
+    } catch (err){
+      console.error(err);
+      showToast('Не удалось заблокировать. Попробуй ещё раз.');
+      return false;
+    }
+  }
+
+  async function renderBlockedList(){
+    const wrap = $('p-blocked-wrap');
+    const list = $('p-blocked-list');
+    const uids = [...blockedByMe];
+    if (uids.length === 0){ wrap.style.display = 'none'; list.innerHTML = ''; return; }
+    wrap.style.display = 'block';
+    list.innerHTML = '';
+    for (const uid of uids){
+      const name = blockNames[uid] || 'Заблокированный пользователь';
+      const row = document.createElement('div');
+      row.className = 'blocked-row';
+      row.innerHTML = '<span>' + escapeHtml(name) + '</span>';
+      const btn = document.createElement('button');
+      btn.className = 'quiet-link';
+      btn.textContent = 'Разблокировать';
+      btn.addEventListener('click', async () => {
+        try {
+          await api('DELETE', '/blocks/' + encodeURIComponent(uid));
+          blockedByMe.delete(uid);
+          renderBlockedList(); renderChatList(); renderIncomingLikes();
+          if (window.__mapLoaded) loadMap();
+          showToast(name + ' разблокирован(а)');
+        } catch (err){ console.error(err); }
+      });
+      row.appendChild(btn);
+      list.appendChild(row);
+    }
+  }
+
+  $('p-block-btn').addEventListener('click', async () => {
+    if (!viewedOtherProfile) return;
+    const name = viewedOtherProfile.name || 'этого человека';
+    if (!confirm('Заблокировать ' + name + '? Вы перестанете видеть друг друга на карте и в поиске, переписка закроется. Разблокировать можно в своём профиле.')) return;
+    const ok = await blockUser(viewedOtherProfile.uid, viewedOtherProfile.name);
+    if (ok){ setActiveScreen('s-map'); loadMap(); }
+  });
+
+  async function openProfileByUid(uid){
+    if (!uid) return;
+    try {
+      const r = await api('GET', '/profiles/' + encodeURIComponent(uid));
+      await openOtherProfile(r.profile);
+    } catch (err){
+      console.error(err);
+      showToast(err && err.status === 404 ? 'Анкета удалена или недоступна' : (err.message || 'Не удалось открыть анкету'));
+    }
+  }
+  $('chat-peer').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
+  $('chat-avatar').addEventListener('click', () => openProfileByUid(activeChatOtherUid));
+
+  /* ---------- видимость анкеты: 30 дней + «я нашёл группу» ---------- */
+  function formatDate(ms){
+    return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  }
+  function renderVisibilityCard(){
+    const el = $('p-visibility');
+    const p = currentProfile;
+    if (!el || !p) return;
+    let status, note, actions;
+    const band = p.kind === 'band';
+    if (p.hidden){
+      el.classList.add('off');
+      status = band ? 'Группа скрыта из поиска' : 'Ты скрыт(а) из поиска';
+      note = (band ? 'Рады, что состав собран! ' : 'Рады, что ты нашёл(ла) своих! ') + 'Старые переписки остаются, новые люди анкету не видят.';
+      actions = '<button class="ghost-btn accent" data-vis="show">Снова показывать меня</button>';
+    } else if (p.activeUntil && p.activeUntil <= Date.now()){
+      el.classList.add('off');
+      status = 'Срок показа истёк — анкета скрыта';
+      note = 'Анкета показывается 30 дней, чтобы на карте были только те, кто ищет прямо сейчас.';
+      actions = '<button class="ghost-btn accent" data-vis="extend">Показывать ещё 30 дней</button>';
+    } else {
+      el.classList.remove('off');
+      status = p.activeUntil ? 'Анкета видна в поиске до ' + formatDate(p.activeUntil) : 'Анкета видна в поиске';
+      note = 'Через 30 дней она скроется сама — если ещё ищешь, просто продли.';
+      actions = '<button class="ghost-btn" data-vis="extend">Продлить на 30 дней</button>' +
+                '<button class="ghost-btn accent" data-vis="found">' + (band ? 'Мы нашли участника — скрыть нас' : 'Я нашёл(ла) группу — скрыть меня') + '</button>';
+    }
+    el.innerHTML = '<div class="vis-status"><span class="vis-dot"></span>' + escapeHtml(status) + '</div>' +
+      '<div class="vis-note">' + escapeHtml(note) + '</div><div class="vis-actions">' + actions + '</div>';
+    el.querySelectorAll('[data-vis]').forEach(btn => btn.addEventListener('click', () => updateVisibility(btn.dataset.vis)));
+  }
+  async function updateVisibility(action){
+    if (!currentUser || !currentProfile) return;
+    const patch = action === 'found'
+      ? { hidden: true }
+      : { hidden: false, activeUntil: Date.now() + VISIBLE_DAYS * DAY_MS };
+    try {
+      await api('POST', action === 'found' ? '/me/profile/hide' : '/me/profile/show');
+      currentProfile = { ...currentProfile, ...patch };
+      renderVisibilityCard();
+      showToast(action === 'found' ? 'Анкета скрыта. Удачи и хороших репетиций!' : 'Анкета снова видна до ' + formatDate(currentProfile.activeUntil));
+    } catch (err){
+      console.error(err);
+      showToast('Не получилось сохранить. Попробуй ещё раз.');
+    }
+  }
+
+  /* ---------- приглашения ---------- */
+  ['map-invite-btn', 'map-empty-invite-btn', 'chat-empty-invite-btn', 'p-invite-btn'].forEach(id => {
+    $(id).addEventListener('click', inviteFriends);
+  });
+  $('map-hidden-note').addEventListener('click', openOwnProfile);
+
+  /* ---------- удаление аккаунта ---------- */
+  function closeDeleteModal(){ $('delete-modal-overlay').style.display = 'none'; }
+  $('p-delete-btn').addEventListener('click', () => {
+    $('delete-password').value = '';
+    $('delete-error').style.display = 'none';
+    $('delete-modal-overlay').style.display = 'flex';
+  });
+  $('delete-cancel-btn').addEventListener('click', closeDeleteModal);
+  $('delete-confirm-btn').addEventListener('click', async () => {
+    const password = $('delete-password').value;
+    const errEl = $('delete-error');
+    const showErr = (m) => { errEl.textContent = m; errEl.style.display = 'block'; };
+    if (!password){ showErr('Введи пароль.'); return; }
+    const btn = $('delete-confirm-btn');
+    btn.disabled = true; btn.textContent = 'Удаляю…';
+    try {
+      await api('DELETE', '/me', { password });
+      stopAllPolling();
+      setTokens(null, null);
+      await onAuthChange(null);
+      closeDeleteModal();
+      showToast('Аккаунт удалён. Спасибо, что был(а) с нами.');
+    } catch (err){
+      console.error(err);
+      showErr(err && err.status ? err.message : 'Удаление прервалось. Попробуй ещё раз.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Удалить навсегда';
+    }
+  });
+
+  /* ---------- жалобы ---------- */
+  wireChipGroup('report-reasons', 'single');
+
+  function openReportModal(targetUid, chatId){
+    if (!targetUid) return;
+    reportTargetUid = targetUid;
+    reportTargetChatId = chatId || null;
+    $('report-comment').value = '';
+    $('report-also-block').checked = false;
+    $('report-error').style.display = 'none';
+    setChipValues('report-reasons', []);
+    $('report-modal-overlay').style.display = 'flex';
+  }
+  function closeReportModal(){
+    $('report-modal-overlay').style.display = 'none';
+  }
+  $('report-cancel-btn').addEventListener('click', closeReportModal);
+  $('report-submit-btn').addEventListener('click', async () => {
+    const reason = getChipValues('report-reasons')[0];
+    if (!reason){
+      $('report-error').textContent = 'Выбери причину.';
+      $('report-error').style.display = 'block';
+      return;
+    }
+    if (!reportTargetUid || !currentUser) return;
+    const btn = $('report-submit-btn');
+    btn.disabled = true;
+    try {
+      await api('POST', '/reports', { targetUid: reportTargetUid, reason, text: $('report-comment').value.trim(), chatId: reportTargetChatId || undefined });
+      const alsoBlock = $('report-also-block').checked;
+      const targetUid = reportTargetUid;
+      closeReportModal();
+      if (alsoBlock){
+        const ok = await blockUser(targetUid, null);
+        if (ok){ setActiveScreen('s-map'); loadMap(); }
+      } else {
+        showToast('Жалоба отправлена. Спасибо!');
+      }
+    } catch (err){
+      console.error(err);
+      $('report-error').textContent = 'Не удалось отправить жалобу. Попробуй ещё раз.';
+      $('report-error').style.display = 'block';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $('p-report-btn').addEventListener('click', () => {
+    if (!viewedOtherProfile) return;
+    openReportModal(viewedOtherProfile.uid);
+  });
+  $('chat-report-btn').addEventListener('click', () => {
+    if (!activeChatOtherUid) return;
+    openReportModal(activeChatOtherUid, activeChatId);
+  });
+
+  /* ---------- tabbar ---------- */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const screen = btn.dataset.screen;
+      if (screen === 's-profile') openOwnProfile();
+      else if (screen === 's-chat') openChatList();
+      else if (screen === 's-map'){ setActiveScreen('s-map'); loadMap(); }
+      else setActiveScreen(screen);
+    });
+  });
+
+
+  /* ---------- «О приложении» ---------- */
+  const isStandalone = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  function setAboutOs(os){
+    $('about-ios').style.display = os === 'ios' ? 'block' : 'none';
+    $('about-android').style.display = os === 'android' ? 'block' : 'none';
+    $('about-os-tabs').querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.os === os));
+  }
+  function openAbout(){
+    const ua = navigator.userAgent || '';
+    const isIos = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    setAboutOs(isIos ? 'ios' : 'android');
+    $('about-installed').style.display = isStandalone() ? 'block' : 'none';
+    $('about-install-btn').style.display = (typeof deferredPrompt !== 'undefined' && deferredPrompt) ? 'block' : 'none';
+    $('about-overlay').classList.add('open');
+    $('about-overlay').querySelector('.about-body').scrollTop = 0;
+  }
+  function closeAbout(){ $('about-overlay').classList.remove('open'); }
+  $('about-os-tabs').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => setAboutOs(c.dataset.os)));
+  $('about-close-btn').addEventListener('click', closeAbout);
+  $('auth-about-btn').addEventListener('click', openAbout);
+  $('p-about-btn').addEventListener('click', openAbout);
+  $('about-install-btn').addEventListener('click', () => { $('install-btn').click(); closeAbout(); });
+  $('about-city-btn').addEventListener('click', async () => {
+    const msg = $('about-city-msg');
+    const city = $('about-city-input').value.trim().replace(/\s+/g, ' ');
+    const show = (t) => { msg.textContent = t; msg.style.display = 'block'; };
+    if (city.length < 2){ show('Напиши название города.'); return; }
+    let already = false;
+    try { already = localStorage.getItem('sn_city_sent') === '1'; } catch (e){}
+    if (already){ show('Мы уже получили твою заявку, спасибо!'); return; }
+    const btn = $('about-city-btn');
+    btn.disabled = true;
+    try {
+      await api('POST', '/city-requests', { city });
+      try { localStorage.setItem('sn_city_sent', '1'); } catch (e){}
+      $('about-city-input').value = '';
+      show('Записали!');
+    } catch (err){
+      console.error(err);
+      show(err && err.status === 429 ? err.message : 'Не получилось отправить. Попробуй позже.');
+    } finally { btn.disabled = false; }
+  });
+
+  /* ---------- подсказка «установи на экран» (один раз, закрывается навсегда) ---------- */
+  function hintClosed(){ try { return localStorage.getItem('sn_hint_closed') === '1'; } catch (e){ return false; } }
+  function closeInstallHint(){
+    $('install-hint').style.display = 'none';
+    try { localStorage.setItem('sn_hint_closed', '1'); } catch (e){}
+  }
+  function maybeShowInstallHint(){
+    const mobile = (window.matchMedia && window.matchMedia('(max-width:639px)').matches) || /Android|iPhone|iPad|iPod/.test(navigator.userAgent || '');
+    $('install-hint').style.display = (mobile && !isStandalone() && !hintClosed()) ? 'flex' : 'none';
+  }
+  $('install-hint-close').addEventListener('click', closeInstallHint);
+  $('install-hint-open').addEventListener('click', () => { closeInstallHint(); openAbout(); });
+  window.addEventListener('appinstalled', closeInstallHint);
+
+  /* ---------- PWA: service worker + install prompt ---------- */
+  if ('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+  let deferredPrompt = null;
+  const installBtn = $('install-btn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'inline-flex';
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+  });
+
+  window.addEventListener('hashchange', handleEmailLink);
+  bootApp();
+</script>
+
+</body>
+</html>
