@@ -344,6 +344,7 @@
   }
   .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 
+  .sf-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 14px;}
   .map-district{
     text-align:center;
     font-size:12.5px;
@@ -479,6 +480,12 @@
   .layout{width:100%;}
   .app-shell, .screen, .scroll, .filter-row, .map-area{min-width:0;}
   .text-input, textarea.text-input, .chat-input input.box{font-size:16px;}
+  .mic-help{margin-top:10px;border-top:1px solid var(--line);padding-top:8px;}
+  .mic-help summary{cursor:pointer;font-size:12.5px;color:var(--accent);list-style:none;}
+  .mic-help summary::-webkit-details-marker{display:none;}
+  .mic-help-body{font-size:12px;color:var(--ink-quiet);line-height:1.45;}
+  .mic-help-body p{margin:8px 0 0;}
+  .mic-help-body b{color:var(--ink);}
   .district-chip-note{font-size:11.5px;color:var(--ink-quiet);margin-top:6px;}
   .chat-list-item.unread .name{color:var(--accent);}
   .chat-list-item.unread .preview{color:var(--ink);font-weight:600;}
@@ -729,11 +736,22 @@
                 <div class="msg-line muted" id="rec-status" style="display:none;text-align:left;margin-top:8px;"></div>
                 <audio id="rec-preview" controls preload="none" style="display:none;"></audio>
                 <div class="rec-row" style="margin-top:10px;">
-                  <label class="rec-file-label" for="rec-file">или загрузить файл</label>
+                  <label class="rec-file-label" for="rec-file">или загрузить файл (до 60 сек и 2,5 МБ)</label>
                   <input type="file" id="rec-file" accept="audio/*" style="display:none;">
                   <button type="button" class="quiet-link danger" id="rec-remove" style="display:none;">Удалить запись</button>
                 </div>
-                <div class="district-chip-note">Сыграй кусочек, спой куплет или покажи свой звук. Телефон лучше поставить в полуметре от инструмента.</div>
+                <div class="district-chip-note">Сыграй кусочек, спой куплет или покажи свой звук. Телефон лучше поставить в полуметре от инструмента. Запись и файл — не длиннее 60 секунд; файл — не тяжелее 2,5 МБ (mp3, m4a, ogg, webm).</div>
+                <details class="mic-help" id="mic-help">
+                  <summary>Не получается записать? Как разрешить микрофон</summary>
+                  <div class="mic-help-body">
+                    <p>При первой записи браузер спрашивает «Разрешить доступ к микрофону?» — нажми «Разрешить». Если случайно нажал(а) «Запретить», он больше не спросит: разрешение нужно включить вручную.</p>
+                    <p><b>iPhone (Safari):</b> в адресной строке нажми «Аа» → «Настройки веб-сайта» → «Микрофон» → «Разрешить». Потом вернись и нажми «Записать».</p>
+                    <p><b>Android (Chrome):</b> нажми значок слева от адреса → «Разрешения» → «Микрофон» → «Разрешить». Не видишь значок: ⋮ → «Настройки» → «Настройки сайтов» → «Микрофон» → svoynastroy.ru → «Разрешить».</p>
+                    <p><b>Компьютер (Chrome, Яндекс Браузер, Edge):</b> нажми значок замка или настроек слева от адреса → «Микрофон» → «Разрешить». Страница обновится.</p>
+                    <p><b>Открыл(а) ссылку из ВК или Телеграма?</b> Встроенный браузер часто не даёт доступ к микрофону. Открой svoynastroy.ru в Safari или Chrome (через меню ⋯ → «Открыть в браузере»).</p>
+                    <p>Микрофон всё равно не работает? Запиши голосовую заметку встроенным диктофоном телефона и загрузи её файлом — выше «или загрузить файл».</p>
+                  </div>
+                </details>
               </div>
               <input class="text-input" type="url" id="f-music-link" placeholder="Ссылка на твою музыку: Яндекс Музыка, VK, YouTube…" style="margin-top:10px;">
             </div>
@@ -743,16 +761,16 @@
             </div>
             <div class="msg-line err" id="anketa-error" style="display:none;"></div>
             <div class="msg-line muted" id="anketa-status" style="display:none;"></div>
-            <button class="primary-btn" id="anketa-submit-btn">Показать меня на карте</button>
+            <button class="primary-btn" id="anketa-submit-btn">Опубликовать анкету</button>
           </div>
         </section>
 
-        <!-- SCREEN: MAP -->
-        <section class="screen" id="s-map">
+        <!-- SCREEN: SEARCH -->
+        <section class="screen" id="s-search">
           <div class="app-header header-row">
             <div>
-              <h2>Рядом с тобой</h2>
-              <div class="sub" id="map-sub">Загружаю…</div>
+              <h2>Кого ищешь?</h2>
+              <div class="sub" id="search-sub">Загружаю…</div>
             </div>
             <button class="ghost-btn accent" id="map-invite-btn">+ Пригласить</button>
           </div>
@@ -763,43 +781,7 @@
             <button class="ih-x" id="install-hint-close" type="button" aria-label="Закрыть">×</button>
           </div>
           <div class="map-hidden-note" id="map-hidden-note">Твоя анкета сейчас скрыта от других · открыть профиль</div>
-          <div class="filter-row" id="map-filter">
-            <span class="filter-chip on" data-val="Все">Все</span>
-            <span class="filter-chip" data-val="Гитара">Гитара</span>
-            <span class="filter-chip" data-val="Вокал">Вокал</span>
-            <span class="filter-chip" data-val="Барабаны">Барабаны</span>
-            <span class="filter-chip" data-val="Бас">Бас</span>
-            <span class="filter-chip" data-val="Клавиши">Клавиши</span>
-            <span class="filter-chip" data-val="Струнные">Струнные</span>
-            <span class="filter-chip" data-val="Духовые">Духовые</span>
-            <span class="filter-chip" data-val="За пультом">За пультом</span>
-            <span class="filter-chip" data-val="Группы">Группы</span>
-          </div>
-          <div class="view-row">
-            <div class="view-toggle" id="map-view-toggle"><button type="button" class="on" data-v="scheme">Схема</button><button type="button" data-v="list">Список</button></div>
-            <div class="map-scale" id="map-scale"></div>
-          </div>
-          <div class="map-area" id="map-area">
-            <div class="me-dot"></div>
-            <div class="map-empty" id="map-empty" style="display:none;">Рядом пока никого с такими фильтрами.<br>Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="map-empty-invite-btn">Пригласить</button></div>
-          </div>
-          <div id="map-list"></div>
-        </section>
-
-        <!-- SCREEN: SEARCH -->
-        <section class="screen" id="s-search">
-          <div class="app-header">
-            <h2>Кого ищешь?</h2>
-            <div class="sub">Фильтры + радиус поиска</div>
-          </div>
           <div class="scroll">
-            <div class="field">
-              <label>Кто</label>
-              <div class="chips" id="sf-kind">
-                <span class="chip" data-val="musician">Музыканты</span>
-                <span class="chip" data-val="band">Группы</span>
-              </div>
-            </div>
             <div class="field">
               <label>Что умеет</label>
               <div class="chips" id="sf-instrument">
@@ -811,6 +793,18 @@
                 <span class="chip" data-val="Струнные">Струнные</span>
                 <span class="chip" data-val="Духовые">Духовые</span>
                 <span class="chip" data-val="За пультом">За пультом</span>
+              </div>
+            </div>
+            <div class="sf-toggle-row">
+              <button type="button" class="ghost-btn" id="sf-toggle" aria-expanded="false">Ещё фильтры ▾</button>
+              <button type="button" class="quiet-link" id="sf-reset" style="display:none;">Сбросить</button>
+            </div>
+            <div id="sf-more" style="display:none;">
+            <div class="field">
+              <label>Кто</label>
+              <div class="chips" id="sf-kind">
+                <span class="chip" data-val="musician">Музыканты</span>
+                <span class="chip" data-val="band">Группы</span>
               </div>
             </div>
             <div class="field">
@@ -855,10 +849,10 @@
                 <span class="chip on" data-val="25">25 км</span>
               </div>
             </div>
-            <button class="primary-btn" id="search-submit-btn">Показать совпадения</button>
-
-            <div class="section-title res-head" id="search-results-title" style="margin-top:22px;"><span id="search-count">Результаты</span><button class="quiet-link" id="search-up-btn" type="button" style="display:none;">↑ К фильтрам</button></div>
-            <div id="search-results"><div class="msg-line muted">Настрой фильтры и нажми «Показать совпадения».</div></div>
+            </div>
+            
+            <div class="section-title res-head" id="search-results-title" style="margin-top:14px;"><span id="search-count">Результаты</span></div>
+            <div id="search-results"><div class="msg-line muted">Загружаю…</div></div>
           </div>
         </section>
 
@@ -924,7 +918,7 @@
               <div id="likes-you-list" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;"></div>
             </div>
             <div class="scroll" id="chat-list-scroll">
-              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Напиши кому-нибудь с карты или из поиска.<br><button class="ghost-btn accent" id="chat-empty-invite-btn" style="margin-top:12px;">Пригласить знакомых</button></div>
+              <div id="chat-list-empty" class="msg-line muted" style="margin-top:40px;display:none;">Пока нет диалогов.<br>Найди кого-нибудь в поиске и нажми «Мне интересно».<br><button class="ghost-btn accent" id="chat-empty-invite-btn" style="margin-top:12px;">Пригласить знакомых</button></div>
               <div id="chat-list-items"></div>
             </div>
           </div>
@@ -948,10 +942,6 @@
         </section>
 
         <div class="tabbar" id="tabbar">
-          <button class="tab-btn" data-screen="s-map">
-            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-            Карта
-          </button>
           <button class="tab-btn" data-screen="s-search">
             <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></svg>
             Поиск
@@ -1001,14 +991,14 @@
     <div class="section-title">Как это работает</div>
     <ol class="about-steps">
       <li><b>Заполни анкету:</b> на чём играешь, уровень, жанры, чего ищешь. По желанию добавь, как ты звучишь: запиши до 60 секунд прямо в приложении, загрузи аудиофайл или вставь ссылку на Яндекс Музыку, VK, YouTube и другие площадки.</li>
-      <li><b>Смотри, кто рядом:</b> на карте или в поиске. В поиске можно отфильтровать по тому, кто нужен, что умеет, уровню, цели, жанру (с поджанрами) и радиусу.</li>
+      <li><b>Смотри, кто рядом:</b> раздел «Поиск» сразу показывает ближайших. Можно отфильтровать по инструменту, тому, кто нужен, уровню, цели, жанру (с поджанрами) и радиусу.</li>
       <li><b>Нажми «Мне интересно».</b> Если интерес взаимный — открывается чат. Спама в личку нет.</li>
     </ol>
     <p class="q">Чтобы считать расстояния, браузер спросит доступ к геопозиции. Мы сохраняем только примерную точку (около 1 км): другие видят «≈ 2 км» и район, а не твой адрес. Не разрешишь — возьмём центр выбранного района.</p>
 
     <div class="section-title">Наш подход</div>
     <p>Приложение нужно, чтобы договориться и пойти играть, а не чтобы листать ленту. Поэтому здесь нет рекламы, бесконечного скролла и навязчивых уведомлений.</p>
-    <p>Анкета показывается 30 дней — на карте только те, кто ищет прямо сейчас. Нашёл группу — скрой анкету одной кнопкой.</p>
+    <p>Анкета показывается 30 дней — в поиске только те, кто ищет прямо сейчас. Нашёл группу — скрой анкету одной кнопкой.</p>
 
     <div class="section-title">География</div>
     <p>Сейчас Свой Настрой работает только в <b>Екатеринбурге</b>: в анкете выбирается район города. Живёшь в другом месте? Напиши город — так мы узнаем, где приложение ждут.</p>
@@ -1028,7 +1018,7 @@
     <div class="about-faq">
       <details><summary>Почему я никого не вижу?</summary><p>Приложение только запускается, и людей пока немного. Загляни в «Поиск», сними часть фильтров и позови знакомых музыкантов — кнопка «Пригласить» есть в Профиле.</p></details>
       <details><summary>Зачем нужна геопозиция?</summary><p>Чтобы показать, кто рядом. Мы округляем её до примерно 1 км, а другим показываем расстояние вроде «≈ 2 км» и район. Если доступ закрыт, используем центр выбранного района. Разрешить доступ позже: на iPhone — Настройки → Конфиденциальность → Службы геолокации; на Android — значок слева от адреса сайта → Разрешения → Местоположение.</p></details>
-      <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и 15 МБ) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
+      <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и до 2,5 МБ; форматы mp3, m4a, ogg, webm) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Если файл тяжелее 2,5 МБ, сохрани его в mp3 с битрейтом 128 кбит/с — минута займёт около 1 МБ. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
       <details><summary>Как скрыть анкету?</summary><p>В Профиле есть карточка видимости. Нашёл группу — нажми «Я нашёл(ла) группу — скрыть меня». Вернуться можно в любой момент.</p></details>
       <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Каждое сохранение продлевает показ анкеты ещё на 30 дней.</p></details>
       <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись тоже удаляются из хранилища.</p></details>
@@ -1181,28 +1171,27 @@
       fr.readAsDataURL(blob);
     });
   }
+  const AUDIO_MAX_BYTES = 2500000; /* 2,5 МБ: минута mp3 даже 320 кбит/с ≈ 2,4 МБ; выше нельзя — потолок запроса к API 3,5 МБ с учётом base64 */
   const AUDIO_TYPE_FIX = { 'audio/x-m4a': 'audio/mp4', 'audio/m4a': 'audio/mp4', 'audio/aac': 'audio/mp4', 'audio/mp3': 'audio/mpeg', 'audio/x-mpeg': 'audio/mpeg' };
   async function uploadFile(kind, blob){
-    if (blob.size > 2 * 1024 * 1024) throw new ApiError(413, 'TOO_LARGE', 'Файл больше 2 МБ.');
+    const limit = kind === 'audio' ? AUDIO_MAX_BYTES : 2 * 1024 * 1024;
+    if (blob.size > limit) throw new ApiError(413, 'TOO_LARGE', 'Файл больше ' + (kind === 'audio' ? '2,5' : '2') + ' МБ.');
     let type = String(blob.type || '').split(';')[0].toLowerCase();
     type = AUDIO_TYPE_FIX[type] || type;
     const data = await blobToBase64(blob);
     return api('POST', '/files', { kind, contentType: type, data });
   }
 
-  const MAP_RADIUS_KM = 25;
 
   let currentUser = null;
   let currentProfile = null;
   let editingProfile = false;
   let authMode = 'login';
-  let currentMapFilter = 'Все';
   let viewedOtherProfile = null;
   let activeChatId = null;
   let activeChatOtherUid = null;
   let unsubscribeMessages = null;
   let unsubscribeChatList = null;
-  window.__mapProfiles = [];
   let myOutgoingLikeUids = new Set();
   let incomingLikesRaw = [];
   let likerProfilesCache = new Map();
@@ -1430,7 +1419,8 @@
       // для музыки выключаем «телефонную» обработку голоса — она режет звук инструментов
       recStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     } catch (err){
-      setRecStatus('Нет доступа к микрофону. Разреши его в настройках браузера и попробуй снова.');
+      setRecStatus('Нет доступа к микрофону. Разреши его в настройках браузера — подсказка ниже — и попробуй снова.');
+      const mh = $('mic-help'); if (mh){ mh.open = true; mh.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
       return;
     }
     const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
@@ -1503,6 +1493,7 @@
     $('brand-bar').style.display = id === 's-auth' ? 'none' : 'flex';
     if (id !== 's-anketa' && mediaRecorder) cancelRecording();
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+    if (id === 's-search') updateHiddenNote();
   }
 
   function wireChipGroup(containerId, mode){
@@ -1692,9 +1683,9 @@
         migratePrivacy(user.uid);
         $('tabbar').style.display = 'flex';
         editingProfile = false;
-        setActiveScreen('s-map');
+        setActiveScreen('s-search');
         maybeShowInstallHint();
-        loadMap();
+        runSearch();
         subscribeLikeWatchers();
         subscribeBlocks();
         subscribeChatList();
@@ -1775,7 +1766,7 @@
     pendingAvatarKey = undefined; pendingAudioKey = undefined;
     $('anketa-title').textContent = isEdit ? 'Редактирование анкеты' : 'Анкета';
     $('anketa-sub').textContent = isEdit ? 'Обнови данные о себе' : 'Расскажи о себе — это займёт минуту';
-    $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Показать меня на карте';
+    $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Опубликовать анкету';
     if (isEdit && currentProfile){
       $('f-name').value = currentProfile.name || '';
       $('f-age').value = currentProfile.age || '';
@@ -1872,7 +1863,7 @@
     const file = $('rec-file').files[0];
     $('rec-file').value = '';
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024){ setRecStatus('Файл больше 2 МБ — выбери покороче (до минуты).'); return; }
+    if (file.size > AUDIO_MAX_BYTES){ setRecStatus('Файл больше 2,5 МБ. Обрежь до минуты или сохрани в mp3 128 кбит/с — минута займёт около 1 МБ.'); return; }
     const dur = await new Promise(resolve => {
       const a = document.createElement('audio');
       a.preload = 'metadata';
@@ -1974,8 +1965,8 @@
       currentProfile = Object.assign({ uid: currentUser.uid }, saved.profile);
       hideAnketaMsgs();
       $('tabbar').style.display = 'flex';
-      setActiveScreen('s-map');
-      loadMap();
+      setActiveScreen('s-search');
+      runSearch();
       if (!unsubscribeOutgoingLikes) subscribeLikeWatchers();
       if (!unsubscribeChatList) subscribeChatList();
       if (!unsubscribeBlocksOut) subscribeBlocks();
@@ -1987,158 +1978,6 @@
     }
   });
 
-  /* ---------- profiles fetch ---------- */
-  async function fetchMapProfiles(){
-    const r = await api('GET', '/map');
-    return r.items || [];
-  }
-
-  /* ---------- map ---------- */
-  async function loadMap(){
-    $('map-sub').textContent = 'Загружаю…';
-    let profiles;
-    try {
-      profiles = await fetchMapProfiles();
-    } catch (err){
-      $('map-sub').textContent = 'Не удалось загрузить анкеты.';
-      return;
-    }
-    const me = currentProfile;
-    renderOwnDistrict();
-    const withDist = profiles; /* расстояние и направление считает сервер; чужие координаты клиенту не отдаются */
-    window.__mapProfiles = withDist;
-    window.__mapLoaded = true;
-    renderMapPins(withDist, currentMapFilter);
-  }
-
-  let mapView = 'scheme';
-  function ruAnkety(n){ const a = n % 100, b = n % 10; return n + ' ' + ((a > 10 && a < 20) ? 'анкет' : b === 1 ? 'анкета' : (b >= 2 && b <= 4) ? 'анкеты' : 'анкет'); }
-  function pickScale(maxD){ for (const k of [2, 5, 10, 25]) if (maxD <= k) return k; return 25; }
-  function fmtKm(k){ return (Math.round(k * 10) / 10).toString().replace('.', ',') + ' км'; }
-  function syncMapViewUi(){
-    document.querySelectorAll('#map-view-toggle button').forEach(b => b.classList.toggle('on', b.dataset.v === mapView));
-    $('map-area').style.display = mapView === 'scheme' ? '' : 'none';
-    $('map-list').style.display = mapView === 'list' ? 'block' : 'none';
-    if (mapView === 'list') $('map-scale').textContent = '';
-  }
-  function mapListCard(p){
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.cursor = 'pointer';
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="avatar ${avatarClassFor(p.uid)}">${avatarInnerHtml(p)}</div>
-        <div>
-          <div class="card-name">${escapeHtml(p.name || 'Без имени')}${p.kind === 'band' ? '<span class="band-badge">группа</span>' : (p.age ? ' · ' + p.age : '')}</div>
-          <div class="card-meta">${escapeHtml((p.instruments || []).join(', ') || '—')}${p.district ? ' · ' + escapeHtml(p.district) : ''}</div>
-        </div>
-        <div class="dist">${fmtDist(p.dist)}</div>
-      </div>`;
-    card.addEventListener('click', () => openOtherProfile(p));
-    return card;
-  }
-  function renderMapList(items, title){
-    const box = $('map-list');
-    box.innerHTML = '';
-    if (title){
-      const head = document.createElement('div');
-      head.className = 'map-list-head';
-      head.innerHTML = '<span>' + escapeHtml(title) + '</span><button class="ghost-btn accent" type="button">← Вся схема</button>';
-      head.querySelector('button').addEventListener('click', () => { mapView = 'scheme'; syncMapViewUi(); renderMapPins(window.__mapProfiles || [], currentMapFilter); });
-      box.appendChild(head);
-    }
-    if (items.length === 0){
-      box.insertAdjacentHTML('beforeend', '<div class="msg-line muted">Рядом пока никого с такими фильтрами. Позови знакомых музыкантов — вместе интереснее.</div>');
-      return;
-    }
-    items.slice().sort((a, b) => a.dist - b.dist).forEach(p => box.appendChild(mapListCard(p)));
-  }
-
-  function renderMapPins(list, filter){
-    const mapArea = $('map-area');
-    mapArea.querySelectorAll('.pin, .cluster, .radar-ring').forEach(p => p.remove());
-    const base = list.filter(p => !isBlockedPair(p.uid));
-    const filtered = filter === 'Все' ? base
-      : filter === 'Группы' ? base.filter(p => p.kind === 'band')
-      : base.filter(p => (p.instruments||[]).includes(filter));
-    $('map-empty').style.display = (mapView === 'scheme' && filtered.length === 0) ? 'block' : 'none';
-    $('map-hidden-note').style.display = (currentProfile && !isProfileVisible(currentProfile)) ? 'block' : 'none';
-    $('map-sub').textContent = `В радиусе ${MAP_RADIUS_KM} км · ${ruAnkety(filtered.length)}`;
-    if (mapView === 'list'){ renderMapList(filtered, null); return; }
-    const w = mapArea.clientWidth, h = mapArea.clientHeight;
-    if (!w || !h) return;
-    const cx = w / 2, cy = h * 0.52;
-    const R = Math.max(40, Math.min(cx - 22, cy - 44, h - cy - 12));
-    const maxD = filtered.reduce((m, p) => Math.max(m, p.dist), 0);
-    const scale = pickScale(maxD);
-    $('map-scale').textContent = 'Схема, не карта · до ' + fmtKm(scale);
-    [scale / 2, scale].forEach(km => {
-      const ring = document.createElement('div');
-      ring.className = 'radar-ring';
-      const d = 2 * R * (km / scale);
-      ring.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;width:' + d + 'px;height:' + d + 'px;';
-      ring.innerHTML = '<span>' + fmtKm(km) + '</span>';
-      mapArea.appendChild(ring);
-    });
-    const clusters = [];
-    filtered.forEach(p => {
-      const rad = p.bearing * Math.PI / 180;
-      const r = Math.min(p.dist / scale, 1) * R;
-      const x = cx + Math.sin(rad) * r, y = cy - Math.cos(rad) * r;
-      const c = clusters.find(k => Math.hypot(k.x - x, k.y - y) < 34);
-      if (c){
-        c.items.push(p);
-        c.x = (c.x * (c.items.length - 1) + x) / c.items.length;
-        c.y = (c.y * (c.items.length - 1) + y) / c.items.length;
-      } else clusters.push({ x, y, items: [p] });
-    });
-    clusters.forEach(c => {
-      if (c.items.length > 1){
-        const el = document.createElement('div');
-        el.className = 'cluster';
-        el.style.left = c.x + 'px';
-        el.style.top = c.y + 'px';
-        el.textContent = c.items.length;
-        el.title = 'Здесь ' + c.items.length + ' анкет';
-        el.addEventListener('click', () => {
-          mapView = 'list';
-          syncMapViewUi();
-          renderMapList(c.items, 'В этой точке · ' + c.items.length);
-        });
-        mapArea.appendChild(el);
-        return;
-      }
-      const p = c.items[0];
-      const pin = document.createElement('div');
-      pin.className = 'pin ' + avatarClassFor(p.uid) + (p.kind === 'band' ? ' band' : '');
-      pin.style.left = c.x + 'px';
-      pin.style.top = c.y + 'px';
-      pin.innerHTML = p.avatarUrl
-        ? '<span style="display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;transform:rotate(45deg);"><img src="' + escapeHtml(p.avatarUrl) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></span>'
-        : '<span>' + escapeHtml(initialsFor(p)) + '</span>';
-      pin.title = p.name || '';
-      pin.addEventListener('click', () => openOtherProfile(p));
-      mapArea.appendChild(pin);
-    });
-  }
-  document.querySelectorAll('#map-view-toggle button').forEach(b => b.addEventListener('click', () => {
-    mapView = b.dataset.v;
-    syncMapViewUi();
-    renderMapPins(window.__mapProfiles || [], currentMapFilter);
-  }));
-  let mapResizeT = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(mapResizeT);
-    mapResizeT = setTimeout(() => { if (window.__mapLoaded && mapView === 'scheme') renderMapPins(window.__mapProfiles || [], currentMapFilter); }, 150);
-  });
-
-  wireChipGroup('map-filter', 'single');
-  document.querySelectorAll('#map-filter .filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      currentMapFilter = chip.dataset.val;
-      renderMapPins(window.__mapProfiles || [], currentMapFilter);
-    });
-  });
 
   /* ---------- search ---------- */
   wireChipGroup('sf-instrument', 'single');
@@ -2160,7 +1999,26 @@
   wireChipGroup('sf-radius', 'single');
   wireChipGroup('sf-kind', 'single');
 
-  $('search-submit-btn').addEventListener('click', async () => {
+  function ruAnkety(n){ const a = n % 100, b = n % 10; return n + ' ' + ((a > 10 && a < 20) ? 'анкет' : b === 1 ? 'анкета' : (b >= 2 && b <= 4) ? 'анкеты' : 'анкет'); }
+  function searchFilterCount(){
+    return ['sf-kind', 'sf-level', 'sf-goal', 'sf-genre'].reduce((n, id) => n + getChipValues(id).length, 0)
+      + (getChipValues('sf-radius')[0] && getChipValues('sf-radius')[0] !== '25' ? 1 : 0);
+  }
+  function refreshFilterUi(){
+    const n = searchFilterCount();
+    const open = $('sf-more').style.display !== 'none';
+    $('sf-toggle').textContent = 'Ещё фильтры' + (n ? ' · ' + n : '') + (open ? ' ▴' : ' ▾');
+    $('sf-toggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+    $('sf-reset').style.display = (n || getChipValues('sf-instrument').length) ? 'inline-block' : 'none';
+  }
+  function updateHiddenNote(){
+    $('map-hidden-note').style.display = (currentProfile && !isProfileVisible(currentProfile)) ? 'block' : 'none';
+  }
+  let searchSeq = 0, searchTimer = null, lastSearchAt = 0;
+  window.__searchLoaded = false;
+  /* silent: не показывать «Ищу…» (фоновое обновление, старые результаты остаются на экране) */
+  async function runSearch(opts){
+    const silent = !!(opts && opts.silent);
     const instrument = getChipValues('sf-instrument')[0] || null;
     const level = getChipValues('sf-level')[0] || null;
     const goal = getChipValues('sf-goal')[0] || null;
@@ -2168,13 +2026,12 @@
     const genreDetail = getChipValues('sf-genre-sub')[0] || null;
     const radius = Number(getChipValues('sf-radius')[0] || '25');
     const kindFilter = getChipValues('sf-kind')[0] || null;
-
     const resultsEl = $('search-results');
-    const submitBtn = $('search-submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Ищу…';
-    resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
-
+    const my = ++searchSeq;
+    renderOwnDistrict();
+    updateHiddenNote();
+    refreshFilterUi();
+    if (!silent) resultsEl.innerHTML = '<div class="msg-line muted">Ищу…</div>';
     let list, total = 0;
     try {
       const qs = new URLSearchParams({ radius: String(radius), limit: '50' });
@@ -2187,30 +2044,53 @@
       const r = await api('GET', '/search?' + qs.toString());
       list = r.items || []; total = r.total || list.length;
     } catch (err){
-      resultsEl.innerHTML = '<div class="msg-line err">Не удалось загрузить анкеты.</div>';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Показать совпадения';
+      if (my !== searchSeq) return;
+      if (!silent || !window.__searchLoaded){
+        resultsEl.innerHTML = '<div class="msg-line err">Не удалось загрузить анкеты.</div>';
+        $('search-sub').textContent = 'Не удалось загрузить анкеты';
+      }
       return;
     }
-    renderSearchResults(list, total);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Показать совпадения';
-    /* результаты ниже фильтров — сами прокручиваем экран к ним, чтобы было видно, что поиск сработал */
-    const title = $('search-results-title');
-    const smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    requestAnimationFrame(() => title.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }));
+    if (my !== searchSeq) return; /* пока шёл запрос, фильтры сменились — показываем только последний */
+    window.__searchLoaded = true;
+    lastSearchAt = Date.now();
+    $('search-sub').textContent = 'В радиусе ' + radius + ' км · ' + ruAnkety(total);
+    renderSearchResults(list, total, searchFilterCount() > 0 || !!instrument);
+  }
+  function scheduleSearch(){ clearTimeout(searchTimer); refreshFilterUi(); searchTimer = setTimeout(runSearch, 250); }
+  /* любое нажатие на фильтр сразу обновляет выдачу */
+  ['sf-instrument', 'sf-kind', 'sf-level', 'sf-goal', 'sf-genre', 'sf-radius'].forEach(id => {
+    $(id).addEventListener('click', e => { if (e.target.closest('.chip')) scheduleSearch(); });
   });
-  $('search-up-btn').addEventListener('click', () => {
-    const sc = $('s-search').querySelector('.scroll');
-    if (sc) sc.scrollTo({ top: 0, behavior: 'smooth' });
+  $('sf-genre-details').addEventListener('click', e => { if (e.target.closest('.chip')) scheduleSearch(); });
+  $('sf-toggle').addEventListener('click', () => {
+    const more = $('sf-more');
+    more.style.display = more.style.display === 'none' ? 'block' : 'none';
+    refreshFilterUi();
   });
+  $('sf-reset').addEventListener('click', () => {
+    ['sf-instrument', 'sf-kind', 'sf-level', 'sf-goal', 'sf-genre'].forEach(id => setChipValues(id, []));
+    setChipValues('sf-radius', ['25']);
+    $('sf-genre-details').innerHTML = '';
+    runSearch();
+  });
+  /* обновление выдачи при возврате на вкладку «Поиск», если данные старше 30 секунд */
+  function showSearchTab(){
+    setActiveScreen('s-search');
+    if (!window.__searchLoaded) runSearch();
+    else if (Date.now() - lastSearchAt > 30000) runSearch({ silent: true });
+  }
 
-  function renderSearchResults(list, total){
+  function renderSearchResults(list, total, filtered){
     const resultsEl = $('search-results');
-    $('search-up-btn').style.display = 'inline-block';
+    list = list.filter(p => !isBlockedPair(p.uid));
     if (list.length === 0){
-      $('search-count').textContent = 'Никого не нашлось';
-      resultsEl.innerHTML = '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.</div>';
+      $('search-count').textContent = filtered ? 'Никого не нашлось' : 'Пока никого рядом';
+      resultsEl.innerHTML = filtered
+        ? '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.</div>'
+        : '<div class="msg-line muted">Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="search-empty-invite-btn" type="button" style="margin-top:10px;">Пригласить</button></div>';
+      const ib = $('search-empty-invite-btn');
+      if (ib) ib.addEventListener('click', inviteFriends);
       return;
     }
     $('search-count').textContent = 'Найдено: ' + (total || list.length) + (total && total > list.length ? ' · показаны ближайшие ' + list.length : '');
@@ -2620,7 +2500,7 @@
     const refreshAll = () => {
       renderChatList();
       renderIncomingLikes();
-      if (window.__mapLoaded) renderMapPins(window.__mapProfiles || [], currentMapFilter);
+      if (window.__searchLoaded) runSearch({ silent: true });
       if ($('p-own-extra').style.display === 'block') renderBlockedList();
     };
     /* блокировки меняются только действиями самого пользователя; обратные (меня заблокировали) сервер скрывает сам */
@@ -2670,7 +2550,7 @@
           await api('DELETE', '/blocks/' + encodeURIComponent(uid));
           blockedByMe.delete(uid);
           renderBlockedList(); renderChatList(); renderIncomingLikes();
-          if (window.__mapLoaded) loadMap();
+          if (window.__searchLoaded) runSearch({ silent: true });
           showToast(name + ' разблокирован(а)');
         } catch (err){ console.error(err); }
       });
@@ -2682,9 +2562,9 @@
   $('p-block-btn').addEventListener('click', async () => {
     if (!viewedOtherProfile) return;
     const name = viewedOtherProfile.name || 'этого человека';
-    if (!confirm('Заблокировать ' + name + '? Вы перестанете видеть друг друга на карте и в поиске, переписка закроется. Разблокировать можно в своём профиле.')) return;
+    if (!confirm('Заблокировать ' + name + '? Вы перестанете видеть друг друга в поиске, переписка закроется. Разблокировать можно в своём профиле.')) return;
     const ok = await blockUser(viewedOtherProfile.uid, viewedOtherProfile.name);
-    if (ok){ setActiveScreen('s-map'); loadMap(); }
+    if (ok){ setActiveScreen('s-search'); runSearch(); }
   });
 
   async function openProfileByUid(uid){
@@ -2718,7 +2598,7 @@
     } else if (p.activeUntil && p.activeUntil <= Date.now()){
       el.classList.add('off');
       status = 'Срок показа истёк — анкета скрыта';
-      note = 'Анкета показывается 30 дней, чтобы на карте были только те, кто ищет прямо сейчас.';
+      note = 'Анкета показывается 30 дней, чтобы в поиске были только те, кто ищет прямо сейчас.';
       actions = '<button class="ghost-btn accent" data-vis="extend">Показывать ещё 30 дней</button>';
     } else {
       el.classList.remove('off');
@@ -2748,7 +2628,7 @@
   }
 
   /* ---------- приглашения ---------- */
-  ['map-invite-btn', 'map-empty-invite-btn', 'chat-empty-invite-btn', 'p-invite-btn'].forEach(id => {
+  ['map-invite-btn', 'chat-empty-invite-btn', 'p-invite-btn'].forEach(id => {
     $(id).addEventListener('click', inviteFriends);
   });
   $('map-hidden-note').addEventListener('click', openOwnProfile);
@@ -2817,7 +2697,7 @@
       closeReportModal();
       if (alsoBlock){
         const ok = await blockUser(targetUid, null);
-        if (ok){ setActiveScreen('s-map'); loadMap(); }
+        if (ok){ setActiveScreen('s-search'); runSearch(); }
       } else {
         showToast('Жалоба отправлена. Спасибо!');
       }
@@ -2844,7 +2724,7 @@
       const screen = btn.dataset.screen;
       if (screen === 's-profile') openOwnProfile();
       else if (screen === 's-chat') openChatList();
-      else if (screen === 's-map'){ setActiveScreen('s-map'); loadMap(); }
+      else if (screen === 's-search') showSearchTab();
       else setActiveScreen(screen);
     });
   });
