@@ -661,6 +661,11 @@
                 <span class="chip" data-val="Орджоникидзевский">Орджоникидзевский</span>
                 <span class="chip" data-val="Чкаловский">Чкаловский</span>
               </div>
+              <div id="f-refresh-geo-row" style="display:none;margin-top:6px;">
+                <button type="button" class="quiet-link" id="f-refresh-geo">Обновить моё местоположение</button>
+                <div class="district-chip-note" id="f-refresh-geo-note" style="display:none;">Местоположение обновится при сохранении. Браузер может спросить доступ к геопозиции.</div>
+                <div class="district-chip-note">При правке анкеты мы не меняем твою точку для расчёта расстояний. Переехал(а) или была не там — нажми «Обновить».</div>
+              </div>
               <div class="district-chip-note">Подсказка: ВИЗ — Верх-Исетский, Уралмаш и Эльмаш — Орджоникидзевский, Втузгородок — Кировский, Юго-Запад — Ленинский, Ботаника и Химмаш — Чкаловский, Сортировка — Железнодорожный, Синие Камни — Октябрьский.</div>
             </div>
             <div class="field">
@@ -1520,6 +1525,11 @@
     });
   }
 
+  $('f-refresh-geo').addEventListener('click', () => {
+    refreshGeoRequested = true;
+    $('f-refresh-geo').style.display = 'none';
+    $('f-refresh-geo-note').style.display = 'block';
+  });
   wireChipGroup('f-instruments', 'multi');
   function renderSkillDetails(selectedDetails){
     const wrap = $('f-skill-details');
@@ -1762,8 +1772,13 @@
   });
 
   /* ---------- anketa (create / edit profile) ---------- */
+  let refreshGeoRequested = false;
   function prepareAnketaForm(isEdit){
     pendingAvatarKey = undefined; pendingAudioKey = undefined;
+    refreshGeoRequested = false;
+    $('f-refresh-geo-row').style.display = isEdit ? 'block' : 'none';
+    $('f-refresh-geo').style.display = 'inline-block';
+    $('f-refresh-geo-note').style.display = 'none';
     $('anketa-title').textContent = isEdit ? 'Редактирование анкеты' : 'Анкета';
     $('anketa-sub').textContent = isEdit ? 'Обнови данные о себе' : 'Расскажи о себе — это займёт минуту';
     $('anketa-submit-btn').textContent = isEdit ? 'Сохранить изменения' : 'Опубликовать анкету';
@@ -1934,8 +1949,11 @@
     showAnketaStatus('Определяю геопозицию…');
     let coords;
     let usedFallback = false;
+    const prevGeo = currentProfile;
+    const keepGeo = editingProfile && !refreshGeoRequested && prevGeo && typeof prevGeo.lat === 'number' && prevGeo.district === district;
     try {
-      coords = await getGeolocation();
+      if (keepGeo) coords = { lat: prevGeo.lat, lng: prevGeo.lng };
+      else coords = await getGeolocation();
     } catch (err){
       const prev = currentProfile;
       if (editingProfile && prev && typeof prev.lat === 'number' && prev.district === district){
@@ -2197,7 +2215,7 @@
         msgBtn.style.display = 'block';
       } else if (iLiked){
         likeBtn.disabled = true;
-        likeBtn.textContent = 'Ждём взаимности…';
+        likeBtn.textContent = 'Ждём взаимного интереса';
       } else {
         likeBtn.disabled = false;
         likeBtn.textContent = 'Мне интересно';
