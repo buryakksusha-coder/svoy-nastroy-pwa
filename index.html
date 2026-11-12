@@ -158,6 +158,7 @@
     font-size:12.5px;
     margin-top:2px;
   }
+  .auth-free{font-size:12px;color:var(--accent);margin-top:6px;font-weight:600;}
 
   .scroll{
     flex:1;
@@ -591,28 +592,36 @@
             <img class="brand-logo" src="icons/icon-192.png" alt="">
             <h2>Свой Настрой</h2>
             <div class="sub" id="auth-sub">Проверяю сессию…</div>
+            <div class="auth-free">Бесплатно · без рекламы и подписок</div>
           </div>
           <div class="scroll">
             <div class="city-note"><span class="dot"></span><span>Пока работаем только в Екатеринбурге</span><button class="quiet-link" id="auth-about-btn" type="button">О приложении и установка</button></div>
             <div class="field">
-              <label>Email</label>
+              <label for="auth-email">Email</label>
               <input class="text-input" type="email" id="auth-email" autocomplete="email" placeholder="you@example.com">
             </div>
             <div class="field">
-              <label>Пароль</label>
-              <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 6 символов">
-              <div style="text-align:right;margin-top:4px;"><button class="quiet-link" id="auth-forgot-btn" type="button">Забыл пароль?</button></div>
+              <label for="auth-password">Пароль</label>
+              <input class="text-input" type="password" id="auth-password" autocomplete="current-password" placeholder="минимум 8 символов" enterkeyhint="go">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                <button class="quiet-link" id="auth-show-password" type="button">Показать</button>
+                <button class="quiet-link" id="auth-forgot-btn" type="button">Забыл пароль?</button>
+              </div>
             </div>
             <div class="field" id="consent-field" style="display:none;">
               <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400;">
                 <input type="checkbox" id="auth-consent" style="margin-top:3px;">
                 <span style="font-size:12px;color:var(--ink-quiet);line-height:1.4;">Согласен(на) с <a href="privacy.html" target="_blank" style="color:var(--accent);">политикой конфиденциальности</a> и обработкой персональных данных, включая геолокацию</span>
               </label>
+              <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400;margin-top:8px;">
+                <input type="checkbox" id="auth-adult" style="margin-top:3px;">
+                <span style="font-size:12px;color:var(--ink-quiet);line-height:1.4;">Мне исполнилось 18 лет — сервис только для совершеннолетних</span>
+              </label>
             </div>
             <div class="msg-line err" id="auth-error" style="display:none;"></div>
             <div class="msg-line" id="auth-info" style="display:none;text-align:left;color:var(--good);margin:0 0 10px;"></div>
             <button class="primary-btn" id="auth-submit-btn">Войти</button>
-            <button class="primary-btn" id="auth-toggle-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Нет аккаунта? Зарегистрироваться</button>
+            <button type="button" class="primary-btn" id="auth-toggle-btn" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);margin-top:10px;">Нет аккаунта? Зарегистрироваться</button>
           </div>
         </section>
 
@@ -638,6 +647,7 @@
                 <div style="flex:1;">
                   <input type="file" id="f-avatar-input" accept="image/*" style="font-size:12px;color:var(--ink-quiet);max-width:100%;">
                   <div class="msg-line muted" id="f-avatar-status" style="display:none;margin-top:6px;text-align:left;"></div>
+                  <button type="button" class="quiet-link danger" id="f-avatar-remove" style="display:none;padding-left:0;">Убрать фото</button>
                 </div>
               </div>
             </div>
@@ -1003,7 +1013,7 @@
 
     <div class="section-title">Наш подход</div>
     <p>Приложение нужно, чтобы договориться и пойти играть, а не чтобы листать ленту. Поэтому здесь нет рекламы, бесконечного скролла и навязчивых уведомлений.</p>
-    <p>Анкета показывается 30 дней — в поиске только те, кто ищет прямо сейчас. Нашёл группу — скрой анкету одной кнопкой.</p>
+    <p>Пока ты заходишь в приложение, анкета продлевается сама — вручную нажимать ничего не нужно. В поиске остаются те, кто заходит. Нашёл группу — скрой анкету одной кнопкой.</p>
 
     <div class="section-title">География</div>
     <p>Сейчас Свой Настрой работает только в <b>Екатеринбурге</b>: в анкете выбирается район города. Живёшь в другом месте? Напиши город — так мы узнаем, где приложение ждут.</p>
@@ -1021,19 +1031,23 @@
 
     <div class="section-title">Частые вопросы</div>
     <div class="about-faq">
-      <details><summary>Почему я никого не вижу?</summary><p>Приложение только запускается, и людей пока немного. Загляни в «Поиск», сними часть фильтров и позови знакомых музыкантов — кнопка «Пригласить» есть в Профиле.</p></details>
+      <details><summary>Почему я никого не вижу?</summary><p>Приложение молодое, людей пока немного. Анкеты показываются 30 дней с последнего входа: если человек давно не заходил, его анкета скрывается — поэтому список короткий. Загляни в «Поиск», сними часть фильтров и позови знакомых — кнопка «Пригласить» есть в Профиле.</p></details>
       <details><summary>Зачем нужна геопозиция?</summary><p>Чтобы показать, кто рядом. Мы округляем её до примерно 1 км, а другим показываем расстояние вроде «≈ 2 км» и район. Если доступ закрыт, используем центр выбранного района. Разрешить доступ позже: на iPhone — Настройки → Конфиденциальность → Службы геолокации; на Android — значок слева от адреса сайта → Разрешения → Местоположение.</p></details>
       <details><summary>Как добавить музыку?</summary><p>Профиль → «Редактировать» → блок «Как ты звучишь». Можно записать до 60 секунд прямо в приложении, загрузить аудиофайл (до 60 секунд и до 2,5 МБ; форматы mp3, m4a, ogg, webm) или вставить ссылку на Яндекс Музыку, VK, YouTube, SoundCloud, Bandcamp, Telegram, Звук, Apple Music или Spotify. Если файл тяжелее 2,5 МБ, сохрани его в mp3 с битрейтом 128 кбит/с — минута займёт около 1 МБ. Запись и ссылку можно заменить или удалить в любой момент.</p></details>
       <details><summary>Как скрыть анкету?</summary><p>В Профиле есть карточка видимости. Нашёл группу — нажми «Я нашёл(ла) группу — скрыть меня». Вернуться можно в любой момент.</p></details>
-      <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Каждое сохранение продлевает показ анкеты ещё на 30 дней.</p></details>
+      <details><summary>Как изменить анкету?</summary><p>Профиль → «Редактировать». Можно поменять инструменты, цели, район, фото и музыку. Сохранение и вход продлевают показ анкеты на 30 дней.</p></details>
       <details><summary>Как удалить аккаунт?</summary><p>Профиль → внизу «Удалить аккаунт». Анкета, симпатии и переписки (у собеседников тоже) удаляются безвозвратно. Аватарка и аудиозапись тоже удаляются из хранилища.</p></details>
       <details><summary>Нужно ли подтверждать почту?</summary><p>При регистрации мы отправляем письмо. Подтвердить можно позже — это не мешает пользоваться приложением.</p></details>
+      <details><summary>Это бесплатно?</summary><p>Да. Без рекламы, подписок и платных функций.</p></details>
+      <details><summary>Куда пропала анкета?</summary><p>Она показывается 30 дней. Если ты заходишь в приложение, срок продлевается сам; вручную — в Профиле кнопкой «Продлить на 30 дней».</p></details>
+      <details><summary>Почему нет уведомлений?</summary><p>Так задумано: без навязчивых пушей. Новые взаимные интересы и сообщения видны на вкладке «Чат» — там появляется значок.</p></details>
+      <details><summary>Кто делает приложение?</summary><p>Семён, музыкант из Екатеринбурга. Приложение бесплатное; идеи и ошибки — на greenbergsound@gmail.com.</p></details>
     </div>
 
     <div class="section-title">Связаться с нами</div>
     <p>Нашёл ошибку или есть идея — напиши:<br><a href="mailto:greenbergsound@gmail.com?subject=%D0%A1%D0%B2%D0%BE%D0%B9%20%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9" style="color:var(--accent);">greenbergsound@gmail.com</a></p>
 
-    <div class="about-foot">Свой Настрой · v1.2 · Екатеринбург</div>
+    <div class="about-foot">Свой Настрой · v15 · 12.11.2026 · Екатеринбург</div>
   </div></div>
 </div>
 
@@ -1089,7 +1103,7 @@
 <script type="module">
   /* ---------- слой данных: REST API (Yandex Cloud, РФ) ---------- */
   const API_BASE = 'https://api.svoynastroy.ru/v1';
-  const POLICY_VERSION = '2026-10-06';
+  const POLICY_VERSION = '2026-11-12';
   const store = {
     get(k){ try { return localStorage.getItem(k); } catch (e){ return null; } },
     set(k, v){ try { localStorage.setItem(k, v); } catch (e){} },
@@ -1608,7 +1622,20 @@
     $('auth-sub').textContent = authMode === 'login' ? 'Войди, чтобы найти музыкантов рядом' : 'Создай аккаунт — это займёт 10 секунд';
     $('consent-field').style.display = authMode === 'register' ? 'block' : 'none';
     $('auth-forgot-btn').style.display = authMode === 'login' ? 'inline-block' : 'none';
+    $('auth-password').setAttribute('autocomplete', authMode === 'register' ? 'new-password' : 'current-password');
     hideAuthError();
+  });
+
+  ['auth-email', 'auth-password'].forEach(id => {
+    $(id).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter'){ e.preventDefault(); $('auth-submit-btn').click(); }
+    });
+  });
+  $('auth-show-password').addEventListener('click', () => {
+    const inp = $('auth-password');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    $('auth-show-password').textContent = show ? 'Скрыть' : 'Показать';
   });
 
   $('auth-forgot-btn').addEventListener('click', async () => {
@@ -1639,7 +1666,9 @@
     const email = $('auth-email').value.trim();
     const password = $('auth-password').value;
     if (!email || !password){ showAuthError('Заполни email и пароль.'); return; }
+    if (authMode === 'register' && password.length < 8){ showAuthError('Пароль — от 8 символов.'); return; }
     if (authMode === 'register' && !$('auth-consent').checked){ showAuthError('Нужно согласие на обработку персональных данных.'); return; }
+    if (authMode === 'register' && !$('auth-adult').checked){ showAuthError('Подтверди, что тебе исполнилось 18 лет.'); return; }
     const btn = $('auth-submit-btn');
     btn.disabled = true; btn.textContent = 'Подожди…';
     try {
@@ -1820,6 +1849,7 @@
     }
     $('f-avatar-input').value = '';
     $('f-avatar-status').style.display = 'none';
+    $('f-avatar-remove').style.display = pendingAvatarUrl ? 'inline-block' : 'none';
     const preview = $('f-avatar-preview');
     preview.className = 'avatar a1';
     preview.style.width = '64px'; preview.style.height = '64px'; preview.style.fontSize = '22px';
@@ -1863,11 +1893,22 @@
       pendingAvatarUrl = up.url;
       pendingAvatarKey = up.key;
       $('f-avatar-preview').innerHTML = avatarInnerHtml({ avatarUrl: pendingAvatarUrl });
+      $('f-avatar-remove').style.display = 'inline-block';
       statusEl.textContent = 'Фото загружено. Не забудь сохранить анкету.';
     } catch (err){
       console.error(err);
       statusEl.textContent = 'Не удалось загрузить фото (' + err.message + '). Можно продолжить без него.';
     }
+  });
+  $('f-avatar-remove').addEventListener('click', () => {
+    pendingAvatarKey = null;
+    pendingAvatarUrl = null;
+    const nm = (editingProfile && currentProfile) ? currentProfile.name : ($('f-name').value || '');
+    $('f-avatar-preview').innerHTML = avatarInnerHtml({ name: nm });
+    $('f-avatar-remove').style.display = 'none';
+    const st = $('f-avatar-status');
+    st.style.display = 'block';
+    st.textContent = 'Фото убрано. Сохрани анкету, чтобы применить.';
   });
   $('rec-btn').addEventListener('click', () => {
     if (audioUploading) return;
@@ -2105,10 +2146,12 @@
     if (list.length === 0){
       $('search-count').textContent = filtered ? 'Никого не нашлось' : 'Пока никого рядом';
       resultsEl.innerHTML = filtered
-        ? '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.</div>'
-        : '<div class="msg-line muted">Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="search-empty-invite-btn" type="button" style="margin-top:10px;">Пригласить</button></div>';
+        ? '<div class="msg-line muted">Попробуй увеличить радиус или убрать часть фильтров.<br><button class="quiet-link" id="search-empty-faq" type="button" style="margin-top:6px;">Почему пусто?</button></div>'
+        : '<div class="msg-line muted">Позови знакомых музыкантов — вместе интереснее.<br><button class="ghost-btn accent" id="search-empty-invite-btn" type="button" style="margin-top:10px;">Пригласить</button><br><button class="quiet-link" id="search-empty-faq" type="button" style="margin-top:4px;">Почему пусто?</button></div>';
       const ib = $('search-empty-invite-btn');
       if (ib) ib.addEventListener('click', inviteFriends);
+      const fb = $('search-empty-faq');
+      if (fb) fb.addEventListener('click', openAbout);
       return;
     }
     $('search-count').textContent = 'Найдено: ' + (total || list.length) + (total && total > list.length ? ' · показаны ближайшие ' + list.length : '');
@@ -2616,12 +2659,12 @@
     } else if (p.activeUntil && p.activeUntil <= Date.now()){
       el.classList.add('off');
       status = 'Срок показа истёк — анкета скрыта';
-      note = 'Анкета показывается 30 дней, чтобы в поиске были только те, кто ищет прямо сейчас.';
+      note = 'Анкета показывается 30 дней. Зайди в приложение — продлим автоматически, или нажми кнопку.';
       actions = '<button class="ghost-btn accent" data-vis="extend">Показывать ещё 30 дней</button>';
     } else {
       el.classList.remove('off');
       status = p.activeUntil ? 'Анкета видна в поиске до ' + formatDate(p.activeUntil) : 'Анкета видна в поиске';
-      note = 'Через 30 дней она скроется сама — если ещё ищешь, просто продли.';
+      note = 'Пока ты заходишь в приложение, срок продлевается сам. Кнопка ниже — если хочешь продлить вручную.';
       actions = '<button class="ghost-btn" data-vis="extend">Продлить на 30 дней</button>' +
                 '<button class="ghost-btn accent" data-vis="found">' + (band ? 'Мы нашли участника — скрыть нас' : 'Я нашёл(ла) группу — скрыть меня') + '</button>';
     }
