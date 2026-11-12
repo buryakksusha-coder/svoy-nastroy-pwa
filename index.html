@@ -1848,16 +1848,16 @@
             return;
           }
           await onAuthChange(null);
-          hideSplash('Почти готово…');
+          hideSplash();
         }
       } else {
         await onAuthChange(null);
         showStorageHint();
-        hideSplash('Почти готово…');
+        hideSplash();
       }
       handleEmailLink();
     } finally {
-      if (!splashHidden) hideSplash('Почти готово…');
+      if (!splashHidden) hideSplash();
     }
   }
   function handleEmailLink(){
