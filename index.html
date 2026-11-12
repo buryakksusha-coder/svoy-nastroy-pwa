@@ -346,6 +346,7 @@
   .filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 
   .sf-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 14px;}
+  .sf-more-head, .sf-apply-row{display:none;}
   .map-district{
     text-align:center;
     font-size:12.5px;
@@ -569,6 +570,17 @@
     }
     .tabbar{padding-bottom:calc(12px + env(safe-area-inset-bottom));}
     .scroll{overscroll-behavior:contain;}
+  }
+  @media (max-width:639px){
+    #sf-more.open{
+      display:block !important;
+      position:fixed; inset:0; z-index:45;
+      background:var(--panel);
+      overflow-y:auto;
+      padding:calc(14px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
+    }
+    #sf-more.open .sf-more-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    #sf-more.open .sf-apply-row{display:block;position:sticky;bottom:0;padding:10px 0 calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(23,24,29,0),var(--panel) 35%);}
   }
 </style>
 </head>
@@ -815,6 +827,7 @@
               <button type="button" class="quiet-link" id="sf-reset" style="display:none;">Сбросить</button>
             </div>
             <div id="sf-more" style="display:none;">
+            <div class="sf-more-head"><div class="section-title" style="margin:0;">Фильтры</div><button type="button" class="quiet-link" id="sf-close">Закрыть</button></div>
             <div class="field">
               <label>Кто</label>
               <div class="chips" id="sf-kind">
@@ -864,6 +877,7 @@
                 <span class="chip on" data-val="25">25 км</span>
               </div>
             </div>
+            <div class="sf-apply-row"><button type="button" class="primary-btn" id="sf-apply">Показать результаты</button></div>
             </div>
             
             <div class="section-title res-head" id="search-results-title" style="margin-top:14px;"><span id="search-count">Результаты</span></div>
@@ -1047,7 +1061,7 @@
     <div class="section-title">Связаться с нами</div>
     <p>Нашёл ошибку или есть идея — напиши:<br><a href="mailto:greenbergsound@gmail.com?subject=%D0%A1%D0%B2%D0%BE%D0%B9%20%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9" style="color:var(--accent);">greenbergsound@gmail.com</a></p>
 
-    <div class="about-foot">Свой Настрой · v15 · 12.11.2026 · Екатеринбург</div>
+    <div class="about-foot">Свой Настрой · v16 · 12.11.2026 · Екатеринбург</div>
   </div></div>
 </div>
 
@@ -1111,10 +1125,29 @@
   };
   let accessToken = store.get('sn_access');
   let refreshToken = store.get('sn_refresh');
+  let storageBlocked = false;
+  try {
+    localStorage.setItem('__sn_probe__', '1');
+    if (localStorage.getItem('__sn_probe__') !== '1') storageBlocked = true;
+    localStorage.removeItem('__sn_probe__');
+  } catch (e){ storageBlocked = true; }
   function setTokens(a, r){
     accessToken = a || null; refreshToken = r || null;
     if (a) store.set('sn_access', a); else store.del('sn_access');
     if (r) store.set('sn_refresh', r); else store.del('sn_refresh');
+    if (a && store.get('sn_access') !== a) storageBlocked = true;
+    if (a && r) store.set('sn_had_session', '1');
+  }
+  function showStorageHint(){
+    if (storageBlocked){
+      showAuthError('Браузер не сохраняет вход (приватный режим или запрет хранения). Открой сайт в обычном окне или установи приложение — иначе после закрытия придётся входить снова.');
+      return;
+    }
+    if (store.get('sn_had_session') === '1' && !accessToken){
+      const info = $('auth-info');
+      info.textContent = 'Похоже, вход не сохранился. Войди ещё раз. Если повторяется — открой сайт в Chrome/Safari или установи приложение на экран.';
+      info.style.display = 'block';
+    }
   }
   class ApiError extends Error {
     constructor(status, code, message){ super(message || code); this.status = status; this.code = code; }
@@ -1128,7 +1161,8 @@
         try {
           res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: refreshToken }) });
         } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
-        if (!res.ok){ setTokens(null, null); throw new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'); }
+        if (res.status === 401){ setTokens(null, null); throw new ApiError(401, 'UNAUTHORIZED', 'Нужно войти заново'); }
+        if (!res.ok){ throw new ApiError(res.status, 'SERVER', 'Сервер временно недоступен. Попробуй ещё раз.'); }
         const j = await res.json();
         setTokens(j.access, j.refresh);
       })().finally(() => { refreshing = null; });
@@ -1149,7 +1183,7 @@
     const errOf = (d) => (d && d.error) || {};
     if (res.status === 401 && errOf(data).code === 'UNAUTHORIZED' && !isAuthPath && refreshToken){
       try { await refreshAccess(); }
-      catch (e){ if (e.code !== 'NETWORK') sessionLost(); throw e; }
+      catch (e){ if (e.status === 401) sessionLost(); throw e; }
       try { res = await send(); } catch (e){ throw new ApiError(0, 'NETWORK', 'Проблема с сетью. Проверь соединение.'); }
       data = res.status === 204 ? null : await res.json().catch(() => ({}));
     }
@@ -1479,11 +1513,13 @@
     'резать русских', 'джихад против', 'газават'
   ];
   const BULLYING_INSULTS = [
-    'тварь', 'урод', 'ублюдок', 'дебил', 'даун', 'ничтожество',
-    'конченая', 'конченый', 'отброс', 'мразь', 'чмо', 'позорище'
+    'тварь', 'урод', 'ублюдок', 'дебил', 'даун', 'ничтожество', 'конченая', 'конченый', 'отброс', 'мразь', 'чмо', 'позорище',
+    'дурак', 'дура', 'идиот', 'идиотка', 'кретин', 'кретинка', 'придурок', 'тупой', 'тупая', 'лох', 'неудачник', 'неудачница',
+    'никчемный', 'никчемная', 'жалкий', 'жалкая', 'убогий', 'убогая', 'псих', 'психичка', 'больной', 'больная'
   ];
   const BULLYING_THREATS = [
-    'убью', 'сдохни', 'найду и', 'пожалеешь', 'проучу', 'закопаю', 'урою', 'зарежу'
+    'убью', 'сдохни', 'найду и', 'пожалеешь', 'проучу', 'закопаю', 'урою', 'зарежу', 'заткнись', 'пошел ты', 'пошла ты',
+    'иди на', 'ненавижу тебя', 'ты никто', 'тебе место'
   ];
   function normalizeForFilter(text){
     return String(text || '').toLowerCase().replace(/ё/g, 'е');
@@ -1499,7 +1535,7 @@
     }
     const hasInsult = containsAny(text, BULLYING_INSULTS);
     const hasThreat = containsAny(text, BULLYING_THREATS);
-    const hasDirectAddress = /\bты\b/.test(text) || /\bтебя\b/.test(text) || /\bтебе\b/.test(text);
+    const hasDirectAddress = /(^|[^а-яa-z0-9_])(ты|тебя|тебе|вы|вас|вам)([^а-яa-z0-9_]|$)/.test(text);
     if ((hasInsult && hasDirectAddress) || hasThreat){
       return { ok: false, reason: 'Похоже на оскорбление или угрозу в чей-то адрес — сохранение заблокировано. Мат сам по себе не запрещён.' };
     }
@@ -1723,6 +1759,7 @@
         $('tabbar').style.display = 'flex';
         editingProfile = false;
         setActiveScreen('s-search');
+        if (storageBlocked) showToast('Вход выполнен, но браузер не сохраняет сессию. Открой в обычном окне или установи приложение.');
         maybeShowInstallHint();
         runSearch();
         subscribeLikeWatchers();
@@ -1756,11 +1793,15 @@
         const me = await api('GET', '/me');
         await onAuthChange(me.user, me.profile);
       } catch (e){
-        if (e.status === 0){ await onAuthChange(null); showAuthError(e.message); }
-        else await onAuthChange(null);
+        if (e.status === 0 || (e.status && e.status >= 500)){
+          showAuthError('Не удалось проверить сессию: сервер временно недоступен. Проверь связь и обнови страницу.');
+          return;
+        }
+        await onAuthChange(null);
       }
     } else {
       await onAuthChange(null);
+      showStorageHint();
     }
     handleEmailLink();
   }
@@ -2122,10 +2163,24 @@
     $(id).addEventListener('click', e => { if (e.target.closest('.chip')) scheduleSearch(); });
   });
   $('sf-genre-details').addEventListener('click', e => { if (e.target.closest('.chip')) scheduleSearch(); });
+  function closeFilters(){
+    const more = $('sf-more');
+    more.classList.remove('open');
+    more.style.display = 'none';
+    refreshFilterUi();
+  }
   $('sf-toggle').addEventListener('click', () => {
     const more = $('sf-more');
-    more.style.display = more.style.display === 'none' ? 'block' : 'none';
+    const open = !more.classList.contains('open');
+    if (open){ more.classList.add('open'); more.style.display = 'block'; more.scrollTop = 0; }
+    else closeFilters();
     refreshFilterUi();
+  });
+  $('sf-close').addEventListener('click', closeFilters);
+  $('sf-apply').addEventListener('click', () => {
+    closeFilters();
+    runSearch();
+    setTimeout(() => { const t = $('search-results-title'); if (t) t.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 250);
   });
   $('sf-reset').addEventListener('click', () => {
     ['sf-instrument', 'sf-kind', 'sf-level', 'sf-goal', 'sf-genre'].forEach(id => setChipValues(id, []));
@@ -2382,6 +2437,7 @@
     stopAllPolling();
     activeChatId = null;
     if (rt) api('POST', '/auth/logout', { refresh: rt }).catch(() => {});
+    store.del('sn_had_session');
     setTokens(null, null);
     await onAuthChange(null);
   });
